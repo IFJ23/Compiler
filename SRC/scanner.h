@@ -9,7 +9,7 @@
 #include "error.h"
 #include <stdlib.h>
 #include <stdio.h>
-
+#include <stdbool.h>
 typedef enum {
     KW_DOUBLE,
     KW_ELSE,
@@ -49,5 +49,23 @@ typedef enum {
     TYPE_COLON,
 } Token_type;
 
+typedef union { 
+    Keyword kw;
+    char *id;
+    int integer;
+    double decimal;
+    char *string;
+} Token_value;
+typedef struct {
+    Token_type type;
+    Token_value value;
+    int line;
+} Token;
+
+typedef struct{
+    FILE *file;
+    int line;
+} Scanner;
+int get_token(Scanner *scanner, Token *token);
 
 #endif //IFJ23_SCANNER_H
