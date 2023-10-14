@@ -47,6 +47,10 @@ typedef enum {
     TYPE_RIGHT_BRACKET,
     TYPE_COMMA,
     TYPE_COLON,
+    TYPE_FACTORIAL,
+    TYPE_LEFT_CURLY_BRACKET,
+    TYPE_RIGHT_CURLY_BRACKET,
+    TYPE_RETURN_ARROW,
 } Token_type;
 
 typedef union { 
@@ -66,6 +70,8 @@ typedef struct{
     FILE *file;
     int line;
 } Scanner;
-int get_token(Scanner *scanner, Token *token);
 
+int get_token(Scanner*, Token*);
+
+int keyword_from_token(Token*, char*);
 #endif //IFJ23_SCANNER_H
