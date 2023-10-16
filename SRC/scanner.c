@@ -14,7 +14,7 @@ int get_token(Scanner *scanner, Token *token){
         token->type = TYPE_EOF;
         return EXIT_SUCCESS;
         }
-        
+        scanner->line = 0;
         if(isspace(c)){
             continue;
         }

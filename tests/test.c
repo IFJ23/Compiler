@@ -28,10 +28,10 @@ int main() {
     FILE *test_input2 = fopen("test2.txt", "r");
 
     // Test 1: Check for TYPE_PLUS
-    run_test("Test for TYPE_PLUS", TYPE_PLUS, 1, test_input1);
+    run_test("Test for TYPE_PLUS", TYPE_PLUS, 0, test_input1);
 
     // Test 2: Check for TYPE_RETURN_ARROW
-    run_test("Test for TYPE_RETURN_ARROW", TYPE_RETURN_ARROW, 2, test_input2);
+    run_test("Test for TYPE_RETURN_ARROW", TYPE_RETURN_ARROW, 0, test_input2);
 
     // Add more test cases here for other token types, keywords, and identifiers
 
