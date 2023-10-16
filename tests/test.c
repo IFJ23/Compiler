@@ -9,7 +9,7 @@
 #include "../SRC/scanner.h" // Include the header file of your code
 
 // Define a helper function to run tests
-void run_test(const char *test_name, int expected_type, int expected_line, FILE *input_file) {
+void run_test(const char *test_name, Token_type expected_type, int expected_line, FILE *input_file) {
     Scanner scanner;
     scanner.file = input_file;
     Token token;

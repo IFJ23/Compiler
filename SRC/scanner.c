@@ -24,13 +24,54 @@ int get_token(Scanner *scanner, Token *token){
             continue;
         }
         
+        if(isdigit(c)){
+            // int counter = 0;
+            int size = 20;
+            char *number = malloc(sizeof(char) * size);
+            if(number == NULL){
+                exit(INTERNAL_ERROR);
+            }
+            // TODO
+        }
+        if((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_'){
+            int counter = 0;
+            int size = 20;
+            char *id = malloc(sizeof(char) * size);
+            if(id == NULL){
+                exit(INTERNAL_ERROR);
+            }
+            while((isalnum(c) || c == '_') && c != EOF){
+                if(counter == size){
+                    size *= 2;
+                    id = realloc(id, sizeof(char) * size);
+                    if(id == NULL){
+                        exit(INTERNAL_ERROR);
+                    }
+                }
+                id[counter] = c;
+                counter++;
+                c = fgetc(scanner->file);
+            }
+            ungetc(c, scanner->file);
+            id[counter] = '\0';
+            if(keyword_from_token(token, id) == EXIT_SUCCESS){
+                token->line = scanner->line;
+                free(id);
+                return EXIT_SUCCESS;
+            }
+            token->type = TYPE_ID;
+            token->value.id = id;
+            token->line = scanner->line;
+            return EXIT_SUCCESS;
+        }
+        int c2;
         switch(c){
             case '+':
                 token->type = TYPE_PLUS;
                 token->line = scanner->line;
                 return EXIT_SUCCESS;
             case '-':
-                int c2 = fgetc(scanner->file);
+                c2 = fgetc(scanner->file);
                 if(c2 == '>'){
                     token->type = TYPE_RETURN_ARROW;
                     token->line = scanner->line;
@@ -47,7 +88,7 @@ int get_token(Scanner *scanner, Token *token){
                 token->line = scanner->line;
                 return EXIT_SUCCESS;
             case '/':
-            int c2 = fgetc(scanner->file);
+            c2 = fgetc(scanner->file);
                 if(c2 == '/'){
                     while(c2 != '\n'){
                         c2 = fgetc(scanner->file);
@@ -59,7 +100,7 @@ int get_token(Scanner *scanner, Token *token){
                     }
                     break;
                 }
-                else if(c2 == '*'){
+                if ( c2 == '*'){
                     while(true){
                         c2 = fgetc(scanner->file);
                         if(c2 == EOF){
@@ -84,12 +125,12 @@ int get_token(Scanner *scanner, Token *token){
                         }
                     }
                 }
-                else{
+                
                 ungetc(c2, scanner->file);
                 token->type = TYPE_DIV;
                 token->line = scanner->line;
                 return EXIT_SUCCESS;
-                }
+                
             case '<':
                 c2 = fgetc(scanner->file);
                 if(c2 == '='){
@@ -180,7 +221,7 @@ int get_token(Scanner *scanner, Token *token){
                     return EXIT_SUCCESS;
                 }
             case '"':
-                int c2 = fgetc(scanner->file);
+                c2 = fgetc(scanner->file);
                 if(c2 == '"'){
                     int c3 = fgetc(scanner->file);
                     if(c3 == '"'){
@@ -224,46 +265,7 @@ int get_token(Scanner *scanner, Token *token){
                 return EXIT_SUCCESS;
                 
         }
-        if(isdigit(c)){
-            int counter = 0;
-            int size = 20;
-            char *number = malloc(sizeof(char) * size);
-            if(number == NULL){
-                exit(INTERNAL_ERROR);
-            }
-            // TODO
-        }
-        if((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_'){
-            int counter = 0;
-            int size = 20;
-            char *id = malloc(sizeof(char) * size);
-            if(id == NULL){
-                exit(INTERNAL_ERROR);
-            }
-            while((isalnum(c) || c == '_') && c != EOF){
-                if(counter == size){
-                    size *= 2;
-                    id = realloc(id, sizeof(char) * size);
-                    if(id == NULL){
-                        exit(INTERNAL_ERROR);
-                    }
-                }
-                id[counter] = c;
-                counter++;
-                c = fgetc(scanner->file);
-            }
-            ungetc(c, scanner->file);
-            id[counter] = '\0';
-            if(keyword_from_token(token, id) == EXIT_SUCCESS){
-                token->line = scanner->line;
-                free(id);
-                return EXIT_SUCCESS;
-            }
-            token->type = TYPE_ID;
-            token->value.id = id;
-            token->line = scanner->line;
-            return EXIT_SUCCESS;
-        }
+        
 
     }
 }
