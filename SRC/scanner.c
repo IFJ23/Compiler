@@ -166,8 +166,63 @@ int get_token(Scanner *scanner, Token *token){
                 token->type = TYPE_RIGHT_CURLY_BRACKET;
                 token->line = scanner->line;
                 return EXIT_SUCCESS;
-            
-
+            case '?':
+                c2 = fgetc(scanner->file);
+                if(c2 == '?'){
+                    token->type = TYPE_NIL_COALESCING_OPERATOR;
+                    token->line = scanner->line;
+                    return EXIT_SUCCESS;
+                }
+                else{
+                    ungetc(c2, scanner->file);
+                    token->type = TYPE_NIL_ASSIGNER;
+                    token->line = scanner->line;
+                    return EXIT_SUCCESS;
+                }
+            case '"':
+                int c2 = fgetc(scanner->file);
+                if(c2 == '"'){
+                    int c3 = fgetc(scanner->file);
+                    if(c3 == '"'){
+                        token->type = TYPE_MULTILINE_STRING;
+                        token->line = scanner->line;
+                        //todo
+                    }
+                    else{
+                        ungetc(c3, scanner->file);                       
+                        token->type = TYPE_STRING;
+                        token->value.string = "";
+                        token->line = scanner->line;
+                        return EXIT_SUCCESS;
+                    }
+                }
+                int counter = 0;
+                int size = 20;
+                char *string = malloc(sizeof(char) * size);
+                if(string == NULL){
+                    exit(INTERNAL_ERROR);
+                }
+                while(c2 != '"'){
+                    if(c2 == EOF){
+                        exit(LEXICAL_ERROR);
+                    }
+                    if(counter == size){
+                        size *= 2;
+                        string = realloc(string, sizeof(char) * size);
+                        if(string == NULL){
+                            exit(INTERNAL_ERROR);
+                        }
+                    }
+                    string[counter] = c2;
+                    counter++;
+                    c2 = fgetc(scanner->file);
+                }
+                string[counter] = '\0';
+                token->type = TYPE_STRING;
+                token->value.string = string;
+                token->line = scanner->line;
+                return EXIT_SUCCESS;
+                
         }
         if(isdigit(c)){
             int counter = 0;
