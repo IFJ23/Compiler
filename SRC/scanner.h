@@ -56,6 +56,7 @@ typedef enum {
     TYPE_NIL_ASSIGNER,
     TYPE_NIL_COALESCING_OPERATOR,
     TYPE_MULTILINE_STRING,
+    TYPE_ERROR,
 } Token_type;
 
 typedef union { 

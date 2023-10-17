@@ -24,14 +24,81 @@ int get_token(Scanner *scanner, Token *token){
             continue;
         }
         
-        if(isdigit(c)){
-            // int counter = 0;
+        if(isdigit(c)){ 
+            int counter,exponent,dot,sign = 0;
             int size = 20;
             char *number = malloc(sizeof(char) * size);
             if(number == NULL){
                 exit(INTERNAL_ERROR);
             }
-            // TODO
+            while(isdigit(c) || c == '.' || c == 'e' || c == 'E' || c == '+' || c == '-'){
+                if(counter == size){
+                    size *= 2;
+                    number = realloc(number, sizeof(char) * size);
+                    if(number == NULL){
+                        exit(INTERNAL_ERROR);
+                    }
+                }
+                number[counter] = c;
+                counter++;
+                c = fgetc(scanner->file);
+                if((number[counter-1] >= '0' && number[counter-1] <= '9') && (c == '+' || c == '-')){
+					break;
+				}
+                if(!isdigit(c) && number[counter-1] == '.'){
+                    token->type = TYPE_ERROR;
+                    token->line = scanner->line;
+                    free(number);
+                    return LEXICAL_ERROR;
+                }
+            }
+            ungetc(c, scanner->file);
+            number[counter] = '\0';
+            if(!isdigit(number[counter-1])){
+                token->type = TYPE_ERROR;
+                token->line = scanner->line;
+                free(number);
+                return LEXICAL_ERROR;
+            }
+            counter = 0;
+            while(number[counter] != '\0'){
+                if(number[counter] == '.'){
+                    if(exponent > 0){
+                        token->type = TYPE_ERROR;
+                        token->line = scanner->line;
+                        free(number);
+                        return LEXICAL_ERROR;
+                    }
+                    dot++;
+                }
+                if (strchr(number, 'e') != NULL || strchr(number, 'E') != NULL){
+                    exponent++;
+                }
+                if (strchr(number, '+') != NULL || strchr(number, '-') != NULL){
+                    sign++;
+                }
+            }
+            if(dot == 0 && exponent == 0 && sign == 0){
+            token->type = TYPE_INT;
+            token->value.integer = strtoll(number, NULL, 10);
+            token->line = scanner->line;
+            free(number);
+            return EXIT_SUCCESS;
+            } 
+            else if((sign==0 && exponent == 0 && dot == 1) || (sign==0 && exponent == 1 && dot == 0) || (sign==0 && exponent == 1 && dot == 1) 
+            || (sign==1 && exponent == 1 && dot == 0) || (sign==1 && exponent == 1 && dot == 1 )){ 
+                token->type = TYPE_DOUBLE;
+                token->value.decimal = strtod(number, NULL);
+                token->line = scanner->line;
+                free(number);
+                return EXIT_SUCCESS;
+            }
+            else{
+                token->type = TYPE_ERROR;
+                token->line = scanner->line;
+                free(number);
+                return LEXICAL_ERROR;
+            }
         }
         if((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_'){
             int counter = 0;
@@ -100,7 +167,7 @@ int get_token(Scanner *scanner, Token *token){
                     }
                     break;
                 }
-                if ( c2 == '*'){
+                if (c2 == '*'){
                     while(true){
                         c2 = fgetc(scanner->file);
                         if(c2 == EOF){
