@@ -222,6 +222,7 @@ int get_token(Scanner *scanner, Token *token){
                 }
             case '"':
                 c2 = fgetc(scanner->file);
+
                 if(c2 == '"'){
                     int c3 = fgetc(scanner->file);
                     if(c3 == '"'){
@@ -235,6 +236,7 @@ int get_token(Scanner *scanner, Token *token){
                         token->value.string = "";
                         token->line = scanner->line;
                         return EXIT_SUCCESS;
+
                     }
                 }
                 int counter = 0;
@@ -266,8 +268,6 @@ int get_token(Scanner *scanner, Token *token){
                 
         }
         
-
-    }
 }
 
 int keyword_from_token(Token *token, char *c){
