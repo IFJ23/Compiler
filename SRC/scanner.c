@@ -246,7 +246,7 @@ int get_token(Scanner *scanner, Token *token){
                 }
                 else{
                     ungetc(c2, scanner->file);
-                    token->type = TYPE_FACTORIAL;
+                    token->type = TYPE_EXCLAMATION_MARK;
                     token->line = scanner->line;
                     return EXIT_SUCCESS;
                 }
@@ -333,12 +333,11 @@ int get_token(Scanner *scanner, Token *token){
                 token->line = scanner->line;
                 return EXIT_SUCCESS;
                 
-        }
-        
+        }       
+    }
 }
-
-int keyword_from_token(Token *token, char *c){
-    if(strcmp(c, "double") == 0){
+int keyword_from_token(Token *token, char *c) {
+    if(strcmp(c, "Double") == 0){
         token->type = TYPE_KW;
         token->value.kw = KW_DOUBLE;
         return EXIT_SUCCESS;
@@ -358,7 +357,7 @@ int keyword_from_token(Token *token, char *c){
         token->value.kw = KW_IF;
         return EXIT_SUCCESS;
     }
-    if(strcmp(c, "int") == 0){
+    if(strcmp(c, "Int") == 0){
         token->type = TYPE_KW;
         token->value.kw = KW_INT;
         return EXIT_SUCCESS;
@@ -378,7 +377,7 @@ int keyword_from_token(Token *token, char *c){
         token->value.kw = KW_RETURN;
         return EXIT_SUCCESS;
     }
-    if(strcmp(c, "string") == 0){
+    if(strcmp(c, "String") == 0){
         token->type = TYPE_KW;
         token->value.kw = KW_STRING;
         return EXIT_SUCCESS;
