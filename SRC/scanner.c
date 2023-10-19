@@ -107,17 +107,20 @@ int get_token(Scanner *scanner, Token *token){
             if(id == NULL){
                 exit(INTERNAL_ERROR);
             }
-            while((isalnum(c) || c == '_') && c != EOF){
+            while((isalnum(c) || c == '_' || c == '?') && c != EOF){
                 if(counter == size){
                     size *= 2;
                     id = realloc(id, sizeof(char) * size);
                     if(id == NULL){
                         exit(INTERNAL_ERROR);
                     }
-                }
+                }               
                 id[counter] = c;
-                counter++;
+                counter++;            
                 c = fgetc(scanner->file);
+                if (c == '?'){
+                    break;
+                }
             }
             ungetc(c, scanner->file);
             id[counter] = '\0';
@@ -246,7 +249,7 @@ int get_token(Scanner *scanner, Token *token){
                 }
                 else{
                     ungetc(c2, scanner->file);
-                    token->type = TYPE_FACTORIAL;
+                    token->type = TYPE_EXCLAMATION_MARK;
                     token->line = scanner->line;
                     return EXIT_SUCCESS;
                 }
@@ -283,9 +286,9 @@ int get_token(Scanner *scanner, Token *token){
                 }
                 else{
                     ungetc(c2, scanner->file);
-                    token->type = TYPE_NIL_ASSIGNER;
+                    token->type = TYPE_ERROR;
                     token->line = scanner->line;
-                    return EXIT_SUCCESS;
+                    return LEXICAL_ERROR;
                 }
             case '"':
                 c2 = fgetc(scanner->file);
@@ -333,12 +336,11 @@ int get_token(Scanner *scanner, Token *token){
                 token->line = scanner->line;
                 return EXIT_SUCCESS;
                 
-        }
-        
+        }       
+    }
 }
-
-int keyword_from_token(Token *token, char *c){
-    if(strcmp(c, "double") == 0){
+int keyword_from_token(Token *token, char *c) {
+    if(strcmp(c, "Double") == 0){
         token->type = TYPE_KW;
         token->value.kw = KW_DOUBLE;
         return EXIT_SUCCESS;
@@ -358,7 +360,7 @@ int keyword_from_token(Token *token, char *c){
         token->value.kw = KW_IF;
         return EXIT_SUCCESS;
     }
-    if(strcmp(c, "int") == 0){
+    if(strcmp(c, "Int") == 0){
         token->type = TYPE_KW;
         token->value.kw = KW_INT;
         return EXIT_SUCCESS;
@@ -378,7 +380,7 @@ int keyword_from_token(Token *token, char *c){
         token->value.kw = KW_RETURN;
         return EXIT_SUCCESS;
     }
-    if(strcmp(c, "string") == 0){
+    if(strcmp(c, "String") == 0){
         token->type = TYPE_KW;
         token->value.kw = KW_STRING;
         return EXIT_SUCCESS;
@@ -391,6 +393,21 @@ int keyword_from_token(Token *token, char *c){
     if(strcmp(c, "while") == 0){
         token->type = TYPE_KW;
         token->value.kw = KW_WHILE;
+        return EXIT_SUCCESS;
+    }
+    if(strcmp(c, "Int?") == 0){
+        token->type = TYPE_KW;
+        token->value.kw = KW_UNDEFINED_INT;
+        return EXIT_SUCCESS;
+    }
+    if(strcmp(c, "Double?") == 0){
+        token->type = TYPE_KW;
+        token->value.kw = KW_UNDEFINED_DOUBLE;
+        return EXIT_SUCCESS;
+    }
+    if(strcmp(c, "String?") == 0){
+        token->type = TYPE_KW;
+        token->value.kw = KW_UNDEFINED_STRING;
         return EXIT_SUCCESS;
     }
     return EXIT_FAILURE;
