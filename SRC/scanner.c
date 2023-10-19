@@ -129,6 +129,12 @@ int get_token(Scanner *scanner, Token *token){
                 free(id);
                 return EXIT_SUCCESS;
             }
+            if(id[counter-1] == '?'){
+                token->type = TYPE_ERROR;
+                token->line = scanner->line;
+                free(id);
+                return LEXICAL_ERROR;
+            }
             token->type = TYPE_ID;
             token->value.id = id;
             token->line = scanner->line;
