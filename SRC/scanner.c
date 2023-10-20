@@ -357,9 +357,44 @@ int get_token(Scanner *scanner, Token *token){
                             string[counter-1] = '\\';
                         }
                         else if(c2 == 'u'){
-                            c2 = fgetc(scanner->file);
-                            if(c2 == '{'){
-                                
+                            int c3 = fgetc(scanner->file);
+                            if(c3 == '{'){
+                                int c4 = fgetc(scanner->file);
+                                if(isdigit(c4)){
+                                    int c5 = fgetc(scanner->file);
+                                    if(isdigit(c5)){                                     
+                                        int c6 = fgetc(scanner->file);
+                                        if(c6 == '}'){
+                                            int hex[] = {c4, c5};
+                                            int number = strtol(hex, NULL, 16);
+                                            string[counter-1] = number; 
+                                        }
+                                        else{
+                                            token->type = TYPE_ERROR;
+                                            token->line = scanner->line;
+                                            free(string);
+                                            return LEXICAL_ERROR;
+                                        }                                                                                                                                    
+                                    }
+                                    else{
+                                        token->type = TYPE_ERROR;
+                                        token->line = scanner->line;
+                                        free(string);
+                                        return LEXICAL_ERROR;
+                                    }
+                                }
+                                else{
+                                    token->type = TYPE_ERROR;
+                                    token->line = scanner->line;
+                                    free(string);
+                                    return LEXICAL_ERROR;
+                                }
+                            }
+                            else{
+                                token->type = TYPE_ERROR;
+                                token->line = scanner->line;
+                                free(string);
+                                return LEXICAL_ERROR;
                             }
                         }
                         else{
