@@ -436,6 +436,8 @@ int get_token(Scanner *scanner, Token *token){
                         free(string);
                         return LEXICAL_ERROR;
                     }
+                    c2 = fgetc(scanner->file);
+                    
                 }
                 
         }       
