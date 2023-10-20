@@ -342,7 +342,7 @@ int get_token(Scanner *scanner, Token *token){
                         free(string);
                         return LEXICAL_ERROR;
                     }
-                    else if( c2 == '/'){
+                    else if( c2 == '\\'){
                         c2 = fgetc(scanner->file);
                         if(c2 == 'n'){
                             string[counter-1] = '\n';
