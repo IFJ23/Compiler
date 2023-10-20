@@ -347,6 +347,9 @@ int get_token(Scanner *scanner, Token *token){
                         if(c2 == 'n'){
                             string[counter-1] = '\n';
                         }
+                        else if(c2 == 'r'){
+                            string[counter-1] = '\r';
+                        }
                         else if(c2 == 't'){
                             string[counter-1] = '\t';
                         }
