@@ -117,10 +117,11 @@ int get_token(Scanner *scanner, Token *token){
                 }               
                 id[counter] = c;
                 counter++;            
-                c = fgetc(scanner->file);
                 if (c == '?'){
+                    c = fgetc(scanner->file);
                     break;
                 }
+                c = fgetc(scanner->file);               
             }
             ungetc(c, scanner->file);
             id[counter] = '\0';
