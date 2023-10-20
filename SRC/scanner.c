@@ -360,9 +360,9 @@ int get_token(Scanner *scanner, Token *token){
                             int c3 = fgetc(scanner->file);
                             if(c3 == '{'){
                                 int c4 = fgetc(scanner->file);
-                                if(isdigit(c4)){
+                                if(isalnum(c4)){
                                     int c5 = fgetc(scanner->file);
-                                    if(isdigit(c5)){                                     
+                                    if(isalnum(c5)){                                     
                                         int c6 = fgetc(scanner->file);
                                         if(c6 == '}'){
                                             int hex[] = {c4, c5};
