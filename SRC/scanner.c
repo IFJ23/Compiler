@@ -117,10 +117,11 @@ int get_token(Scanner *scanner, Token *token){
                 }               
                 id[counter] = c;
                 counter++;            
-                c = fgetc(scanner->file);
                 if (c == '?'){
+                    c = fgetc(scanner->file);
                     break;
                 }
+                c = fgetc(scanner->file);               
             }
             ungetc(c, scanner->file);
             id[counter] = '\0';
@@ -315,17 +316,18 @@ int get_token(Scanner *scanner, Token *token){
 
                     }
                 }
+                else{
+                    token->type = TYPE_STRING;
+                    token->line = scanner->line;
+                    }
                 int counter = 0;
                 int size = 20;
                 char *string = malloc(sizeof(char) * size);
                 if(string == NULL){
                     exit(INTERNAL_ERROR);
                 }
-                while(c2 != '"'){
-                    if(c2 == EOF){
-                        exit(LEXICAL_ERROR);
-                    }
-                    if(counter == size){
+                while(true){
+                    if (counter == size){
                         size *= 2;
                         string = realloc(string, sizeof(char) * size);
                         if(string == NULL){
@@ -334,13 +336,86 @@ int get_token(Scanner *scanner, Token *token){
                     }
                     string[counter] = c2;
                     counter++;
-                    c2 = fgetc(scanner->file);
+                    if( c2 < 32 || c2 > 255){
+                        token->type = TYPE_ERROR;
+                        token->line = scanner->line;
+                        free(string);
+                        return LEXICAL_ERROR;
+                    }
+                    else if( c2 == '/'){
+                        c2 = fgetc(scanner->file);
+                        if(c2 == 'n'){
+                            string[counter-1] = '\n';
+                        }
+                        else if(c2 == 't'){
+                            string[counter-1] = '\t';
+                        }
+                        else if(c2 == '"'){
+                            string[counter-1] = '"';
+                        }
+                        else if(c2 == '\\'){
+                            string[counter-1] = '\\';
+                        }
+                        else if(c2 == 'u'){
+                            int c3 = fgetc(scanner->file);
+                            if(c3 == '{'){
+                                int c4 = fgetc(scanner->file);
+                                if(isdigit(c4)){
+                                    int c5 = fgetc(scanner->file);
+                                    if(isdigit(c5)){                                     
+                                        int c6 = fgetc(scanner->file);
+                                        if(c6 == '}'){
+                                            int hex[] = {c4, c5};
+                                            int number = strtol(hex, NULL, 16);
+                                            string[counter-1] = number; 
+                                        }
+                                        else{
+                                            token->type = TYPE_ERROR;
+                                            token->line = scanner->line;
+                                            free(string);
+                                            return LEXICAL_ERROR;
+                                        }                                                                                                                                    
+                                    }
+                                    else{
+                                        token->type = TYPE_ERROR;
+                                        token->line = scanner->line;
+                                        free(string);
+                                        return LEXICAL_ERROR;
+                                    }
+                                }
+                                else{
+                                    token->type = TYPE_ERROR;
+                                    token->line = scanner->line;
+                                    free(string);
+                                    return LEXICAL_ERROR;
+                                }
+                            }
+                            else{
+                                token->type = TYPE_ERROR;
+                                token->line = scanner->line;
+                                free(string);
+                                return LEXICAL_ERROR;
+                            }
+                        }
+                        else{
+                            token->type = TYPE_ERROR;
+                            token->line = scanner->line;
+                            free(string);
+                            return LEXICAL_ERROR;
+                        }
+                    }
+                    else if(c2 == '"'){
+                        string[counter-1] = '\0';
+                        token->value.string = string;
+                        return EXIT_SUCCESS;
+                    }
+                    else if(c2 == EOF){
+                        token->type = TYPE_ERROR;
+                        token->line = scanner->line;
+                        free(string);
+                        return LEXICAL_ERROR;
+                    }
                 }
-                string[counter] = '\0';
-                token->type = TYPE_STRING;
-                token->value.string = string;
-                token->line = scanner->line;
-                return EXIT_SUCCESS;
                 
         }       
     }
