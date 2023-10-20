@@ -3,13 +3,15 @@
 // Authors:
 // Ivan Onufriienko (xonufr00)
 
-#ifndef IFJ23_SCANNER_H 
+#ifndef IFJ23_SCANNER_H
 #define IFJ23_SCANNER_H
 
 #include "error.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <ctype.h>
+#include <string.h>
 typedef enum {
     KW_DOUBLE,
     KW_ELSE,
@@ -22,6 +24,9 @@ typedef enum {
     KW_STRING,
     KW_VAR,
     KW_WHILE,
+    KW_UNDEFINED_INT,
+    KW_UNDEFINED_DOUBLE,
+    KW_UNDEFINED_STRING,
 } Keyword;
 
 typedef enum {
@@ -47,13 +52,16 @@ typedef enum {
     TYPE_RIGHT_BRACKET,
     TYPE_COMMA,
     TYPE_COLON,
-    TYPE_FACTORIAL,
+    TYPE_EXCLAMATION_MARK,
     TYPE_LEFT_CURLY_BRACKET,
     TYPE_RIGHT_CURLY_BRACKET,
     TYPE_RETURN_ARROW,
+    TYPE_NIL_COALESCING_OPERATOR,
+    TYPE_MULTILINE_STRING,
+    TYPE_ERROR,
 } Token_type;
 
-typedef union { 
+typedef union {
     Keyword kw;
     char *id;
     int integer;
