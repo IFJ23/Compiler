@@ -1,0 +1,24 @@
++              // TYPE_PLUS
+-              // TYPE_MINUS
+*              // TYPE_MUL
+/              // TYPE_DIV
+<              // TYPE_LESS
+<=             // TYPE_LESS_EQUAL
+>              // TYPE_MORE
+>=             // TYPE_MORE_EQUAL
+=              // TYPE_ASSIGN
+==             // TYPE_EQUAL
+!=             // TYPE_NOT_EQUAL
+(              // TYPE_LEFT_BRACKET
+)              // TYPE_RIGHT_BRACKET
+,              // TYPE_COMMA
+:              // TYPE_COLON
+{              // TYPE_LEFT_CURLY_BRACKET
+}              // TYPE_RIGHT_CURLY_BRACKET
+??             // TYPE_NIL_COALESCING_OPERATOR
+identifier     // TYPE_ID
+func           // TYPE_KW (Keyword)
+let            // TYPE_KW (Keyword)
+"test"         // TYPE_STRING
+12             // TYPE_INT
+12.34          // TYPE_DOUBLE

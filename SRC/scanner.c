@@ -25,7 +25,8 @@ int get_token(Scanner *scanner, Token *token){
         }
         
         if(isdigit(c)){ 
-            int counter,exponent,dot,sign = 0;
+            int counter,exponent,dot,sign;
+            counter = exponent = dot = sign = 0;
             int size = 20;
             char *number = malloc(sizeof(char) * size);
             if(number == NULL){
@@ -77,6 +78,7 @@ int get_token(Scanner *scanner, Token *token){
                 if (strchr(number, '+') != NULL || strchr(number, '-') != NULL){
                     sign++;
                 }
+                counter++;
             }
             if(dot == 0 && exponent == 0 && sign == 0){
             token->type = TYPE_INT;
@@ -368,7 +370,7 @@ int get_token(Scanner *scanner, Token *token){
                                     if(isalnum(c5)){                                     
                                         int c6 = fgetc(scanner->file);
                                         if(c6 == '}'){
-                                            int hex[] = {c4, c5};
+                                        char hex[] = {c4, c5};
                                             int number = strtol(hex, NULL, 16);
                                             string[counter-1] = number; 
                                         }
