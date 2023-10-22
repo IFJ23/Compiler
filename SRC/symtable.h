@@ -11,13 +11,13 @@
 #include <stdio.h>
 #include "scanner.h"
 
-typedef char * hash_tab_key_t; 
+typedef char * ht_key_t; 
 
 typedef enum{
-    HASH_TYPE_FUNCTION,
-    HASH_TYPE_VARIABLE,
-    HASH_TYPE_CONSTANT,
-} hash_tab_type_t;
+    ITEM_TYPE_FUNCTION,
+    ITEM_TYPE_VARIABLE,
+    ITEM_TYPE_CONSTANT,
+} ht_item_type_t;
 
 
 typedef enum {
@@ -26,42 +26,41 @@ typedef enum {
     DATA_TYPE_STRING,
     DATA_TYPE_UNDEFINED,
     DATA_TYPE_VOID,
-} hash_tab_data_t;
+} ht_data_type_t;
 
-typedef struct hashtab_data {
-    hash_tab_type_t type;
-    hash_tab_data_t value_type;
-    hash_tab_data_t return_type;
-    hash_tab_data_t* params;
+typedef struct ht_data {
+    ht_item_type_t type;
+    ht_data_type_t value_type;
+    ht_data_type_t return_type;
+    ht_data_type_t* params;
+    ht_key_t key;
     int params_count;
     char** params_names;
-} hash_tab_data_t;       
+} ht_data_t;       
 
-typedef struct hash_tab_item{
-    hash_tab_data_t data;
-    struct hash_tab_item* next;
-} hash_tab_item_t;
+typedef struct ht_item{
+    ht_data_t data;
+    struct ht_item* next;
+} ht_item_t;
 
-typedef struct hash_tab{
+typedef struct ht_tab{
     size_t size;
     size_t arr_size;
-    hash_tab_item_t** arr_ptr;
-} hash_tab_t;
+    ht_item_t** arr_ptr;
+} ht_t;
 
-size_t hash_function(hash_tab_key_t key, size_t size);
+size_t hash_function(ht_key_t key, size_t size);
 
-hash_tab_t* hash_tab_init(size_t size);
+ht_t* ht_init(size_t size);
 
-hash_tab_item_t* hash_tab_find(hash_tab_t* table, hash_tab_key_t key);
+ht_data_t* ht_find(ht_t* table, ht_key_t key);
 
-hash_tab_item_t* hash_tab_insert(hash_tab_t* table, hash_tab_key_t key, hash_tab_data_t data);
+ht_data_t* ht_insert(ht_t* table, char* key, Token* token);
 
-void hash_tab_for_each(hash_tab_t* table, void (*func)(hash_tab_item_t* item));
+void ht_for_each(ht_t* table, void (*func)(ht_data_t* item));
 
-void hash_tab_clear(hash_tab_t* table);
+void ht_clear(ht_t* table);
 
-void hash_tab_free(hash_tab_t* table);
-
-
+void ht_free(ht_t* table);
 
 #endif // HTAB_H__
