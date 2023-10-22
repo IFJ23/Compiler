@@ -3,7 +3,7 @@
 // Authors:
 // Ivan Onufriienko (xonufr00)
 
-#ifndef IFJ23_SCANNER_H 
+#ifndef IFJ23_SCANNER_H
 #define IFJ23_SCANNER_H
 
 #include "error.h"
@@ -61,7 +61,7 @@ typedef enum {
     TYPE_ERROR,
 } Token_type;
 
-typedef union { 
+typedef union {
     Keyword kw;
     char *id;
     int integer;
