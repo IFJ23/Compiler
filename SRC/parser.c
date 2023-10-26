@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "scanner.h" // Custom lexer header
+#include "parser.h" // Custom lexer header
 #include "stdarg.h" // Custom lexer header
 #include "ast.h"   // Custom AST header
 #include "error.h" // Custom error handling header
@@ -76,6 +77,105 @@ ast_node_t *create_ast_node(/* arguments */) {
 int perform_semantic_analysis(parser_t *parser, ast_node_t *ast) {
     // Implement semantic analysis rules.
     // Report semantic errors if any are found.
+}
+
+/// \brief Function inserting inbuilt functions to global table
+/// \param parser Parser structure
+void insert_builtins(Parser * restrict parser) {
+    char *identifier = malloc(sizeof(char)*10);
+    if (identifier == NULL) exit(INTERNAL_ERROR);
+    strcpy(identifier, "42readString");
+    parser->builtins[0] = identifier;
+    htab_data_t *readString = htab_insert(parser->glob_tab, NULL, identifier);
+    if (reads == NULL) exit(INTERNAL_ERROR);
+    readString->type = ITEM_TYPE_FUNCTION;
+    readString->param_count = 0;
+    readString->return_type = DATA_TYPE_STRING;
+
+    identifier = malloc(sizeof(char)*10);
+    if (identifier == NULL) exit(INTERNAL_ERROR);
+    strcpy(identifier, "42readInt");
+    parser->builtins[1] = identifier;
+    htab_data_t *readInt = htab_insert(parser->glob_tab, NULL, identifier);
+    if (readInt == NULL) exit(INTERNAL_ERROR);
+    readInt->type = ITEM_TYPE_FUNCTION;
+    readInt->param_count = 0;
+    readInt->return_type = DATA_TYPE_INT;
+
+    identifier = malloc(sizeof(char)*10);
+    if (identifier == NULL) exit(INTERNAL_ERROR);
+    strcpy(identifier, "42readDouble ");
+    parser->builtins[1] = identifier;
+    htab_data_t *readDouble  = htab_insert(parser->glob_tab, NULL, identifier);
+    if (readDouble  == NULL) exit(INTERNAL_ERROR);
+    readDouble ->type = ITEM_TYPE_FUNCTION;
+    readDouble ->param_count = 0;
+    readDouble ->return_type = DATA_TYPE_DOUBLE;
+
+    identifier = malloc(sizeof(char)*10);
+    if (identifier == NULL) exit(INTERNAL_ERROR);
+    strcpy(identifier, "42length");
+    parser->builtins[3] = identifier;
+    htab_data_t *length = htab_insert(parser->glob_tab, NULL, identifier);
+    if (length == NULL) exit(INTERNAL_ERROR);
+    length->type = ITEM_TYPE_FUNCTION;
+    length->params = malloc(sizeof(ht_data_type_t));
+    if (strlen_->params == NULL) exit(INTERNAL_ERROR);
+    length->params[0] = DATA_TYPE_STRING;
+    length->param_count = 1;
+    length->return_type = DATA_TYPE_INT;
+
+    identifier = malloc(sizeof(char)*15);
+    if (identifier == NULL) exit(INTERNAL_ERROR);
+    strcpy(identifier, "42substring");
+    parser->builtins[4] = identifier;
+    htab_data_t *substring = htab_insert(parser->glob_tab, NULL, identifier);
+    if (substring == NULL) exit(INTERNAL_ERROR);
+    substring->type = ITEM_TYPE_FUNCTION;
+    substring->params = malloc(sizeof(ht_data_type_t)*3);
+    if (substring->params == NULL) exit(INTERNAL_ERROR);
+    substring->params[0] = DATA_TYPE_STRING;
+    substring->params[1] = DATA_TYPE_INT;
+    substring->params[2] = DATA_TYPE_INT;
+    substring->param_count = 3;
+    substring->return_type = DATA_TYPE_STRING;
+
+    identifier = calloc(sizeof(char)*10, 10);
+    if (identifier == NULL) exit(INTERNAL_ERROR);
+    strcat(identifier, "42ord");
+    parser->builtins[5] = identifier;
+    htab_data_t *ord_ = htab_insert(parser->glob_tab, NULL, identifier);
+    if (ord_ == NULL) exit(INTERNAL_ERROR);
+    ord_->type = ITEM_TYPE_FUNCTION;
+    ord_->params = malloc(sizeof(ht_data_type_t));
+    if (ord_->params == NULL) exit(INTERNAL_ERROR);
+    ord_->params[0] = DATA_TYPE_STRING;
+    ord_->param_count = 1;
+    ord_->return_type = DATA_TYPE_INT;
+
+    identifier = calloc(sizeof(char)*10, 10);
+    if (identifier == NULL) exit(INTERNAL_ERROR);
+    strcat(identifier, "42chr");
+    parser->builtins[6] = identifier;
+    htab_data_t *chr_ = htab_insert(parser->glob_tab, NULL, identifier);
+    if (chr_ == NULL) exit(INTERNAL_ERROR);
+    chr_->type = ITEM_TYPE_FUNCTION;
+    chr_->params = malloc(sizeof(ht_data_type_t));
+    if (chr_->params == NULL) exit(INTERNAL_ERROR);
+    chr_->params[0] = DATA_TYPE_INT;
+    chr_->param_count = 1;
+    chr_->return_type = DATA_TYPE_STRING;
+
+    identifier = calloc(sizeof(char)*20, 20);
+    if (identifier == NULL) exit(INTERNAL_ERROR);
+    strcat(identifier, "42write");
+    parser->builtins[10] = identifier;
+    htab_data_t *write = htab_insert(parser->glob_tab, NULL, identifier);
+    if (write == NULL) exit(INTERNAL_ERROR);
+    write->type = ITEM_TYPE_FUNCTION;
+    write->param_count = -1;
+    write->return_type = DATA_TYPE_VOID;
+
 }
 
 

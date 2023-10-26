@@ -71,8 +71,8 @@ typedef struct parser_t {
     Token *tmp_token;
     htab_t *glob_tab;
     htab_t *temporary_tab;
-    TStack *local_tabs;
-    TStack *garbage_bin;
+    Stack *local_tabs;
+    Stack *garbage_bin;
     htab_data_t *in_func;
     htab_data_t *in_assign;
     htab_data_t *val_returned;
