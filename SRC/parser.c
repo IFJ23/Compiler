@@ -77,3 +77,21 @@ int perform_semantic_analysis(parser_t *parser, ast_node_t *ast) {
     // Implement semantic analysis rules.
     // Report semantic errors if any are found.
 }
+
+
+/// \param value unsigned int value
+/// \param type unsigned int type
+/// \return Pointer to allocated memory
+// maybe will be needed
+TData *stack_data(int value, int type) {
+    TData *ptr = malloc(sizeof(TData));
+    if (ptr != NULL) {
+        ptr->value = value;
+        ptr->type = type;
+        ptr->htab = NULL;
+        ptr->bucket = NULL;
+    } else {
+        exit(INTERNAL_ERROR);
+    }
+    return ptr;
+}
