@@ -6,7 +6,7 @@
 #ifndef IFJ23_SCANNER_H
 #define IFJ23_SCANNER_H
 
-#include "error.h"
+#include "errors.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
