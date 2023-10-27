@@ -1,3 +1,8 @@
+// Compiler to IFJ23 language
+// Faculty of Information Technology Brno University of Technology
+// Authors:
+// Vsevolod Pokhvalenko (xpokhv00)
+
 #ifndef _STACK_H_
 #define _STACK_H_
 

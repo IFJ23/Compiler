@@ -6,7 +6,7 @@
 #ifndef IFJ23_SCANNER_H
 #define IFJ23_SCANNER_H
 
-#include "error.h"
+#include "errors.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -24,9 +24,9 @@ typedef enum {
     KW_STRING,
     KW_VAR,
     KW_WHILE,
-    KW_UNDEFINED_INT,
-    KW_UNDEFINED_DOUBLE,
-    KW_UNDEFINED_STRING,
+    KW_INT_NIL,
+    KW_DOUBLE_NIL,
+    KW_STRING_NIL,
 } Keyword;
 
 typedef enum {
