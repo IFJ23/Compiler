@@ -4,7 +4,7 @@
 #include "scanner.h" // Custom lexer header
 #include "stdarg.h" // Custom lexer header
 #include "ast.h"   // Custom AST header
-#include "error.h" // Custom error handling header
+#include "errors.h" // Custom error handling header
 
 typedef struct parser {
     // Add fields for your parser's state and information
