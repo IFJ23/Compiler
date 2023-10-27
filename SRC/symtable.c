@@ -4,7 +4,7 @@
 // Ivan Onufriienko (xonufr00)
 
 #include "symtable.h"
-#include "error.h"
+#include "errors.h"
 
 
 size_t hash_function(const char *str) {
