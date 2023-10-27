@@ -532,25 +532,33 @@ int get_token(Scanner *scanner, Token *token){
                     else if(c2 == '"'){
                         
                         if(token->type == TYPE_MULTILINE_STRING){
-                        int c3 = fgetc(scanner->file);
-                        
-                        if( c3 == '"'){
-                            int c4 = fgetc(scanner->file);
-                            
-                            if(c4 == '"'){
-                                token->line = scanner->line;
-                                free(string);
-                                return EXIT_SUCCESS;
+                            int c3 = fgetc(scanner->file);
+
+                            if( c3 == '"'){
+                                int c4 = fgetc(scanner->file);
+
+                                if(c4 == '"'){
+                                    token->line = scanner->line;
+                                    free(string);
+                                    return EXIT_SUCCESS;
+                                }
+
+                                else{
+                                    ungetc(c4, scanner->file);
+                                    token->type = TYPE_ERROR;
+                                    token->line = scanner->line;
+                                    free(string);
+                                    return LEXICAL_ERROR;
+                                }
                             }
-                            
+
                             else{
-                                ungetc(c4, scanner->file);
+                                ungetc(c3, scanner->file);
                                 token->type = TYPE_ERROR;
                                 token->line = scanner->line;
                                 free(string);
                                 return LEXICAL_ERROR;
                             }
-                        }
                         }
                         
                         string[counter-1] = '\0';
