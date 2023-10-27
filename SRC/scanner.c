@@ -227,6 +227,8 @@ int get_token(Scanner *scanner, Token *token){
                     while(true){                   
                         c2 = fgetc(scanner->file);
                         
+                        int nested = 0;
+                        
                         if(c2 == EOF){
                             exit(LEXICAL_ERROR);
                         }
@@ -234,7 +236,21 @@ int get_token(Scanner *scanner, Token *token){
                         if(c2 == '\n'){
                             scanner->line++;
                         }
-                        
+                        if(c2 == '/'){
+                            c2 = fgetc(scanner->file);
+                            
+                            if(c2 == EOF){
+                                exit(LEXICAL_ERROR);
+                            }
+                            
+                            if(c2 == '*'){
+                                nested++;
+                            }
+                            
+                            else{
+                                ungetc(c2, scanner->file);
+                            }
+                        }
                         if(c2 == '*'){
                             c2 = fgetc(scanner->file);
                             
@@ -243,7 +259,13 @@ int get_token(Scanner *scanner, Token *token){
                             }
                             
                             if(c2 == '/'){
-                                break;
+                                if(nested == 0){
+                                    break;
+                                }
+                                
+                                else{
+                                    nested--;
+                                }
                             }
                             
                             else{
