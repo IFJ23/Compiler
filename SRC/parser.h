@@ -39,26 +39,25 @@ typedef enum {
     T_KW,
 } TermType;
 
-typedef enum {
-    P_MUL __attribute__((unused)),
-    P_DIV __attribute__((unused)),
-    P_ADD __attribute__((unused)),
-    P_SUB __attribute__((unused)),
-    P_CONC __attribute__((unused)),
-    P_I,
-    P_LEFT_BRACKET,
-    P_RIGHT_BRACKET,
-    P_R,
-    P_TYPE_EQ __attribute__((unused)),
-    P_TYPE_NEQ __attribute__((unused)),
-    P_END,
-    P_FN,
-    P_COMMA,
-    P_OPEN,
-    P_CLOSE,
-    P_EQUAL,
-    P_E
-}PrecSyms;
+typedef enum
+{
+    S,    /// < SHIFT
+    E,    /// = EQUAL
+    R,    /// > REDUCE
+    N     /// # ERROR
+} Prec_table_sign_enum;
+
+typedef enum
+{
+    I_NOT,             /// 0 ! (logical NOT)
+    I_MUL_DIV,         /// 1 * /
+    I_PLUS_MINUS,       /// 2 + -
+    I_EQ_NE_REL,       /// 3 == != < > <= >= (equality and relational operators)
+    I_COALESCE,        /// 4 ?? (null coalescing operator)
+    I_LEFT_BRACKET,    /// 5 (
+    I_RIGHT_BRACKET,   /// 6 )
+    I_DATA            /// 7 i
+} Prec_table_index_enum;
 
 typedef struct parser_t {
     bool in_param_def;

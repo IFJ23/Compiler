@@ -14,6 +14,23 @@
 
 #define LEXICAL_OK 0
 
+#define TABLE_SIZE 10
+
+// Precedence table (adjusted without | and $)
+int prec_table[TABLE_SIZE][TABLE_SIZE] =
+
+        {
+                //  ! | * / | + - | == != < > <= >= | ?? | ( | ) | i
+                { R, S, S, S, R, S, S, R }, /// !
+                { R, R, S, S, R, S, S, R }, /// * /
+                { R, R, R, S, R, S, S, R }, /// + -
+                { S, S, S, N, S, R, S, R }, /// == != < > <= >=
+                { S, S, S, E, S, S, S, N }, /// ??
+                { R, R, R, R, N, R, N, R }, /// (
+                { S, S, S, S, S, E, S, N }, /// )
+                { R, R, R, R, N, R, N, R }  /// i
+        };
+
 
 typedef struct parser {
     // Add fields for your parser's state and information
