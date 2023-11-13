@@ -11,665 +11,443 @@
 #include "stdarg.h" // Custom lexer header
 #include "ast.h"   // Custom AST header
 #include "error.h" // Custom error handling header
+#include "string.h"
 
 #define LEXICAL_OK 0
 
 #define TABLE_SIZE 10
 
 // Precedence table (adjusted without | and $)
-int prec_table[TABLE_SIZE][TABLE_SIZE] =
+const char precedenceTable[PT_SIZE][PT_SIZE] = {
+//           *     /     \     +     -     =    !=     <    <=     >    >=     (     )     ID    F     ,     ??
+/*  *  */ { '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' , '_' , '_' , '>' },
+/*  /  */ { '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' , '_' , '_' , '>' },
+/*  \  */ { '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' , '_' , '_' , '>' },
+/*  +  */ { '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' , '_' , '_' , '>' },
+/*  -  */ { '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' , '_' , '_' , '>' },
+/*  =  */ { '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' , '_' , '_' , '>' },
+/*  != */ { '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' , '_' , '_' , '>' },
+/*  <  */ { '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' , '_' , '_' , '>' },
+/*  <= */ { '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' , '_' , '_' , '>' },
+/*  >  */ { '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' , '_' , '_' , '>' },
+/*  >= */ { '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' , '_' , '_' , '>' },
+/*  (  */ { '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '=' , '<' , '_' , '<' , '_' },
+/*  )  */ { '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '_' , '>' , '_' , '_' , '_' , '>' },
+/*  ID */ { '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '_' , '>' , '_' , '_' , '>' , '>' },
+/*  F  */ { '_' , '_' , '_' , '_' , '_' , '_' , '_' , '_' , '_' , '_' , '_' , '<' , '_' , '_' , '_' , '_' , '_' },
+/*  ,  */ { '_' , '_' , '_' , '_' , '_' , '_' , '_' , '_' , '_' , '_' , '_' , '_' , '<' , '<' , '_' , '<' , '_' },
+/*  ??  */ { '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '_' , '_' },
+};
 
-        {
-                //  ! | * / | + - | == != < > <= >= | ?? | ( | ) | i
-                { R, S, S, S, R, S, S, R }, /// !
-                { R, R, S, S, R, S, S, R }, /// * /
-                { R, R, R, S, R, S, S, R }, /// + -
-                { S, S, S, N, S, R, S, R }, /// == != < > <= >=
-                { S, S, S, E, S, S, S, N }, /// ??
-                { R, R, R, R, N, R, N, R }, /// (
-                { S, S, S, S, S, E, S, N }, /// )
-                { R, R, R, R, N, R, N, R }  /// i
-        };
+/**
+ * Function tests if symbols in parameters are valid according to rules.
+ *
+ * @param num Number of valid symbols in parameter.
+ * @param op1 Symbol 1.
+ * @param op2 Symbol 2.
+ * @param op3 Symbol 3.
+ * @return NOT_A_RULE if no rule is found or returns rule which is valid.
+ */
+static Prec_rules_enum test_rule(int num, Symbol_stack_item* op1, Symbol_stack_item* op2, Symbol_stack_item* op3)
+{
+    switch (num)
+    {
+        case 1:
+            // rule E -> i
+            if (op1->symbol == IDENTIFIER || op1->symbol == INT_NUMBER || op1->symbol == DOUBLE_NUMBER || op1->symbol == STRING)
+                return OPERAND;
 
+            return NOT_A_RULE;
 
-typedef struct parser {
-    // Add fields for your parser's state and information
-    token_t *curr_func_id;
-    size_t decl_cnt;
-    size_t cond_cnt;
-    size_t loop_cnt;
-    bool found_return;
-    tok_stack_t decl_func;
-    int return_code;
-    bool reached_EOF;
-    Scanner *scanner;
-    symbol_tables_t sym;
-    prog_t dst_code;
-} parser_t;
+        case 3:
+            // rule E -> (E)
+            if (op1->symbol == LEFT_BRACKET && op2->symbol == NON_TERM && op3->symbol == RIGHT_BRACKET)
+                return LBR_NT_RBR;
 
-int parser_init(parser_t *parser, Scanner *scanner) {
-    // Initialize your parser fields, e.g., counters, flags, stacks, etc.
-    parser->curr_func_id = NULL;
-    parser->decl_cnt = 0;
-    parser->cond_cnt = 0;
-    parser->loop_cnt = 0;
-    parser->found_return = false;
-    parser->return_code = PARSE_SUCCESS;
-    parser->reached_EOF = false;
-    parser->scanner = scanner;
+            if (op1->symbol == NON_TERM && op3->symbol == NON_TERM)
+            {
+                switch (op2->symbol)
+                {
+                    // rule E -> E + E
+                    case PLUS:
+                        return NT_PLUS_NT;
 
-    // Initialize other components like symbol tables, destination code, etc.
-    // You may need to allocate memory and initialize them.
+                        // rule E -> E - E
+                    case MINUS:
+                        return NT_MINUS_NT;
 
-    return EXIT_SUCCESS;
-}
+                        // rule E -> E * E
+                    case MUL:
+                        return NT_MUL_NT;
 
-/// \brief Gets row and column indexes for the precedence table
-/// \param token Last token read
-/// \param rc Row or column index
-/// \param symbol Specified symbol from the table
-void prec_index(const Token * restrict token, unsigned int * restrict rc, int symbol) {
-    if (symbol > -1 && symbol < 15 && token == NULL) {
-        *rc = symbol;
-        return;
-    } else if (token == NULL) {
-        exit(INTERNAL_ERROR);
-    }
-    switch (token->type) {
+                        // rule E -> E / E
+                    case DIV:
+                        return NT_DIV_NT;
 
-        case T_IDENTIFIER:
-            *rc = 12;
-            break;
-        case TYPE_STRING: case TYPE_INT: case TYPE_FLOAT: case TYPE_VAR:
-            *rc = 5;
-            break;
-        case TYPE_COMMA:
-            *rc = 13;
-            break;
-        case TYPE_EOF: case T_END:
-            exit(SYNTAX_ERROR);
-        case TYPE_PLUS:
-            *rc = 2;
-            break;
-        case TYPE_MINUS:
-            *rc = 3;
-            break;
-        case TYPE_MULTILINE_STRING:
-            *rc = 4;
-            break;
-        case TYPE_MUL:
-            *rc = 0;
-            break;
-        case TYPE_DIV:
-            *rc = 1;
-            break;
-        case TYPE_LESS: case TYPE_LESS_EQUAL: case TYPE_MORE: case TYPE_MORE_EQUAL:
-            *rc = 8;
-            break;
-        case TYPE_EQUAL:
-            *rc = 9;
-            break;
-        case TYPE_NOT_EQUAL:
-            *rc = 10;
-            break;
-        case TYPE_LEFT_BRACKET:
-            *rc = 6;
-            break;
-        case TYPE_RIGHT_BRACKET:
-            *rc = 7;
-            break;
-        case TYPE_ERROR:
-            exit(LEXEME_ERROR);
-        case TYPE_LEFT_CURLY_BRACKET:
-            break;
-        case TYPE_KW:
-            if (token->value.keyword == KW_NULL) {
-                *rc = 5;
-            } else {
-                exit(SYNTAX_ERROR);
-            }
-            break;
-        default:
-            exit(SYNTAX_ERROR);
-    }
-}
+                        // rule E -> E \ E
+                    case IDIV:
+                        return NT_IDIV_NT;
 
-/// \brief Expression parser function for reduction rules
-/// \param stack Precedence stack
-/// \param shelf Supportive stack
-/// \param temps Stack storing results of expressions
-/// \param gen Generator structure
-/// \param end indicates whether the end of the expression has been reached
-/// \param parser Parser structure
-/// \return -1 on empty expression, 0 on error, 1 on success
-int reduce(register TStack * restrict stack, register TStack * restrict shelf, TStack * restrict temps,
-           register Generator * restrict gen, bool end, Parser * restrict parser) {
+                        // rule E -> E = E
+                    case EQ:
+                        return NT_EQ_NT;
 
-    if (stack_top(stack)->value == P_E) {
-        stack_push(shelf, stack_pop(stack));
-        if (stack_top(stack)->value == P_END) {
-            stack_push(stack, stack_pop(shelf));
-            return -1; //empty expression
-        }
-    }
-    unsigned int res = 0;
-    bool fn = false;
-    register htab_data_t *last_fn = NULL;
+                        // rule E -> E <> E
+                    case NEQ:
+                        return NT_NEQ_NT;
 
-    while (stack_top(stack)->value != P_OPEN && stack_top(stack)->value != P_END) {
-        TData *data = stack_pop(stack);
-        stack_push(shelf, data);
-        res += data->value;
-        if (data->value == P_FN) {
-            fn = true;
-            last_fn = data->bucket;
-        }
-    }
-    if (stack_top(stack)->value == P_OPEN) {
-        const TData *data = stack_pop(stack);
-        res += data->value;
-        stack_push(shelf, data);
-    } else if (stack_top(stack)->value == P_END && end) {
-        return -1;
-    } else if (stack_top(stack)->value == P_END && !end) {
-        exit(SYNTAX_ERROR);
-    }
+                        // rule E -> E <= E
+                    case LEQ:
+                        return NT_LEQ_NT;
 
-    int cnt = 0;
-    TData *op_one;
-    TData *op_two;
-    htab_data_t **operands = NULL;
+                        // rule E -> E < E
+                    case LTN:
+                        return NT_LTN_NT;
 
-    size_t alloc_num = snprintf(NULL, 0, "%d", parser->tmp_counter) + 1;
-    char *number = malloc(alloc_num);
-    if (number == NULL) exit(INTERNAL_ERROR);
-    snprintf(number, alloc_num, "%d", parser->tmp_counter);
+                        // rule E -> E >= E
+                    case MEQ:
+                        return NT_MEQ_NT;
 
-    char *tmp = malloc(sizeof(char) * (TEMP_LENGTH + alloc_num));
-    if (tmp == NULL) exit(INTERNAL_ERROR);
-    strncpy(tmp, TEMP_VAR_PREFIX, TEMP_LENGTH);
-    strncat(tmp, number, sizeof(char) * (TEMP_LENGTH + alloc_num));
+                        // rule E -> E > E
+                    case MTN:
+                        return NT_MTN_NT;
 
-    free(number);
-
-    TData *data = NULL;
-    htab_data_t *htab_data = NULL;
-    if (res > 34 && res != 59) {
-        parser->tmp_counter++;
-        htab_data = htab_insert(parser->temporary_tab, NULL, tmp);
-        data = stack_data(P_E, P_E);
-        data->bucket = htab_data;
-        data->bucket->type = H_VAR;
-    } else {
-        free(tmp);
-    }
-
-    if (fn) {
-        if (data == NULL) {
-            exit(SYNTAX_ERROR);
-        }
-        data->bucket->type = H_FUNC_ID;
-        //symtable is used here to check for number of args
-        int brackets = 0;
-        int E = 0;
-        int commas = 0;
-        int previous_args = 0;
-        TStack *reversal = NULL;
-        reversal = stack_init(reversal);
-
-        if (last_fn->return_type == D_NONE && last_fn->param_count != 0) {
-            previous_args = last_fn->param_count;
-            last_fn->param_count = 0;
-        }
-
-        bool expect_comma = false;
-
-        while (stack_top(shelf)->value != P_CLOSE) {
-            TData *tmp_data = stack_pop(shelf);
-            stack_push(parser->garbage_bin, tmp_data);
-            if (tmp_data->value == P_LEFT_BRACKET) brackets--;
-            else if (tmp_data->value == P_RIGHT_BRACKET) brackets++;
-            else if (tmp_data->value == P_E) {
-                E++;
-                expect_comma = true;
-
-                tmp_data = stack_pop(temps);
-                stack_push(reversal, tmp_data);
-                if (last_fn->return_type == D_NONE) {
-                    last_fn->params = realloc(last_fn->params, sizeof(DataType) * E);
-                    for (int j = E - 1; j > 0; j--) {
-                        last_fn->params[j] = last_fn->params[j - 1];
-                    }
-                    last_fn->params[0] = tmp_data->bucket->value_type;
-                    last_fn->params_strict = realloc(last_fn->params_strict, sizeof(DataType) * E);
-                    last_fn->params_strict[last_fn->param_count] = true;
-                    if (tmp_data->bucket->value_type == D_VOID) {
-                        last_fn->params_strict[last_fn->param_count] = false;
-                    }
-                    last_fn->param_count++;
+                        // invalid operator
+                    default:
+                        return NOT_A_RULE;
                 }
-            } else if (tmp_data->value == P_COMMA) {
-                if (!expect_comma) exit(SYNTAX_ERROR);
-                commas++;
-                expect_comma = false;
             }
-        }
-        if (brackets != 0) exit(SYNTAX_ERROR);
-        if (stack_top(shelf) != NULL) { // pops last bracket
-            stack_push(parser->garbage_bin, stack_pop(shelf));
-        }
+            return NOT_A_RULE;
+    }
+    return NOT_A_RULE;
+}
 
-        // args number check
-        if (E != last_fn->param_count && last_fn->param_count != -1 && last_fn->return_type != D_NONE)  {
-            exit(PARAMETER_OR_RETURN_ERROR);
-        }
-        if (E != previous_args && previous_args != 0) {
-            exit(PARAMETER_OR_RETURN_ERROR);
-        }
+/**
+ * Function checks semantics of operands according to rule.
+ *
+ * @param rule Pointer to table.
+ * @param op1 Symbol 1.
+ * @param op2 Symbol 2.
+ * @param op3 Symbol 3.
+ * @param final_type Sets data type which will be after executing rule.
+ * @return Given exit code.
+ */
+static int check_semantics(Prec_rules_enum rule, Symbol_stack_item* op1, Symbol_stack_item* op2, Symbol_stack_item* op3, Data_type* final_type)
+{
+    bool retype_op1_to_double = false;
+    bool retype_op3_to_double = false;
+    bool retype_op1_to_integer = false;
+    bool retype_op3_to_integer = false;
 
-        if (commas != E - 1 && E != 0) exit(SYNTAX_ERROR);
+    if (rule == OPERAND)
+    {
+        if (op1->data_type == TYPE_UNDEFINED)
+            return SEM_ERR_UNDEFINED_VAR;
 
-        int builtin = -1;
-        for (int j = 0; j < 11; j++) {
-            if(strcmp(last_fn->identifier, parser->builtins[j]) == 0) {
-                builtin = j;
+        if (op1->data_type == TYPE_BOOL)
+            return SEM_ERR_TYPE_COMPAT;
+    }
+
+    if (rule == LBR_NT_RBR)
+    {
+        if (op2->data_type == TYPE_UNDEFINED)
+            return SEM_ERR_UNDEFINED_VAR;
+    }
+
+    if (rule != OPERAND && rule != LBR_NT_RBR)
+    {
+        if (op1->data_type == TYPE_UNDEFINED || op3->data_type == TYPE_UNDEFINED)
+            return SEM_ERR_UNDEFINED_VAR;
+
+        if (op1->data_type == TYPE_BOOL || op3->data_type == TYPE_BOOL)
+            return SEM_ERR_TYPE_COMPAT;
+    }
+
+    switch (rule)
+    {
+        case OPERAND:
+            *final_type = op1->data_type;
+            break;
+
+        case LBR_NT_RBR:
+            *final_type = op2->data_type;
+            break;
+
+        case NT_PLUS_NT:
+        case NT_MINUS_NT:
+        case NT_MUL_NT:
+            if (op1->data_type == TYPE_STRING && op3->data_type == TYPE_STRING && rule == NT_PLUS_NT)
+            {
+                *final_type = TYPE_STRING;
                 break;
             }
-        }
 
-        htab_data_t **params = NULL;
-        if (builtin != -1) {
-            data->bucket->type = H_VAR;
-            defvar_order(tmp, htab_data, gen, parser);
-
-            params = E ? malloc(sizeof(htab_data_t*) * E) : malloc(sizeof(htab_data_t*));
-            for (int j = 0; j < E; j++) {
-                TData *garbage = stack_pop(reversal);
-                params[j] = garbage->bucket;
-                stack_push(parser->garbage_bin, garbage);
+            if (op1->data_type == TYPE_INT && op3->data_type == TYPE_INT)
+            {
+                *final_type = TYPE_INT;
+                break;
             }
 
-            generator_add_instruction(gen, gen_instruction_constructor(builtin, tmp, operands, NULL, 0, params, E));
-        } else {
-            // creates a temporary variable
-            defvar_order(tmp, htab_data, gen, parser);
+            if (op1->data_type == TYPE_STRING || op3->data_type == TYPE_STRING)
+                return SEM_ERR_TYPE_COMPAT;
 
-            // prepares the call instruction
-            operands = malloc(sizeof(htab_data_t *));
-            operands[0] = last_fn;
-            params = malloc(sizeof(htab_data_t*) * last_fn->param_count);
-            for (int i = 0; i < last_fn->param_count; i++) {
-                TData *garbage = stack_pop(reversal);
-                params[i] = garbage->bucket;
-                stack_push(parser->garbage_bin, garbage);
-            }
-            generator_add_instruction(gen, gen_instruction_constructor(call, tmp, operands, last_fn->params, 1, params, last_fn->param_count));
-        }
+            *final_type = TYPE_DOUBLE;
 
-        printf("11p ");
-        stack_push(stack, stack_data(P_E, P_E));
-        data->bucket->value_type = last_fn->return_type;
-        data->bucket->return_type = last_fn->return_type;
-        stack_push(temps, data);
-        stack_free(reversal);
-        return 1;
-    }
+            if (op1->data_type == TYPE_INT)
+                retype_op1_to_double = true;
 
-    switch (res) {
-        case 34: // <i>
-            while (cnt < 3) {
-                const TData *garbage = stack_pop(shelf);
-                if (garbage == NULL) {
-                    break;
-                }
-                stack_push(parser->garbage_bin, garbage);
-                cnt++;
-            }
-            if (cnt != 3) break;
-            stack_push(stack, stack_data(P_E, P_E));
-            printf("1p ");
-            return 1;
-        case 54:
-            exit(SYNTAX_ERROR);
-        case 63: // multiplication
-            while (cnt < 5) {
-                const TData *garbage = stack_pop(shelf);
-                if (garbage == NULL) {
-                    break;
-                }
-                stack_push(parser->garbage_bin, garbage);
-                cnt++;
-            }
-            if (cnt != 5) break;
-            op_one = stack_pop(temps);
-            op_two = stack_pop(temps);
+            if (op3->data_type == TYPE_INT)
+                retype_op3_to_double = true;
 
-            // type of the outcome
-            if (op_one->bucket->value_type == D_FLOAT || op_two->bucket->value_type == D_FLOAT) {
-                htab_data->value_type = D_FLOAT;
-            } else if (op_one->bucket->value_type == D_INT || op_two->bucket->value_type == D_INT) {
-                htab_data->value_type = D_INT;
-            } else if (op_one->bucket->value_type == D_VOID && op_two->bucket->value_type == D_VOID) {
-                htab_data->value_type = D_INT;
-            } else {
-                htab_data->value_type = D_VOID;
-            }
+            break;
 
-            defvar_order(tmp, htab_data, gen, parser);
+        case NT_DIV_NT:
+            *final_type = TYPE_DOUBLE;
 
-            operands = malloc(sizeof(htab_data_t*) * 2);
-            operands[0] = op_one->bucket; // order doesn't matter here
-            operands[1] = op_two->bucket;
-            generator_add_instruction(gen, gen_instruction_constructor(mul, tmp, operands, NULL, 2, NULL, 0));
+            if (op1->data_type == TYPE_STRING || op3->data_type == TYPE_STRING)
+                return SEM_ERR_TYPE_COMPAT;
 
-            stack_push(parser->garbage_bin, op_one);
-            stack_push(parser->garbage_bin, op_two);
+            if (op1->data_type == TYPE_INT)
+                retype_op1_to_double = true;
 
-            printf("2p ");
-            stack_push(temps, data);
-            stack_push(stack, stack_data(P_E, P_E));
-            return 1;
-        case 64: // division
-            while (cnt < 5) {
-                const TData *garbage = stack_pop(shelf);
-                if (garbage == NULL) {
-                    break;
-                }
-                stack_push(parser->garbage_bin, garbage);
-                cnt++;
-            }
-            if (cnt != 5) break;
-            op_one = stack_pop(temps);
-            op_two = stack_pop(temps);
-            htab_data->value_type = D_FLOAT;
+            if (op3->data_type == TYPE_INT)
+                retype_op3_to_double = true;
 
-            defvar_order(tmp, htab_data, gen, parser);
+            break;
 
-            operands = malloc(sizeof(htab_data_t*) * 2);
-            operands[1] = op_one->bucket; //reversed due to stack
-            operands[0] = op_two->bucket;
-            generator_add_instruction(gen, gen_instruction_constructor(div_, tmp, operands, NULL, 2, NULL, 0));
+        case NT_IDIV_NT:
+            *final_type = TYPE_INT;
 
-            stack_push(parser->garbage_bin, op_one);
-            stack_push(parser->garbage_bin, op_two);
+            if (op1->data_type == TYPE_STRING || op3->data_type == TYPE_STRING)
+                return SEM_ERR_TYPE_COMPAT;
 
-            printf("3p ");
-            stack_push(temps, data);
-            stack_push(stack, stack_data(P_E, P_E));
-            return 1;
-        case 65: // addition
-            while (cnt < 5) {
-                const TData *garbage = stack_pop(shelf);
-                if (garbage == NULL) {
-                    break;
-                }
-                stack_push(parser->garbage_bin, garbage);
-                cnt++;
-            }
-            if (cnt != 5) break;
-            op_one = stack_pop(temps);
-            op_two = stack_pop(temps);
+            if (op1->data_type == TYPE_DOUBLE)
+                retype_op1_to_integer = true;
 
-            // type of the outcome
-            if (op_one->bucket->value_type == D_FLOAT || op_two->bucket->value_type == D_FLOAT) {
-                htab_data->value_type = D_FLOAT;
-            } else if (op_one->bucket->value_type == D_INT || op_two->bucket->value_type == D_INT) {
-                htab_data->value_type = D_INT;
-            } else if (op_one->bucket->value_type == D_VOID && op_two->bucket->value_type == D_VOID) {
-                htab_data->value_type = D_INT;
-            } else {
-                htab_data->value_type = D_VOID;
-            }
+            if (op3->data_type == TYPE_DOUBLE)
+                retype_op3_to_integer = true;
 
-            defvar_order(tmp, htab_data, gen, parser);
+            break;
 
-            operands = malloc(sizeof(htab_data_t*) * 2);
-            operands[1] = op_one->bucket; //reversed due to stack
-            operands[0] = op_two->bucket;
-            generator_add_instruction(gen, gen_instruction_constructor(addition, tmp, operands, NULL, 2, NULL, 0));
+        case NT_EQ_NT:
+        case NT_NEQ_NT:
+        case NT_LEQ_NT:
+        case NT_LTN_NT:
+        case NT_MEQ_NT:
+        case NT_MTN_NT:
+            *final_type = TYPE_BOOL;
 
-            stack_push(parser->garbage_bin, op_one);
-            stack_push(parser->garbage_bin, op_two);
+            if (op1->data_type == TYPE_INT && op3->data_type == TYPE_DOUBLE)
+                retype_op1_to_double = true;
 
-            printf("4p ");
-            stack_push(temps, data);
-            stack_push(stack, stack_data(P_E, P_E));
-            return 1;
-        case 66: // subtraction
-            while (cnt < 5) {
-                const TData *garbage = stack_pop(shelf);
-                if (garbage == NULL) {
-                    break;
-                }
-                stack_push(parser->garbage_bin, garbage);
-                cnt++;
-            }
-            if (cnt != 5) break;
-            op_one = stack_pop(temps);
-            op_two = stack_pop(temps);
+            else if (op1->data_type == TYPE_DOUBLE && op3->data_type == TYPE_INT)
+                retype_op3_to_double = true;
 
-            // type of the outcome
-            if (op_one->bucket->value_type == D_FLOAT || op_two->bucket->value_type == D_FLOAT) {
-                htab_data->value_type = D_FLOAT;
-            } else if (op_one->bucket->value_type == D_INT || op_two->bucket->value_type == D_INT) {
-                htab_data->value_type = D_INT;
-            } else if (op_one->bucket->value_type == D_VOID && op_two->bucket->value_type == D_VOID) {
-                htab_data->value_type = D_INT;
-            } else {
-                htab_data->value_type = D_VOID;
-            }
+            else if (op1->data_type != op3->data_type)
+                return SEM_ERR_TYPE_COMPAT;
 
-            defvar_order(tmp, htab_data, gen, parser);
+            break;
 
-            operands = malloc(sizeof(htab_data_t*) * 2);
-            operands[1] = op_one->bucket; //reversed due to stack
-            operands[0] = op_two->bucket;
-            generator_add_instruction(gen, gen_instruction_constructor(sub, tmp, operands, NULL, 2, NULL, 0));
-
-            stack_push(parser->garbage_bin, op_one);
-            stack_push(parser->garbage_bin, op_two);
-
-            printf("5p ");
-            stack_push(temps, data);
-            stack_push(stack, stack_data(P_E, P_E));
-            return 1;
-        case 67: // concatenation
-            while (cnt < 5) {
-                const TData *garbage = stack_pop(shelf);
-                if (garbage == NULL) {
-                    break;
-                }
-                stack_push(parser->garbage_bin, garbage);
-                cnt++;
-            }
-            if (cnt != 5) break;
-            op_one = stack_pop(temps);
-            op_two = stack_pop(temps);
-
-            defvar_order(tmp, htab_data, gen, parser);
-
-            operands = malloc(sizeof(htab_data_t*) * 2);
-            operands[1] = op_one->bucket; //reversed due to stack
-            operands[0] = op_two->bucket;
-            generator_add_instruction(gen, gen_instruction_constructor(concat, tmp, operands, NULL, 2, NULL, 0));
-
-            stack_push(parser->garbage_bin, op_one);
-            stack_push(parser->garbage_bin, op_two);
-
-            htab_data->value_type = D_STRING;
-
-            printf("6p ");
-            stack_push(temps, data);
-            stack_push(stack, stack_data(P_E, P_E));
-            return 1;
-        case 59: // brackets
-            while (cnt < 5) {
-                const TData *garbage = stack_pop(shelf);
-                if (garbage == NULL) {
-                    break;
-                }
-                stack_push(parser->garbage_bin, garbage);
-                cnt++;
-            }
-            if (cnt != 5) break;
-            printf("7p ");
-            stack_push(stack, stack_data(P_E, P_E));
-            return 1;
-        case 71: // relations or a function
-            while (cnt < 5) {
-                const TData *garbage = stack_pop(shelf);
-                if (garbage == NULL) {
-                    break;
-                }
-                stack_push(parser->garbage_bin, garbage);
-                cnt++;
-            }
-            if (cnt != 5) break;
-            op_one = stack_pop(temps);
-            op_two = stack_pop(temps);
-            htab_data->value_type = D_BOOL;
-
-            defvar_order(tmp, htab_data, gen, parser);
-
-            operands = malloc(sizeof(htab_data_t*) * 2);
-            operands[1] = op_one->bucket; //reversed due to stack
-            operands[0] = op_two->bucket;
-            Instruction *rel = gen_instruction_constructor(div_, tmp, operands, NULL, 2, NULL, 0);
-
-            switch (parser->relation_operator) {
-                case T_GREATER:
-                    rel->instruct = gt;
-                    break;
-                case T_LESS:
-                    rel->instruct = lt;
-                    break;
-                case T_GREATER_EQUAL:
-                    rel->instruct = gte;
-                    break;
-                case T_LESS_EQUAL:
-                    rel->instruct = lte;
-                    break;
-                default:
-                    exit(SYNTAX_ERROR);
-            }
-
-            generator_add_instruction(gen, rel);
-
-            stack_push(parser->garbage_bin, op_one);
-            stack_push(parser->garbage_bin, op_two);
-
-            printf("8p ");
-            stack_push(temps, data);
-            stack_push(stack, stack_data(P_E, P_E));
-            parser->relation_operator = 0;
-            return 1;
-        case 72: // E===E
-            while (cnt < 5) {
-                const TData *garbage = stack_pop(shelf);
-                if (garbage == NULL) {
-                    break;
-                }
-                stack_push(parser->garbage_bin, garbage);
-                cnt++;
-            }
-            if (cnt != 5) break;
-            op_one = stack_pop(temps);
-            op_two = stack_pop(temps);
-            htab_data->value_type = D_BOOL;
-
-            defvar_order(tmp, htab_data, gen, parser);
-
-            operands = malloc(sizeof(htab_data_t*) * 2);
-            operands[1] = op_one->bucket; //reversed due to stack
-            operands[0] = op_two->bucket;
-            generator_add_instruction(gen, gen_instruction_constructor(eq, tmp, operands, NULL, 2, NULL, 0));
-
-            stack_push(parser->garbage_bin, op_one);
-            stack_push(parser->garbage_bin, op_two);
-
-            printf("9p ");
-            stack_push(temps, data);
-            stack_push(stack, stack_data(P_E, P_E));
-            parser->relation_operator = 0;
-            return 1;
-        case 73: // E!==E
-            while (cnt < 5) {
-                const TData *garbage = stack_pop(shelf);
-                if (garbage == NULL) {
-                    break;
-                }
-                stack_push(parser->garbage_bin, garbage);
-                cnt++;
-            }
-            if (cnt != 5) break;
-            op_one = stack_pop(temps);
-            op_two = stack_pop(temps);
-            htab_data->value_type = D_BOOL;
-
-            defvar_order(tmp, htab_data, gen, parser);
-
-            operands = malloc(sizeof(htab_data_t*) * 2);
-            operands[1] = op_one->bucket; //reversed due to stack
-            operands[0] = op_two->bucket;
-            generator_add_instruction(gen, gen_instruction_constructor(neq, tmp, operands, NULL, 2, NULL, 0));
-
-            stack_push(parser->garbage_bin, op_one);
-            stack_push(parser->garbage_bin, op_two);
-
-            printf("10p ");
-            stack_push(temps, data);
-            stack_push(stack, stack_data(P_E, P_E));
-            parser->relation_operator = 0;
-            return 1;
         default:
             break;
     }
 
-    free(data);
-    stack_dispose(shelf);
-    return 0;
+    if (retype_op1_to_double)
+    {
+        GENERATE_CODE(generate_stack_op2_to_double);
+    }
+
+    if (retype_op3_to_double)
+    {
+        GENERATE_CODE(generate_stack_op1_to_double);
+    }
+
+    if (retype_op1_to_integer)
+    {
+        GENERATE_CODE(generate_stack_op2_to_integer);
+    }
+
+    if (retype_op3_to_integer)
+    {
+        GENERATE_CODE(generate_stack_op1_to_integer);
+    }
+
+    return SYNTAX_OK;
 }
 
+/**
+ * Function reduces symbols after STOP symbol if rule for reducing is found.
+ *
+ * @param data Pointer to table.
+ * @return Given exit code.
+ */
+static int reduce_by_rule(PData* data)
+{
+    (void) data;
 
-void parser_cleanup(parser_t *parser) {
-    // Release any dynamically allocated memory, close files, and clean up resources.
-    // For example, release the memory used by symbol tables and destination code.
+    int result;
 
-    // Optionally, free any remaining memory in your parser structure.
+    Symbol_stack_item* op1 = NULL;
+    Symbol_stack_item* op2 = NULL;
+    Symbol_stack_item* op3 = NULL;
+    Data_type final_type;
+    Prec_rules_enum rule_for_code_gen;
+    bool found = false;
 
-    // Close files or other resources.
+    int count = num_of_symbols_after_stop(&found);
 
-    // Finally, free the parser structure itself.
-    free(parser);
+
+    if (count == 1 && found)
+    {
+        op1 = stack.top;
+        rule_for_code_gen = test_rule(count, op1, NULL, NULL);
+    }
+    else if (count == 3 && found)
+    {
+        op1 = stack.top->next->next;
+        op2 = stack.top->next;
+        op3 = stack.top;
+        rule_for_code_gen = test_rule(count, op1, op2, op3);
+    }
+    else
+        return SYNTAX_ERR;
+
+    if (rule_for_code_gen == NOT_A_RULE)
+    {
+        return SYNTAX_ERR;
+    }
+    else
+    {
+        if ((result = check_semantics(rule_for_code_gen, op1, op2, op3, &final_type)))
+            return result;
+
+        if (rule_for_code_gen == NT_PLUS_NT && final_type == TYPE_STRING)
+        {
+            GENERATE_CODE(generate_concat_stack_strings);
+        }
+        else GENERATE_CODE(generate_stack_operation, rule_for_code_gen);
+
+        symbol_stack_pop_count(&stack, count + 1);
+        symbol_stack_push(&stack, NON_TERM, final_type);
+    }
+
+    return SYNTAX_OK;
 }
 
-int parse_program(parser_t *parser) {
-    // Parse the program's grammar, starting with the entry point.
-    // Build the AST as you parse the code.
+int expression(PData* data)
+{
+    int result = SYNTAX_ERR;
 
-    // Return the appropriate return code.
+    symbol_stack_init(&stack);
+
+    if (!symbol_stack_push(&stack, DOLLAR, TYPE_UNDEFINED))
+        FREE_RESOURCES_RETURN(ERROR_INTERNAL);
+
+    Symbol_stack_item* top_stack_terminal;
+    Prec_table_symbol_enum actual_symbol;
+
+    bool success = false;
+
+    do
+    {
+        actual_symbol = get_symbol_from_token(&data->token);
+        top_stack_terminal = symbol_stack_top_terminal(&stack);
+
+        if (top_stack_terminal == NULL)
+            FREE_RESOURCES_RETURN(ERROR_INTERNAL);
+
+        switch (prec_table[get_prec_table_index(top_stack_terminal->symbol)][get_prec_table_index(actual_symbol)])
+        {
+            case S:
+                if (!symbol_stack_insert_after_top_terminal(&stack, STOP, TYPE_UNDEFINED))
+                    FREE_RESOURCES_RETURN(ERROR_INTERNAL);
+
+                if(!symbol_stack_push(&stack, actual_symbol, get_data_type(&data->token, data)))
+                    FREE_RESOURCES_RETURN(ERROR_INTERNAL);
+
+                if (actual_symbol == IDENTIFIER || actual_symbol == INT_NUMBER || actual_symbol == DOUBLE_NUMBER || actual_symbol == STRING)
+                {
+                    GENERATE_CODE(generate_push, data->token);
+                }
+
+                if ((result = get_next_token(&data->token)))
+                    FREE_RESOURCES_RETURN(result);
+                break;
+
+            case E:
+                symbol_stack_push(&stack, actual_symbol, get_data_type(&data->token, data));
+
+                if ((result = get_next_token(&data->token)))
+                    FREE_RESOURCES_RETURN(result);
+                break;
+
+            case R:
+                if ((result = reduce_by_rule(data)))
+                    FREE_RESOURCES_RETURN(result);
+                break;
+
+            case N:
+                if (actual_symbol == DOLLAR && top_stack_terminal->symbol == DOLLAR)
+                    success = true;
+                else
+                    FREE_RESOURCES_RETURN(SYNTAX_ERR);
+                break;
+        }
+    } while (!success);
+
+    Symbol_stack_item* final_non_terminal = symbol_stack_top(&stack);
+    if (final_non_terminal == NULL)
+        FREE_RESOURCES_RETURN(ERROR_INTERNAL);
+    if (final_non_terminal->symbol != NON_TERM)
+        FREE_RESOURCES_RETURN(SYNTAX_ERR);
+
+    if (data->lhs_id != NULL)
+    {
+        char *frame = "LF";
+        if (data->lhs_id->global) frame = "GF";
+
+        switch (data->lhs_id->type)
+        {
+            case TYPE_INT:
+                if (final_non_terminal->data_type == TYPE_STRING)
+                    FREE_RESOURCES_RETURN(SEM_ERR_TYPE_COMPAT);
+
+                GENERATE_CODE(generate_save_expression_result, data->lhs_id->identifier, final_non_terminal->data_type, TYPE_INT, frame);
+                break;
+
+            case TYPE_DOUBLE:
+                if (final_non_terminal->data_type == TYPE_STRING)
+                    FREE_RESOURCES_RETURN(SEM_ERR_TYPE_COMPAT);
+
+                GENERATE_CODE(generate_save_expression_result, data->lhs_id->identifier, final_non_terminal->data_type, TYPE_DOUBLE, frame);
+                break;
+
+            case TYPE_STRING:
+                if (final_non_terminal->data_type != TYPE_STRING)
+                    FREE_RESOURCES_RETURN(SEM_ERR_TYPE_COMPAT);
+
+                GENERATE_CODE(generate_save_expression_result, data->lhs_id->identifier, TYPE_STRING, TYPE_STRING, frame);
+                break;
+
+            case TYPE_UNDEFINED:
+                GENERATE_CODE(generate_save_expression_result, data->lhs_id->identifier, final_non_terminal->data_type, TYPE_UNDEFINED, frame);
+                break;
+
+            case TYPE_BOOL:
+                if (final_non_terminal->data_type != TYPE_BOOL)
+                    FREE_RESOURCES_RETURN(SEM_ERR_TYPE_COMPAT);
+
+                GENERATE_CODE(generate_save_expression_result, data->lhs_id->identifier, final_non_terminal->data_type, TYPE_BOOL, frame);
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    FREE_RESOURCES_RETURN(SYNTAX_OK);
 }
 
-void error(parser_t *parser, const char *format, ...) {
-    va_list args;
-    va_start(args, format);
-    vfprintf(stderr, format, args);
-    va_end(args);
-    // Set the appropriate error code in the parser structure.
-}
-
-typedef struct ast_node {
-    // Define fields for the AST node, e.g., type, value, children, etc.
-} ast_node_t;
-
-ast_node_t *create_ast_node(/* arguments */) {
-    // Create a new AST node, set its fields, and return it.
-}
-
-int perform_semantic_analysis(parser_t *parser, ast_node_t *ast) {
-    // Implement semantic analysis rules.
-    // Report semantic errors if any are found.
-}
 
 /// \brief Function inserting inbuilt functions to global table
 /// \param parser Parser structure
