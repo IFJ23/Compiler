@@ -21,17 +21,11 @@ typedef struct
     Symtable *localSymtable;
 } Parser;
 
-#define LINENUM parser.currToken.pos.line
-#define CHARNUM parser.currToken.pos.character
+#define LINENUM parser.currToken.line
+#define CHARNUM parser.currToken.character
 #define GETTOKEN(scanner, t)              \
     if (getToken(scanner, t) != 0) \
         return LEXICAL_ERROR;
-#define CHECKSEMICOLON()                                                      \
-    if (parser.currToken.type != TOKEN_SEMICOLON)                             \
-    {                                                                         \
-        printError(LINENUM, CHARNUM, "Missing semicolon after a statement."); \
-        return SYNTAX_ERROR;                                                 \
-    }
 #define CHECKRULE(r)    \
     do                  \
     {                   \
@@ -52,7 +46,7 @@ typedef struct
             expr = true;                                   \
             break;                                         \
         case TYPE_KW:                                \
-            if (parser.currToken.value.keyword == KW_NIL) \
+            if (parser.currToken.value.kw == KW_NIL) \
                 expr = true;                               \
             else                                           \
                 expr = false;                              \

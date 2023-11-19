@@ -146,7 +146,7 @@ int parseIf(Scanner *scanner)
     }
 
     GETTOKEN(scanner, &parser.currToken)
-    if (parser.currToken.type != TYPE_KW || parser.currToken.value.keyword != KW_ELSE)
+    if (parser.currToken.type != TYPE_KW || parser.currToken.value.kw != KW_ELSE)
     {
         printError(LINENUM, CHARNUM, "If has to have else clause.");
         return SYNTAX_ERROR;
@@ -239,7 +239,7 @@ int parseParamsCallN(Scanner *scanner, int *pc)
                 printError(LINENUM, CHARNUM, "Passing an undefined var to a function.");
                 return ERR_UNDEF_VAR;
             }
-            printf("PUSHS LF@%s\n", parser.currToken.value.string.content);
+            printf("PUSHS LF@%s\n", parser.currToken.value.string);
             ++(*pc);
             break;
 
@@ -290,7 +290,7 @@ int parseFunctionCall(Scanner *scanner)
 {
     int err = 0;
 
-    SymtablePair *foundFunction = symtableFind(parser.symtable, parser.currToken.value.string.content);
+    SymtablePair *foundFunction = symtableFind(parser.symtable, parser.currToken.value.string);
 
     if (foundFunction == NULL)
     {
@@ -372,7 +372,7 @@ int parseBody(Scanner *scanner)
     int err = 0;
 
     if (parser.currToken.type == TYPE_KW)
-        switch (parser.currToken.value.keyword)
+        switch (parser.currToken.value.kw)
         {
             // <body> -> <if>
             case KW_IF:
@@ -387,13 +387,11 @@ int parseBody(Scanner *scanner)
                 // <body> -> <return> ;
             case KW_RETURN:
                 CHECKRULE(parseReturn())
-                CHECKSEMICOLON()
                 break;
 
                 // <body> -> expr ;
             case KW_NIL:
                 CHECKRULE(parseExpression(false))
-                CHECKSEMICOLON()
                 break;
 
             default:
@@ -429,12 +427,10 @@ int parseBody(Scanner *scanner)
         {
             CHECKRULE(parseExpression(false))
         }
-        CHECKSEMICOLON()
     }
     else if (parser.currToken.type == TOKEN_IDENTIFIER_FUNC)
     {
         CHECKRULE(parseFunctionCall())
-        CHECKSEMICOLON()
     }
 //    else if (parser.currToken.type == TOKEN_SEMICOLON)
 //    {
@@ -444,7 +440,6 @@ int parseBody(Scanner *scanner)
     {
         // <body> -> expr ;
         CHECKRULE(parseExpression(false))
-        CHECKSEMICOLON()
     }
 
     return err;
