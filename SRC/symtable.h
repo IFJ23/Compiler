@@ -1,66 +1,95 @@
-// Compiler to IFJ23 language
-// Faculty of Information Technology Brno University of Technology
-// Authors:
-// Ivan Onufriienko (xonufr00)
-#ifndef HTAB_H__
-#define HTAB_H__
+/**
+ * @file symtable.h
+ * @author Petr Bartoš (xbarto0g)
+ * @brief Header file for symtable.
+ * Reusing symtable implementation from IJC course.
+ */
 
-#include <stdbool.h>
-#include <stdlib.h>
+#ifndef H_SYMTABLE
+#define H_SYMTABLE
+
 #include <string.h>
-#include <stdio.h>
-#include "scanner.h"
+#include <stdbool.h>
+#include "structures.h"
 
-typedef char * ht_key_t; 
+typedef const char *SymtableKey;
 
-typedef enum{
-    ITEM_TYPE_FUNCTION,
-    ITEM_TYPE_VARIABLE,
-    ITEM_TYPE_CONSTANT,
-} ht_item_type_t;
+typedef enum
+{
+    FUNC,
+    VAR
+} ElType;
 
+typedef struct SymtableData
+{
+    ElType type;
+    int paramsCnt;
+    bool possiblyUndefined;
+    LinkedList parameters;
+} SymtableData;
 
-typedef enum {
-    DATA_TYPE_INT,
-    DATA_TYPE_DOUBLE,
-    DATA_TYPE_STRING,
-    DATA_TYPE_UNDEFINED,
-    DATA_TYPE_VOID,
-} ht_data_type_t;
+typedef struct SymtablePair
+{
+    SymtableKey key;
+    SymtableData data;
+} SymtablePair;
 
-typedef struct ht_data {
-    ht_item_type_t type;
-    ht_data_type_t value_type;
-    ht_data_type_t return_type;
-    ht_data_type_t* params;
-    ht_key_t key;
-    int params_count;
-    char** params_names;
-} ht_data_t;       
+typedef struct SymtableItem
+{
+    SymtablePair pair;
+    struct SymtableItem *next;
+} SymtableItem;
 
-typedef struct ht_item{
-    ht_data_t data;
-    struct ht_item* next;
-} ht_item_t;
-
-typedef struct ht_tab{
+typedef struct Symtable
+{
     size_t size;
     size_t arr_size;
-    ht_item_t** arr_ptr;
-} ht_t;
+    SymtableItem **arr_ptr;
+} Symtable;
 
-size_t hash_function(ht_key_t key, size_t size);
+/**
+ * @brief Calculates hash given a key.
+ *
+ * @param key Key to calculate hash for.
+ * @return size_t Hash of supplemented key.
+ */
+size_t symtableHash(SymtableKey key);
 
-ht_t* ht_init(size_t size);
+/**
+ * @brief Initializes a symtable.
+ *
+ * @param n Size of pointer array.
+ * @return symtable* Pointer to the initialized symtable.
+ */
+Symtable *symtableInit(size_t n);
 
-ht_data_t* ht_find(ht_t* table, ht_key_t key);
+/**
+ * @brief Searches for a key in a symtable.
+ *
+ * @param t The symtable to search in.
+ * @param key The key to look for.
+ * @return SymtablePair* Found item.
+ */
+SymtablePair *symtableFind(Symtable *t, SymtableKey key);
 
-ht_data_t* ht_insert(ht_t* table, char* key, Token* token);
+/**
+ * @brief Adds a new element to a symtable.
+ *
+ * @param t The symtable to add the element to.
+ * @param key Key of the element.
+ * @param type Type of the element.
+ * @param paramsCnt Number of parameters (only for functions).
+ * @param undefined Indentifier was defined in an if statement, thus possibly not defined.
+ * @param params Linked list of function parameters (only for functions).
+ * @return SymtablePair* Pointer to the added element.
+ */
+SymtablePair *symtableAdd(Symtable *t, SymtableKey key, ElType type, int paramsCnt, bool undefined, LinkedList params);
 
-void ht_for_each(ht_t* table, void (*func)(ht_data_t* item));
+/**
+ * @brief Frees a symtable.
+ *
+ * @param t The symtable to free.
+ */
+void symtableFree(Symtable *t);
 
-void ht_clear(ht_t* table);
-
-void ht_free(ht_t* table);
-
-#endif // HTAB_H__
+#endif

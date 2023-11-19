@@ -1,139 +1,133 @@
-// Compiler to IFJ23 language
-// Faculty of Information Technology Brno University of Technology
-// Authors:
-// Ivan Onufriienko (xonufr00)
+/**
+ * @file symtable.c
+ * @author Petr Bartoš (xbarto0g)
+ * @brief Implementation of symtable.
+ */
 
+#include <stdlib.h>
+#include <stdint.h>
 #include "symtable.h"
-#include "errors.h"
 
-
-size_t hash_function(const char *str) {
-    size_t h = 0;
+size_t symtableHash(const char *str)
+{
+    uint32_t h = 0;
     const unsigned char *p;
-    
-    for (p = (const unsigned char *) str; *p != '\0'; p++)
+    for (p = (const unsigned char *)str; *p != '\0'; p++)
         h = 65599 * h + *p;
     return h;
 }
 
-ht_t *ht_init(const size_t size) {
-    ht_t *table = malloc(sizeof(ht_t));
-    
-    if (table == NULL) {
-        exit(INTERNAL_ERROR);
-    }
-    
+Symtable *symtableInit(size_t n)
+{
+    Symtable *table = malloc(sizeof(Symtable));
+    if (table == NULL)
+        return NULL;
+
     table->size = 0;
-    table->arr_size = size;
-    table->arr_ptr = malloc(table->arr_size * sizeof(ht_item_t *));    
-    
-    if (table->arr_ptr == NULL) {
+    table->arr_size = n;
+    table->arr_ptr = malloc(sizeof(SymtableItem *) * n);
+    if (table->arr_ptr == NULL)
+    {
         free(table);
-        exit(INTERNAL_ERROR);
+        return NULL;
     }
-    
-    for (int i = 0; i < table->arr_size; i++) {
+
+    for (size_t i = 0; i < n; i++)
+    {
         table->arr_ptr[i] = NULL;
     }
 
     return table;
 }
 
-ht_data_t* ht_find(ht_t* table, ht_key_t key) {
-    size_t index = hash_function(key) % table->arr_size;
-    ht_item_t* item = table->arr_ptr[index];
-    
-    while (item != NULL) {
-        if (strcmp(item->data.key, key) == 0) {
-            return &item->data;
+SymtablePair *symtableFind(Symtable *t, SymtableKey key)
+{
+    if (t == NULL)
+        return NULL;
+
+    size_t hash = symtableHash(key) % t->arr_size;
+    SymtableItem *tmp = t->arr_ptr[hash];
+
+    while (tmp != NULL)
+    {
+        if (!strcmp(key, tmp->pair.key))
+        {
+            return &(tmp->pair);
         }
-        
-        item = item->next;
+        tmp = tmp->next;
     }
-    
     return NULL;
 }
 
-ht_data_t* ht_insert(ht_t* table, char* key, Token* token){
-        
-    ht_data_t* data = malloc(sizeof(ht_data_t));
-    
-    if(data == NULL){
-        exit(INTERNAL_ERROR);
+SymtablePair *symtableAdd(Symtable *t, SymtableKey key, ElType type, int paramsCnt, bool undefined, LinkedList params)
+{
+    if (t == NULL)
+        return NULL;
+
+    SymtablePair *found = symtableFind(t, key);
+
+    if (found != NULL)
+        return found;
+
+    SymtableItem *newitem = malloc(sizeof(SymtableItem));
+    if (newitem == NULL)
+    {
+        return NULL;
     }
-    
-    data->key = key;
-    data->type = ITEM_TYPE_VARIABLE;
-    data->value_type = token->type;
-    data->return_type = DATA_TYPE_UNDEFINED;
-    data->params = NULL;
-    data->params_count = 0;
-    data->params_names = NULL;
-    
-    ht_item_t* item = malloc(sizeof(ht_item_t));
-    
-    if(item == NULL){
-        free(data);
-        exit(INTERNAL_ERROR);
+
+    size_t len = strlen(key);
+    newitem->pair.key = calloc(len + 1, 1);
+    if (newitem->pair.key == NULL)
+    {
+        free(newitem);
+        return NULL;
     }
-    
-    item->data = *data;
-    item->next = NULL;
-    
-    size_t index = hash_function(key) % table->arr_size;
-    
-    if(table->arr_ptr[index] == NULL){
-        table->arr_ptr[index] = item;
-    }else{
-        ht_item_t* tmp = table->arr_ptr[index];
-        
-        while(tmp->next != NULL){
+
+    memcpy((char *)newitem->pair.key, key, len);
+    newitem->pair.data.type = type;
+    newitem->pair.data.paramsCnt = paramsCnt;
+    newitem->pair.data.possiblyUndefined = undefined;
+    newitem->pair.data.parameters = params;
+    newitem->next = NULL;
+    t->size++;
+
+    size_t index = symtableHash(key) % t->arr_size;
+    SymtableItem *tmp = t->arr_ptr[index];
+
+    if (tmp == NULL)
+        t->arr_ptr[index] = newitem;
+    else
+    {
+        while (tmp->next != NULL)
             tmp = tmp->next;
-        }
-        
-        tmp->next = item;
+
+        tmp->next = newitem;
     }
-    
-    table->size++;
-    
-    return data;
+
+    return &(newitem->pair);
 }
 
-void ht_for_each(ht_t* table, void (*func)(ht_data_t* item)){
-        
-        for(int i = 0; i < table->arr_size; i++){
-            ht_item_t* item = table->arr_ptr[i];
-            
-            while(item != NULL){
-                func(&item->data);
-                item = item->next;
-            }
-        }
-}
-
-void ht_clear(ht_t* table){
-
-    for(int i = 0; i < table->arr_size; i++){
-        ht_item_t* item = table->arr_ptr[i];
-        
-        while(item != NULL){
-            ht_item_t* next = item->next;
-            free(item->data.key);
-            free(item);
-            item = next;
-        }
-    }
-    
-    table->size = 0;
-}
-
-void ht_free(ht_t* table){
-    
-    if(table == NULL){
+void symtableFree(Symtable *t)
+{
+    if (t == NULL)
         return;
+
+    SymtableItem *curr, *next;
+
+    for (size_t i = 0; i < t->arr_size; i++)
+    {
+        curr = t->arr_ptr[i];
+        while (curr != NULL)
+        {
+            next = curr->next;
+            free((char *)curr->pair.key);
+            free(curr);
+            curr = next;
+        }
+        t->arr_ptr[i] = NULL;
     }
-    
-    ht_clear(table);
-    free(table->arr_ptr);
-    free(table);
+    t->size = 0;
+
+    free(t->arr_ptr);
+    free(t);
 }
