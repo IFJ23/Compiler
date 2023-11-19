@@ -11,7 +11,7 @@
 #include "stack.h"
 #include "generator.h"
 
-extern const unsigned int LL_TABLE[8][33];
+extern const unsigned int LL_TABLE[13][33];
 
 extern const unsigned int PREC_TABLE[14][14];
 
