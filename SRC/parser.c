@@ -18,7 +18,7 @@
 #define TABLE_SIZE 10
 
 // Precedence table (adjusted without | and $)
-const char PREC_TABLE[14][14] = {
+const unsigned int PREC_TABLE[17][17] = {
 //           *     /     \     +     -     =    !=     <    <=     >    >=     (     )     ID    F     ,     ??
 /*  *  */ { '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' , '_' , '_' , '>' },
 /*  /  */ { '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' , '_' , '_' , '>' },
@@ -39,7 +39,7 @@ const char PREC_TABLE[14][14] = {
 /*  ??  */ { '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '_' , '_' },
 };
 
-const unsigned int LL_TABLE[13][33] = {
+const unsigned int LL_TABLE[13][29] = {
         {1,2},                                                        // <prog>
         {[2] = 3, [28] = 4},                                                   // <scope>
         {[8] = 5, 0, 8, 6, 7, 9},                     // <statement>

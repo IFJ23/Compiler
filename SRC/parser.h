@@ -11,9 +11,9 @@
 #include "stack.h"
 #include "generator.h"
 
-extern const unsigned int LL_TABLE[13][33];
+extern const unsigned int LL_TABLE[13][29];
 
-extern const unsigned int PREC_TABLE[14][14];
+extern const unsigned int PREC_TABLE[17][17];
 
 #define TEMP_VAR_PREFIX "$!!$tmp" // prefix for temporary variables
 #define TEMP_LENGTH 8 // length of the prefix
