@@ -24,8 +24,10 @@ typedef struct
 #define LINENUM parser.currToken.line
 #define CHARNUM parser.currToken.character
 #define GETTOKEN(scanner, t)              \
-    if (getToken(scanner, t) != 0) \
+    if (getToken(scanner, t) == 1) \
         return LEXICAL_ERROR;
+    else if (getToken(scanner, t) == 99) \
+        return INTERNAL_ERROR;
 #define CHECKRULE(r)    \
     do                  \
     {                   \
@@ -77,11 +79,5 @@ void parserDestroy();
  */
 int parse();
 
-/**
- * @brief Checks the "declare(strict_types=1);" part of prologue.
- *
- * @return int Non-zero number if prologue isn't in the specified format, zero otherwise.
- */
-int checkPrologue();
 
 #endif
