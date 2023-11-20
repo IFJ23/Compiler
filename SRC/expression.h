@@ -4,7 +4,8 @@
 #include "symtable.h"
 #include "parser.h"
 #include "scanner.h"
-#include "error.h"
+#include "errors.h"
+#include "generator.h"
 
 #define DOLLAR 500
 #define SHIFT_SYMBOL 501
