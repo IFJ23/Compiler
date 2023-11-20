@@ -7,7 +7,6 @@
 #ifndef IFJ23_GENERATOR_H
 #define IFJ23_GENERATOR_H
 
-#include <stdio.h>
 #include "parser.h"
 
 #endif //IFJ23_GENERATOR_H
