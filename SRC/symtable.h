@@ -1,9 +1,7 @@
-/**
- * @file symtable.h
- * @author Petr Bartoš (xbarto0g)
- * @brief Header file for symtable.
- * Reusing symtable implementation from IJC course.
- */
+// Compiler to IFJ23 language
+// Faculty of Information Technology Brno University of Technology
+// Authors:
+// Vsevolod Pokhvalenko (xpokhv00)
 
 #ifndef H_SYMTABLE
 #define H_SYMTABLE

@@ -1,5 +1,8 @@
+// Compiler to IFJ23 language
+// Faculty of Information Technology Brno University of Technology
+// Authors:
+// Vsevolod Pokhvalenko (xpokhv00)
 #include "structures.h"
-
 
 void stackInit(Stack *s)
 {

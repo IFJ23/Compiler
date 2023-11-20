@@ -5,8 +5,6 @@
 
 #include "scanner.h"
 
-
-
 int get_token(Scanner *scanner, Token *token){
     while(true){
         int c = fgetc(scanner->file);

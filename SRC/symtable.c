@@ -1,8 +1,7 @@
-/**
- * @file symtable.c
- * @author Petr Bartoš (xbarto0g)
- * @brief Implementation of symtable.
- */
+// Compiler to IFJ23 language
+// Faculty of Information Technology Brno University of Technology
+// Authors:
+// Vsevolod Pokhvalenko (xpokhv00)
 
 #include <stdlib.h>
 #include <stdint.h>
