@@ -69,7 +69,7 @@ int parseWhile(Scanner *scanner)
     GETTOKEN(scanner, &parser.currToken)
     if (parser.currToken.type != TYPE_LEFT_BRACKET)
     {
-        printError(LINENUM, CHARNUM, "While condition has to be wrapped by brackets.");
+        printError(LINENUM, "While condition has to be wrapped by brackets.");
         return SYNTAX_ERROR;
     }
 
@@ -85,7 +85,7 @@ int parseWhile(Scanner *scanner)
 
     if (parser.currToken.type != TYPE_LEFT_CURLY_BRACKET)
     {
-        printError(LINENUM, CHARNUM, "The body of while has to be wrapped by braces (opening).");
+        printError(LINENUM, "The body of while has to be wrapped by braces (opening).");
         return SYNTAX_ERROR;
     }
 
@@ -98,7 +98,7 @@ int parseWhile(Scanner *scanner)
 
     if (parser.currToken.type != TYPE_RIGHT_CURLY_BRACKET)
     {
-        printError(LINENUM, CHARNUM, "The body of while has to be wrapped by braces (closing).");
+        printError(LINENUM, "The body of while has to be wrapped by braces (closing).");
         return SYNTAX_ERROR;
     }
 
@@ -115,7 +115,7 @@ int parseIf(Scanner *scanner)
     GETTOKEN(scanner, &parser.currToken)
     if (parser.currToken.type != TYPE_LEFT_BRACKET)
     {
-        printError(LINENUM, CHARNUM, "If condition has to be wrapped by brackets.");
+        printError(LINENUM, "If condition has to be wrapped by brackets.");
         return SYNTAX_ERROR;
     }
 
@@ -132,7 +132,7 @@ int parseIf(Scanner *scanner)
 
     if (parser.currToken.type != TYPE_LEFT_CURLY_BRACKET)
     {
-        printError(LINENUM, CHARNUM, "The body of if has to be wrapped by braces (opening).");
+        printError(LINENUM, "The body of if has to be wrapped by braces (opening).");
         return SYNTAX_ERROR;
     }
 
@@ -145,14 +145,14 @@ int parseIf(Scanner *scanner)
 
     if (parser.currToken.type != TYPE_RIGHT_CURLY_BRACKET)
     {
-        printError(LINENUM, CHARNUM, "The body of if has to be wrapped by braces (closing).");
+        printError(LINENUM, "The body of if has to be wrapped by braces (closing).");
         return SYNTAX_ERROR;
     }
 
     GETTOKEN(scanner, &parser.currToken)
     if (parser.currToken.type != TYPE_KW || parser.currToken.value.kw != KW_ELSE)
     {
-        printError(LINENUM, CHARNUM, "If has to have else clause.");
+        printError(LINENUM, "If has to have else clause.");
         return SYNTAX_ERROR;
     }
 
@@ -161,7 +161,7 @@ int parseIf(Scanner *scanner)
     GETTOKEN(scanner, &parser.currToken)
     if (parser.currToken.type != TYPE_LEFT_CURLY_BRACKET)
     {
-        printError(LINENUM, CHARNUM, "The body of else has to be wrapped by braces (opening).");
+        printError(LINENUM, "The body of else has to be wrapped by braces (opening).");
         return SYNTAX_ERROR;
     }
 
@@ -177,7 +177,7 @@ int parseIf(Scanner *scanner)
 
     if (parser.currToken.type != TYPE_RIGHT_CURLY_BRACKET)
     {
-        printError(LINENUM, CHARNUM, "The body of else has to be wrapped by braces (closing).");
+        printError(LINENUM, "The body of else has to be wrapped by braces (closing).");
         return SYNTAX_ERROR;
     }
 
@@ -212,7 +212,7 @@ int parseReturn(Scanner *scanner)
     {
         if ((expr && parser.outsideBody) || (returning == KW_VOID && expr))
         {
-            printError(LINENUM, CHARNUM, "Current function doesn't have a return value, so return has to be followed by a semicolon.");
+            printError(LINENUM, "Current function doesn't have a return value, so return has to be followed by a semicolon.");
             return SYNTAX_ERROR;
         }
         genReturn(parser.currFunc, false);
@@ -240,8 +240,8 @@ int parseParamsCallN(Scanner *scanner, int *pc)
             if (symtableFind(parser.outsideBody ? parser.localSymtable : parser.symtable, parser.currToken.value.string.content) == NULL)
             {
                 vStrFree(&(parser.currToken.value.string));
-                printError(LINENUM, CHARNUM, "Passing an undefined var to a function.");
-                return ERR_UNDEF_VAR;
+                printError(LINENUM, "Passing an undefined var to a function.");
+                return SEMANTIC_UNDEFINED_ERROR;
             }
             printf("PUSHS LF@%s\n", parser.currToken.value.string);
             ++(*pc);
@@ -256,13 +256,13 @@ int parseParamsCallN(Scanner *scanner, int *pc)
             }
             else
             {
-                printError(LINENUM, CHARNUM, "Function can only be called with a variable or a literal.");
+                printError(LINENUM, "Function can only be called with a variable or a literal.");
                 return SYNTAX_ERROR;
                 break;
             }
 
         default:
-            printError(LINENUM, CHARNUM, "Function can only be called with a variable or a literal.");
+            printError(LINENUM, "Function can only be called with a variable or a literal.");
             return SYNTAX_ERROR;
             break;
     }
@@ -299,14 +299,14 @@ int parseFunctionCall(Scanner *scanner)
     if (foundFunction == NULL)
     {
         vStrFree(&(parser.currToken.value.string));
-        printError(LINENUM, CHARNUM, "Calling an undefined function.");
+        printError(LINENUM, "Calling an undefined function.");
         return SEMANTIC_DEFINITION_ERROR;
     }
 
     GETTOKEN(scanner, &parser.currToken)
     if (parser.currToken.type != TYPE_LEFT_BRACKET)
     {
-        printError(LINENUM, CHARNUM, "Function's parameters have to be in a bracket (opening).");
+        printError(LINENUM, "Function's parameters have to be in a bracket (opening).");
         return SYNTAX_ERROR;
     }
 
@@ -320,14 +320,14 @@ int parseFunctionCall(Scanner *scanner)
     {
         if ((parametersRealCount != foundFunction->data.paramsCnt) && foundFunction->data.paramsCnt != -1)
         {
-            printError(LINENUM, CHARNUM, "Wrong number of parameters passed");
+            printError(LINENUM, "Wrong number of parameters passed");
             return ERR_FUNC_VAR;
         }
     }
 
     if (parser.currToken.type != TYPE_RIGHT_BRACKET)
     {
-        printError(LINENUM, CHARNUM, "Function's parameters have to be in a bracket (closing).");
+        printError(LINENUM, "Function's parameters have to be in a bracket (closing).");
         return SYNTAX_ERROR;
     }
 
@@ -399,7 +399,7 @@ int parseBody(Scanner *scanner)
                 break;
 
             default:
-                printError(LINENUM, CHARNUM, "Unexpected keyword found.");
+                printError(LINENUM, "Unexpected keyword found.");
                 return SYNTAX_ERROR;
                 break;
         }
@@ -453,7 +453,7 @@ int parseTypeP(LinkedList *ll)
 {
     if (parser.currToken.type != TYPE_KW)
     {
-        printError(LINENUM, CHARNUM, "Expected variable type.");
+        printError(LINENUM, "Expected variable type.");
         return SYNTAX_ERROR;
     }
 
@@ -473,7 +473,7 @@ int parseTypeP(LinkedList *ll)
             return 0;
 
         default:
-            printError(LINENUM, CHARNUM, "Expected variable type.");
+            printError(LINENUM, "Expected variable type.");
             return SYNTAX_ERROR;
     }
 }
@@ -503,7 +503,7 @@ int parseParamsDefN(Scanner *scanner, LinkedList *ll)
     GETTOKEN(scanner, &parser.currToken)
     if (parser.currToken.type != TOKEN_IDENTIFIER_VAR)
     {
-        printError(LINENUM, CHARNUM, "Type has to be followed by a variable.");
+        printError(LINENUM, "Type has to be followed by a variable.");
         return SYNTAX_ERROR;
     }
 
@@ -581,7 +581,7 @@ int parseFunctionDef(Scanner *scanner)
     GETTOKEN(scanner, &parser.currToken)
     if (parser.currToken.type != TOKEN_IDENTIFIER_FUNC)
     {
-        printError(LINENUM, CHARNUM, "Keyword function has to be followed by function identifier.");
+        printError(LINENUM, "Keyword function has to be followed by function identifier.");
         return SYNTAX_ERROR;
     }
     parser.currFunc = parser.currToken.value.string;
@@ -589,7 +589,7 @@ int parseFunctionDef(Scanner *scanner)
     if (symtableFind(parser.symtable, parser.currToken.value.string) != NULL)
     {
         vStrFree(&(parser.currToken.value.string));
-        printError(LINENUM, CHARNUM, "Redefinition of function.");
+        printError(LINENUM, "Redefinition of function.");
         return SEMANTIC_DEFINITION_ERROR;
     }
 
@@ -598,7 +598,7 @@ int parseFunctionDef(Scanner *scanner)
     GETTOKEN(scanner, &parser.currToken)
     if (parser.currToken.type != TYPE_LEFT_BRACKET)
     {
-        printError(LINENUM, CHARNUM, "Function definition has to have (empty) set of params.");
+        printError(LINENUM, "Function definition has to have (empty) set of params.");
         return SYNTAX_ERROR;
     }
 
@@ -609,14 +609,14 @@ int parseFunctionDef(Scanner *scanner)
 
     if (parser.currToken.type != TYPE_RIGHT_BRACKET)
     {
-        printError(LINENUM, CHARNUM, "Function definition has to have (empty) set of params.");
+        printError(LINENUM, "Function definition has to have (empty) set of params.");
         return SYNTAX_ERROR;
     }
 
     GETTOKEN(scanner, &parser.currToken)
     if (parser.currToken.type != TYPE_COLON)
     {
-        printError(LINENUM, CHARNUM, "Incorrect function definition syntax, missing colon.");
+        printError(LINENUM, "Incorrect function definition syntax, missing colon.");
         return SYNTAX_ERROR;
     }
 
@@ -626,7 +626,7 @@ int parseFunctionDef(Scanner *scanner)
     GETTOKEN(scanner, &parser.currToken)
     if (parser.currToken.type != TYPE_LEFT_CURLY_BRACKET)
     {
-        printError(LINENUM, CHARNUM, "The body of function has to be wrapped by braces (opening).");
+        printError(LINENUM, "The body of function has to be wrapped by braces (opening).");
         return SYNTAX_ERROR;
     }
 
@@ -646,7 +646,7 @@ int parseFunctionDef(Scanner *scanner)
 
     if (parser.currToken.type != TYPE_RIGHT_CURLY_BRACKET)
     {
-        printError(LINENUM, CHARNUM, "The body of function has to be wrapped by braces (closing).");
+        printError(LINENUM, "The body of function has to be wrapped by braces (closing).");
         return SYNTAX_ERROR;
     }
 
@@ -685,7 +685,7 @@ int parseProgramEnd(Scanner *scanner)
             return 0;
         else
         {
-            printError(LINENUM, CHARNUM, "Closing tag can only be followed by EOL.");
+            printError(LINENUM, "Closing tag can only be followed by EOL.");
             return SYNTAX_ERROR;
         }
     }
