@@ -73,7 +73,7 @@ int parseWhile(Scanner *scanner)
     int currWhile = whileCnt;
     genWhileLoop1(currWhile);
 
-    CHECKRULE(parseExpression(true))
+    CHECKRULE(parseExpression(scanner, true))
 
     genWhileLoop2(currWhile);
 
@@ -115,7 +115,7 @@ int parseIf(Scanner *scanner)
         return SYNTAX_ERROR;
     }
 
-    CHECKRULE(parseExpression(true))
+    CHECKRULE(parseExpression(scanner, true))
 
     Token tmp = {.type = DOLLAR};
     stackPush(parser.undefStack, tmp);
@@ -201,7 +201,7 @@ int parseReturn(Scanner *scanner)
     // <return_p>  -> expr.
     if ((!parser.outsideBody || (parser.outsideBody && returning != KW_NIL)) && expr)
     {
-        CHECKRULE(parseExpression(false))
+        CHECKRULE(parseExpression(scanner, false))
         genReturn(parser.currFunc, true);
     }
     else
@@ -355,7 +355,7 @@ int parseAssign(Token variable)
         // <assign_v> -> expr
     else
     {
-        CHECKRULE(parseExpression(false))
+        CHECKRULE(parseExpression(scanner, false))
     }
 
     if (parser.condDec)
@@ -391,7 +391,7 @@ int parseBody(Scanner *scanner)
 
                 // <body> -> expr ;
             case KW_NIL:
-                CHECKRULE(parseExpression(false))
+                CHECKRULE(parseExpression(scanner, false))
                 break;
 
             default:
@@ -425,7 +425,7 @@ int parseBody(Scanner *scanner)
             // <body> -> expr ;
         else
         {
-            CHECKRULE(parseExpression(false))
+            CHECKRULE(parseExpression(scanner, false))
         }
     }
     else if (parser.currToken.type == TOKEN_IDENTIFIER_FUNC)
@@ -439,7 +439,7 @@ int parseBody(Scanner *scanner)
     else
     {
         // <body> -> expr ;
-        CHECKRULE(parseExpression(false))
+        CHECKRULE(parseExpression(scanner, false))
     }
 
     return err;

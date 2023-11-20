@@ -241,7 +241,7 @@ int reduce()
     }
 }
 
-int shift(Token *preShift)
+int shift(Scanner *scanner, Token *preShift)
 {
     Token shift = {.type = SHIFT_SYMBOL};
     Token topmost = topmostTerminal();
@@ -279,12 +279,12 @@ int shift(Token *preShift)
 
     stackPush(parser.stack, parser.currToken);
     *preShift = parser.currToken;
-    int err = getToken(&(parser.currToken), false);
+    int err = get_token(scanner, &(parser.currToken), false);
 
     return err;
 }
 
-int parseExpression(bool endWithBracket)
+int parseExpression(Scanner *scanner, bool endWithBracket)
 {
     int err = 0;
     Token bottom = {.type = DOLLAR};
@@ -302,13 +302,13 @@ int parseExpression(bool endWithBracket)
                 break;
 
             case (S):
-                err = shift(&beforeEnd);
+                err = shift(scanner, &beforeEnd);
                 break;
 
             case (E):
                 stackPush(parser.stack, parser.currToken);
                 beforeEnd = parser.currToken;
-                err = getToken(&(parser.currToken), false);
+                err = get_token(scanner, &(parser.currToken), false);
                 break;
 
             case (O):

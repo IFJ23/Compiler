@@ -24,9 +24,9 @@ typedef struct
 #define LINENUM parser.currToken.line
 #define CHARNUM parser.currToken.character
 #define GETTOKEN(scanner, t)              \
-    if (getToken(scanner, t) == 1) \
+    if (get_token(scanner, t) == 1) \
         return LEXICAL_ERROR;
-    else if (getToken(scanner, t) == 99) \
+    else if (get_token(scanner, t) == 99) \
         return INTERNAL_ERROR;
 #define CHECKRULE(r)    \
     do                  \
@@ -77,7 +77,7 @@ void parserDestroy();
  *
  * @return int Zero if code was parsed without an error, non-zero otherwise.
  */
-int parse();
+int parse(Scanner *scanner);
 
 
 #endif

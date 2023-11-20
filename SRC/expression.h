@@ -37,6 +37,6 @@ typedef enum
  * @param endWithBracket Check whether right bracket was last parsed token.
  * @return int Zero if expression was parsed successfully, non-zero otherwise.
  */
-int parseExpression(bool endWithBracket);
+int parseExpression(Scanner *scanner, bool endWithBracket);
 
 #endif
