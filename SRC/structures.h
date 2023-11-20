@@ -3,8 +3,8 @@
 // Authors:
 // Vsevolod Pokhvalenko (xpokhv00)
 
-#ifndef H_STRUCTURES
-#define H_STRUCTURES
+#ifndef IFJ23_STRUCTURES_H
+#define IFJ23_STRUCTURES_H
 
 #include "scanner.h"
 #include "errors.h"

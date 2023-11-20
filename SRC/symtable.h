@@ -3,8 +3,8 @@
 // Authors:
 // Vsevolod Pokhvalenko (xpokhv00)
 
-#ifndef H_SYMTABLE
-#define H_SYMTABLE
+#ifndef IFJ23_SYMTABLE_H
+#define IFJ23_SYMTABLE_H
 
 #include <string.h>
 #include <stdbool.h>
