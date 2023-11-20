@@ -3,11 +3,11 @@
 
 #include "scanner.h"
 #include "structures.h"
-#include "error.h"
+#include "errors.h"
 #include <stdlib.h>
 #include "expression.h"
 #include "symtable.h"
-#include "codegen.h"
+#include "generator.h"
 
 typedef struct
 {
@@ -77,11 +77,5 @@ void parserDestroy();
  */
 int parse();
 
-/**
- * @brief Checks the "declare(strict_types=1);" part of prologue.
- *
- * @return int Non-zero number if prologue isn't in the specified format, zero otherwise.
- */
-int checkPrologue();
 
 #endif

@@ -2,7 +2,7 @@
 #define H_STRUCTURES
 
 #include "scanner.h"
-
+#include "errors.h"
 typedef struct StackItem
 {
     Token t;

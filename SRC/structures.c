@@ -1,5 +1,5 @@
 #include "structures.h"
-#include "error.h"
+
 
 void stackInit(Stack *s)
 {
@@ -61,7 +61,7 @@ int listInsert(LinkedList *l, Keyword type)
 {
     ListNode *newEle = malloc(sizeof(struct ListNode));
     if (newEle == NULL)
-        return ERR_INTERNAL;
+        return INTERNAL_ERROR;
     else
     {
         newEle->type = type;
