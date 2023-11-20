@@ -1,5 +1,5 @@
 #include "expression.h"
-#include "codegen.h"
+
 
 extern Parser parser;
 
@@ -199,7 +199,7 @@ tableIndex getTableIndex(Token t)
         case TYPE_RIGHT_BRACKET:
             return I_CLOSEB;
         case TYPE_KW:
-            if (t.value.keyword == KW_NIL)
+            if (t.value.kw == KW_NIL)
                 return I_DATA;
             else
                 return I_DOLLAR;
@@ -279,7 +279,7 @@ int shift(Scanner *scanner, Token *preShift)
 
     stackPush(parser.stack, parser.currToken);
     *preShift = parser.currToken;
-    int err = get_token(scanner, &(parser.currToken), false);
+    int err = get_token(scanner, &(parser.currToken));
 
     return err;
 }
@@ -308,7 +308,7 @@ int parseExpression(Scanner *scanner, bool endWithBracket)
             case (E):
                 stackPush(parser.stack, parser.currToken);
                 beforeEnd = parser.currToken;
-                err = get_token(scanner, &(parser.currToken), false);
+                err = get_token(scanner, &(parser.currToken));
                 break;
 
             case (O):

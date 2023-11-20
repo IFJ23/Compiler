@@ -6,12 +6,13 @@
 #ifndef IFJ23_SCANNER_H
 #define IFJ23_SCANNER_H
 
-#include "errors.h"
+#include "error.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <ctype.h>
 #include <string.h>
+#include "vstr.h"
 typedef enum {
     KW_DOUBLE,
     KW_ELSE,
@@ -58,7 +59,7 @@ typedef enum {
     TYPE_RIGHT_CURLY_BRACKET,
     TOKEN_OPTIONAL_TYPE,
     TOKEN_IDENTIFIER_FUNC,
-    TOKEN_IDENTIFIER_VAR
+    TOKEN_IDENTIFIER_VAR,
     TYPE_RETURN_ARROW,
     TYPE_NIL_COALESCING_OPERATOR,
     TYPE_MULTILINE_STRING,

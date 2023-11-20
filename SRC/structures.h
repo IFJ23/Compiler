@@ -1,8 +1,13 @@
-#ifndef H_STRUCTURES
-#define H_STRUCTURES
+// Compiler to IFJ23 language
+// Faculty of Information Technology Brno University of Technology
+// Authors:
+// Vsevolod Pokhvalenko (xpokhv00)
+
+#ifndef IFJ23_STRUCTURES_H
+#define IFJ23_STRUCTURES_H
 
 #include "scanner.h"
-
+#include "error.h"
 typedef struct StackItem
 {
     Token t;

@@ -1,5 +1,10 @@
-#ifndef H_PARSER
-#define H_PARSER
+// Compiler to IFJ23 language
+// Faculty of Information Technology Brno University of Technology
+// Authors:
+// Vsevolod Pokhvalenko (xpokhv00)
+
+#ifndef IFJ23_PARSER_H
+#define IFJ23_PARSER_H
 
 #include "scanner.h"
 #include "structures.h"
@@ -7,7 +12,8 @@
 #include <stdlib.h>
 #include "expression.h"
 #include "symtable.h"
-#include "codegen.h"
+#include "generator.h"
+#include "vstr.h"
 
 typedef struct
 {
@@ -23,11 +29,9 @@ typedef struct
 
 #define LINENUM parser.currToken.line
 #define CHARNUM parser.currToken.character
-#define GETTOKEN(scanner, t)              \
-    if (get_token(scanner, t) == 1) \
-        return LEXICAL_ERROR;
-    else if (get_token(scanner, t) == 99) \
-        return INTERNAL_ERROR;
+#define GETTOKEN(scanner, t)        \
+    if (get_token(scanner, t) != 0) \
+        return LEXICAL_ERROR;        
 #define CHECKRULE(r)    \
     do                  \
     {                   \
@@ -35,28 +39,28 @@ typedef struct
         if (err != 0)   \
             return err; \
     } while (0);
-#define BEGINNINGOFEX()                                    \
-    do                                                     \
-    {                                                      \
-        switch (parser.currToken.type)                     \
-        {                                                  \
-        case TYPE_LEFT_BRACKET:                           \
-        case TYPE_STRING:                                 \
-        case TYPE_INT:                                    \
-        case TYPE_DOUBLE:                                  \
-        case TOKEN_IDENTIFIER_VAR:                         \
-            expr = true;                                   \
-            break;                                         \
-        case TYPE_KW:                                \
-            if (parser.currToken.value.kw == KW_NIL) \
-                expr = true;                               \
-            else                                           \
-                expr = false;                              \
-            break;                                         \
-        default:                                           \
-            expr = false;                                  \
-            break;                                         \
-        }                                                  \
+#define BEGINNINGOFEX()                                     \
+    do                                                      \
+    {                                                       \
+        switch (parser.currToken.type)                      \
+        {                                                   \
+        case TYPE_LEFT_BRACKET:                             \
+        case TYPE_STRING:                                   \
+        case TYPE_INT:                                      \
+        case TYPE_DOUBLE:                                   \
+        case TOKEN_IDENTIFIER_VAR:                          \
+            expr = true;                                    \
+            break;                                          \
+        case TYPE_KW:                                       \
+            if (parser.currToken.value.kw == KW_NIL)        \
+                expr = true;                                \
+            else                                            \
+                expr = false;                               \
+            break;                                          \
+        default:                                            \
+            expr = false;                                   \
+            break;                                          \
+        }                                                   \
     } while (0);
 
 /**
