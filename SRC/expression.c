@@ -41,7 +41,7 @@ int reduceI()
         foundVar = symtableFind(parser.outsideBody ? parser.localSymtable : parser.symtable, head.value.string);
         if (foundVar == NULL)
         {
-            vStrFree(&(head.value.string));
+
             printError(head.line, "Undefined variable used in an expression.");
             return SEMANTIC_UNDEFINED_ERROR;
         }

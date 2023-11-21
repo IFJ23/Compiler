@@ -3,7 +3,7 @@
 // Authors:
 // Vsevolod Pokhvalenko (xpokhv00)
 #include "parser.h"
-#include "vstr.c"
+
 
 Parser parser;
 
@@ -240,7 +240,7 @@ int parseParamsCallN(Scanner *scanner, int *pc)
         case TOKEN_IDENTIFIER_VAR:
             if (symtableFind(parser.outsideBody ? parser.localSymtable : parser.symtable, parser.currToken.value.string) == NULL)
             {
-                vStrFree(&(parser.currToken.value.string));
+
                 printError(LINENUM, "Passing an undefined var to a function.");
                 return SEMANTIC_UNDEFINED_ERROR;
             }
@@ -299,7 +299,7 @@ int parseFunctionCall(Scanner *scanner)
 
     if (foundFunction == NULL)
     {
-        vStrFree(&(parser.currToken.value.string));
+
         printError(LINENUM, "Calling an undefined function.");
         return SEMANTIC_DEFINITION_ERROR;
     }
@@ -589,7 +589,7 @@ int parseFunctionDef(Scanner *scanner)
 
     if (symtableFind(parser.symtable, parser.currToken.value.string) != NULL)
     {
-        vStrFree(&(parser.currToken.value.string));
+
         printError(LINENUM, "Redefinition of function.");
         return SEMANTIC_DEFINITION_ERROR;
     }

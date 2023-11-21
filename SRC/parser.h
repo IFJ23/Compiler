@@ -13,7 +13,7 @@
 #include "expression.h"
 #include "symtable.h"
 #include "generator.h"
-#include "vstr.h"
+
 
 typedef struct
 {

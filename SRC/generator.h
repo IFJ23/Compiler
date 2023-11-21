@@ -9,7 +9,7 @@
 
 #include "scanner.h"
 #include "parser.h"
-#include "vstr.h"
+
 
 /**
  * @brief Prints info about used lang.

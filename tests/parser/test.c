@@ -20,11 +20,12 @@ int main() {
     // Add your own assertions for testing
     if (result != 0) {
         printf("Parsing failed\n");
-        return 1;
+        fclose(file);
+        return result;
     }
-
-    printf("Parsing successful\n");
-
-    fclose(file);
-    return 0;
+    else{
+        printf("Parsing successful\n");
+        fclose(file);
+        return 0;
+    }
 }

@@ -53,32 +53,7 @@ void genStackPush(Token t)
     {
         case TYPE_STRING:
         {
-            vStr temp;
-            vStrInit(&temp);
-            int i = 0, j = 0, c = 0;
-            char esc[5] = "";
-            while ((c = t.value.string[i]) != '\0')
-            {
-                if (c < 33 || c == 35 || c == 92 || c > 126)
-                {
-                    vStrAppend(&temp, '\\');
-                    if (c < 0)
-                        c += 256;
-                    sprintf(esc, "%03d", c);
-                    for (j = 0; j < 3; j++)
-                    {
-                        vStrAppend(&temp, esc[j]);
-                    }
-                }
-                else
-                {
-                    vStrAppend(&temp, c);
-                }
-                i++;
-            }
-            printf("PUSHS string@%s\n", temp);
-            vStrFree(&temp);
-            vStrFree(&t.value.string);
+            // todo
             break;
         }
 
