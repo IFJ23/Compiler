@@ -2,6 +2,7 @@
 // Faculty of Information Technology Brno University of Technology
 // Authors:
 // Vsevolod Pokhvalenko (xpokhv00)
+// Sviatoslav Pokhvalenko (xpokhv01)
 #include "parser.h"
 
 

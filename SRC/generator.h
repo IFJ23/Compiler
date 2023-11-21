@@ -1,8 +1,9 @@
-/**
- * @file codegen.h
- * @author Lukáš Zedek (xzedek03)
- * @brief Header file for code generator.
- */
+// Compiler to IFJ23 language
+// Faculty of Information Technology Brno University of Technology
+// Authors:
+// Ivan Onufriienko (xonufr00)
+// Oleksii Shelest (xshele02)
+
 
 #ifndef H_GENERATOR
 #define H_GENERATOR
