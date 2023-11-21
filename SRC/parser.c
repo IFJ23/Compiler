@@ -708,7 +708,8 @@ int parseProgram(Scanner *scanner)
 
 int parse(Scanner *scanner)
 {
-
+    if (parserInit() != 0)
+        return INTERNAL_ERROR;
     LinkedList empty = {.itemCount = -1};
     // Insert builtin functions
     symtableAdd(parser.symtable, "readString", FUNC, 0, false, empty);

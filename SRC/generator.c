@@ -11,7 +11,7 @@ extern Parser parser;
 
 void genPrintHead()
 {
-    printf(".IFJcode22\n");
+    printf(".IFJcode23\n");
     printf("DEFVAR GF@%%funcname\n");
     printf("MOVE GF@%%funcname string@main\n");
     printf("DEFVAR GF@%%exprresult\n");
