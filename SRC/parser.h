@@ -2,6 +2,7 @@
 // Faculty of Information Technology Brno University of Technology
 // Authors:
 // Vsevolod Pokhvalenko (xpokhv00)
+// Sviatoslav Pokhvalenko (xpokhv01)
 
 #ifndef IFJ23_PARSER_H
 #define IFJ23_PARSER_H
@@ -13,7 +14,7 @@
 #include "expression.h"
 #include "symtable.h"
 #include "generator.h"
-#include "vstr.h"
+
 
 typedef struct
 {

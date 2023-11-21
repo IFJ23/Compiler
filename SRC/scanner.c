@@ -57,6 +57,7 @@ int get_token(Scanner *scanner, Token *token){
                     token->type = TYPE_ERROR;
                     token->line = scanner->line;
                     free(number);
+                    printError(scanner->line, "Lexical error: Missing number after dot");
                     return LEXICAL_ERROR;
                 }
             }
@@ -68,6 +69,7 @@ int get_token(Scanner *scanner, Token *token){
                 token->type = TYPE_ERROR;
                 token->line = scanner->line;
                 free(number);
+                printError(scanner->line, "Lexical error: Missing number after sign or exponent");
                 return LEXICAL_ERROR;
             }
             
@@ -80,6 +82,7 @@ int get_token(Scanner *scanner, Token *token){
                         token->type = TYPE_ERROR;
                         token->line = scanner->line;
                         free(number);
+                        printError(scanner->line, "Lexical error: Dot cannot be after exponent");
                         return LEXICAL_ERROR;
                     }
                     
@@ -117,6 +120,7 @@ int get_token(Scanner *scanner, Token *token){
                 token->type = TYPE_ERROR;
                 token->line = scanner->line;
                 free(number);
+                printError(scanner->line, "Lexical error: Invalid number");
                 return LEXICAL_ERROR;
             }
         }
@@ -164,6 +168,7 @@ int get_token(Scanner *scanner, Token *token){
                 token->type = TYPE_ERROR;
                 token->line = scanner->line;
                 free(id);
+                printError(scanner->line, "Lexical error: This is not a keyword that is nullable");
                 return LEXICAL_ERROR;
             }
             
@@ -228,6 +233,7 @@ int get_token(Scanner *scanner, Token *token){
                         int nested = 0;
                         
                         if(c2 == EOF){
+                            printError(scanner->line, "Lexical error: Missing closing comment");
                             exit(LEXICAL_ERROR);
                         }
                         
@@ -238,6 +244,7 @@ int get_token(Scanner *scanner, Token *token){
                             c2 = fgetc(scanner->file);
                             
                             if(c2 == EOF){
+                                printError(scanner->line, "Lexical error: Missing closing comment");
                                 exit(LEXICAL_ERROR);
                             }
                             
@@ -253,6 +260,7 @@ int get_token(Scanner *scanner, Token *token){
                             c2 = fgetc(scanner->file);
                             
                             if(c2 == EOF){
+                                printError(scanner->line, "Lexical error: Missing closing comment");
                                 exit(LEXICAL_ERROR);
                             }
                             
@@ -387,6 +395,7 @@ int get_token(Scanner *scanner, Token *token){
                     ungetc(c2, scanner->file);
                     token->type = TYPE_ERROR;
                     token->line = scanner->line;
+                    printError(scanner->line, "Lexical error: There is no such operator as '?'");
                     return LEXICAL_ERROR;
                 }
             
@@ -443,6 +452,7 @@ int get_token(Scanner *scanner, Token *token){
                         token->type = TYPE_ERROR;
                         token->line = scanner->line;
                         free(string);
+                        printError(scanner->line, "Lexical error: Invalid character in string");
                         return LEXICAL_ERROR;
                     }
                     
@@ -491,6 +501,7 @@ int get_token(Scanner *scanner, Token *token){
                                             token->type = TYPE_ERROR;
                                             token->line = scanner->line;
                                             free(string);
+                                            printError(scanner->line, "Lexical error: Invalid unicode escape sequence");
                                             return LEXICAL_ERROR;
                                         }                                                                                                                                    
                                     }
@@ -499,6 +510,7 @@ int get_token(Scanner *scanner, Token *token){
                                         token->type = TYPE_ERROR;
                                         token->line = scanner->line;
                                         free(string);
+                                        printError(scanner->line, "Lexical error: Invalid unicode escape sequence");
                                         return LEXICAL_ERROR;
                                     }
                                 }
@@ -507,6 +519,7 @@ int get_token(Scanner *scanner, Token *token){
                                     token->type = TYPE_ERROR;
                                     token->line = scanner->line;
                                     free(string);
+                                    printError(scanner->line, "Lexical error: Invalid unicode escape sequence");
                                     return LEXICAL_ERROR;
                                 }
                             }
@@ -515,6 +528,7 @@ int get_token(Scanner *scanner, Token *token){
                                 token->type = TYPE_ERROR;
                                 token->line = scanner->line;
                                 free(string);
+                                printError(scanner->line, "Lexical error: Invalid unicode escape sequence");
                                 return LEXICAL_ERROR;
                             }
                         }
@@ -523,6 +537,7 @@ int get_token(Scanner *scanner, Token *token){
                             token->type = TYPE_ERROR;
                             token->line = scanner->line;
                             free(string);
+                            printError(scanner->line, "Lexical error: Invalid unicode escape sequence");
                             return LEXICAL_ERROR;
                         }
                     }
@@ -546,6 +561,7 @@ int get_token(Scanner *scanner, Token *token){
                                     token->type = TYPE_ERROR;
                                     token->line = scanner->line;
                                     free(string);
+                                    printError(scanner->line, "Lexical error: Invalid multiline string");
                                     return LEXICAL_ERROR;
                                 }
                             }
@@ -555,6 +571,7 @@ int get_token(Scanner *scanner, Token *token){
                                 token->type = TYPE_ERROR;
                                 token->line = scanner->line;
                                 free(string);
+                                printError(scanner->line, "Lexical error: Invalid multiline string");
                                 return LEXICAL_ERROR;
                             }
                         }
@@ -568,6 +585,7 @@ int get_token(Scanner *scanner, Token *token){
                         token->type = TYPE_ERROR;
                         token->line = scanner->line;
                         free(string);
+                        printError(scanner->line, "Lexical error: Missing closing quote");
                         return LEXICAL_ERROR;
                     }
                     
