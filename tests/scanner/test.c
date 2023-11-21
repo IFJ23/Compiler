@@ -17,7 +17,9 @@ void run_test(const char *test_name, Token_type expected_type, int expected_line
     printf("Running test: %s\n", test_name);
 
     int result = get_token(&scanner, &token);
+    
     assert(result == EXIT_SUCCESS);
+    printf("Token type: %d\n", token.type);
     assert(token.type == expected_type);
     assert(token.line == expected_line);
 }
@@ -46,12 +48,13 @@ int main() {
     run_test("Test for TYPE_LEFT_CURLY_BRACKET", TYPE_LEFT_CURLY_BRACKET, 0, test_input);
     run_test("Test for TYPE_RIGHT_CURLY_BRACKET", TYPE_RIGHT_CURLY_BRACKET, 0, test_input);
     run_test("Test for TYPE_NIL_COALESCING_OPERATOR", TYPE_NIL_COALESCING_OPERATOR, 0, test_input);
-    run_test("Test for TYPE_ID", TYPE_ID, 0, test_input);
+    run_test("Test for TYPE_ID_VAR", TYPE_IDENTIFIER_VAR, 0, test_input);
     run_test("Test for TYPE_KW (Keyword)", TYPE_KW, 0, test_input);
     run_test("Test for TYPE_KW (Keyword)", TYPE_KW, 0, test_input);
     run_test("Test for TYPE_STRING", TYPE_STRING, 0, test_input);
     run_test("Test for TYPE_INT", TYPE_INT, 0, test_input);
     run_test("Test for TYPE_DOUBLE", TYPE_DOUBLE, 0, test_input);
+    run_test("Test for TYPE_MULTILINE_STRING", TYPE_MULTILINE_STRING, 0, test_input);
 
 
     // Add more test cases here for other token types, keywords, and identifiers

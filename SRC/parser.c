@@ -238,7 +238,7 @@ int parseParamsCallN(Scanner *scanner, int *pc)
             ++(*pc);
             break;
 
-        case TOKEN_IDENTIFIER_VAR:
+        case TYPE_IDENTIFIER_VAR:
             if (symtableFind(parser.outsideBody ? parser.localSymtable : parser.symtable, parser.currToken.value.string) == NULL)
             {
 
@@ -354,7 +354,7 @@ int parseAssign(Scanner *scanner, Token variable)
     int err = 0;
     GETTOKEN(scanner, &parser.currToken)
     // <assign_v> -> <func>
-    if (parser.currToken.type == TOKEN_IDENTIFIER_FUNC)
+    if (parser.currToken.type == TYPE_IDENTIFIER_FUNC)
     {
         CHECKRULE(parseFunctionCall(scanner))
     }
@@ -405,7 +405,7 @@ int parseBody(Scanner *scanner)
                 return SYNTAX_ERROR;
                 break;
         }
-    else if (parser.currToken.type == TOKEN_IDENTIFIER_VAR)
+    else if (parser.currToken.type == TYPE_IDENTIFIER_VAR)
     {
         Token nextToken;
         // if (GETTOKEN(scanner, &nextToken) !== 0)
@@ -434,7 +434,7 @@ int parseBody(Scanner *scanner)
             CHECKRULE(parseExpression(scanner, false))
         }
     }
-    else if (parser.currToken.type == TOKEN_IDENTIFIER_FUNC)
+    else if (parser.currToken.type == TYPE_IDENTIFIER_FUNC)
     {
         CHECKRULE(parseFunctionCall(scanner))
     }
@@ -503,7 +503,7 @@ int parseParamsDefN(Scanner *scanner, LinkedList *ll)
     }
 
     GETTOKEN(scanner, &parser.currToken)
-    if (parser.currToken.type != TOKEN_IDENTIFIER_VAR)
+    if (parser.currToken.type != TYPE_IDENTIFIER_VAR)
     {
         printError(LINENUM, "Type has to be followed by a variable.");
         return SYNTAX_ERROR;
@@ -581,7 +581,7 @@ int parseFunctionDef(Scanner *scanner)
     parser.outsideBody = true;
 
     GETTOKEN(scanner, &parser.currToken)
-    if (parser.currToken.type != TOKEN_IDENTIFIER_FUNC)
+    if (parser.currToken.type != TYPE_IDENTIFIER_FUNC)
     {
         printError(LINENUM, "Keyword function has to be followed by function identifier.");
         return SYNTAX_ERROR;
