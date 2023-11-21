@@ -1,8 +1,4 @@
-/**
- * @file codegen.h
- * @author Lukáš Zedek (xzedek03)
- * @brief Header file for code generator.
- */
+
 
 #ifndef H_GENERATOR
 #define H_GENERATOR

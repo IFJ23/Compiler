@@ -1,8 +1,4 @@
-/**
- * @file codegen.c
- * @author Lukáš Zedek (xzedek03)
- * @brief Code generator implementation.
- */
+
 
 #include "stdio.h"
 #include "generator.h"
