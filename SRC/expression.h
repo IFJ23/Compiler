@@ -1,9 +1,3 @@
-/**
- * @file expression.h
- * @author Petr Bartoš (xbarto0g)
- * @brief Header file for custom expression parsing structures.
- */
-
 #ifndef H_EXPRESSION
 #define H_EXPRESSION
 
@@ -11,6 +5,7 @@
 #include "parser.h"
 #include "scanner.h"
 #include "error.h"
+#include "generator.h"
 
 #define DOLLAR 500
 #define SHIFT_SYMBOL 501
@@ -32,10 +27,9 @@ typedef enum
     I_DATA,
     I_DOLLAR,
     I_RELATIONAL,
+    I_COMPARISON,
     I_OPENB,
-    I_CLOSEB,
-    I_NOTNIl,
-    I_VALORNIL,
+    I_CLOSEB
 } tableIndex;
 
 /**
@@ -44,6 +38,6 @@ typedef enum
  * @param endWithBracket Check whether right bracket was last parsed token.
  * @return int Zero if expression was parsed successfully, non-zero otherwise.
  */
-int parseExpression(bool endWithBracket);
+int parseExpression(Scanner *scanner, bool endWithBracket);
 
 #endif
