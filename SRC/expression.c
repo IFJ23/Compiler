@@ -41,7 +41,7 @@ int reduceI()
         foundVar = symtableFind(parser.outsideBody ? parser.localSymtable : parser.symtable, head.value.string);
         if (foundVar == NULL)
         {
-            vStrFree(&(head.value.string));
+
             printError(head.line, "Undefined variable used in an expression.");
             return SEMANTIC_UNDEFINED_ERROR;
         }
@@ -67,7 +67,7 @@ int reduceI()
     stackPush(parser.stack, t);
 
     return 0;
-};
+}
 
 int reducePlus()
 {
@@ -211,7 +211,7 @@ tableIndex getTableIndex(Token t)
 precValues getRelation(Token top, Token new)
 {
     return prec_table[getTableIndex(top)][getTableIndex(new)];
-};
+}
 
 int reduce()
 {

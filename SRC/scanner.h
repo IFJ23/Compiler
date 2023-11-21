@@ -12,7 +12,7 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include <string.h>
-#include "vstr.h"
+
 typedef enum {
     KW_DOUBLE,
     KW_ELSE,
