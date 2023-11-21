@@ -29,4 +29,6 @@
 #define INTERNAL_ERROR 99               // internal compiler error
 
 
+void printError(int line, char *message);
+
 #endif //IFJ23_ERROR_H

@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "structures.h": "c",
+        "expression.h": "c",
+        "stdlib.h": "c",
+        "generator.h": "c",
+        "vstr.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
+}

@@ -7,7 +7,7 @@
 #define IFJ23_STRUCTURES_H
 
 #include "scanner.h"
-#include "errors.h"
+#include "error.h"
 typedef struct StackItem
 {
     Token t;
