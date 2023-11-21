@@ -1,8 +1,7 @@
-/**
- * @file expression.h
- * @author Petr Bartoš (xbarto0g)
- * @brief Header file for custom expression parsing structures.
- */
+// Compiler to IFJ23 language
+// Faculty of Information Technology Brno University of Technology
+// Authors:
+// Sviatoslav Pokhvalenko (xpokhv01)
 
 #ifndef H_EXPRESSION
 #define H_EXPRESSION

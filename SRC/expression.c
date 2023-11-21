@@ -1,8 +1,7 @@
-/**
- * @file expression.c
- * @author Petr Bartoš (xbarto0g)
- * @brief Expression LR parser.
- */
+// Compiler to IFJ23 language
+// Faculty of Information Technology Brno University of Technology
+// Authors:
+// Sviatoslav Pokhvalenko (xpokhv01)
 
 #include "expression.h"
 #include "generator.h"
