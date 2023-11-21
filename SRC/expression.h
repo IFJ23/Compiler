@@ -30,10 +30,12 @@ typedef enum
     I_PLUS,
     I_MULTIPLY,
     I_DATA,
+    I_DOLLAR,
     I_RELATIONAL,
-    I_COMPARISON,
     I_OPENB,
-    I_CLOSEB
+    I_CLOSEB,
+    I_NOTNIl,
+    I_VALORNIL,
 } tableIndex;
 
 /**

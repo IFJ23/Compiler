@@ -9,15 +9,17 @@
 
 extern Parser parser;
 
-int prec_table[7][7] = {
-        //+, *, id, R, C, (, )
-        {R, S, S, R, R, S, R}, // +
-        {R, R, S,  R, R, S, R}, // *
-        {R, R, F,  R, R, F, R}, // id
-        {S, S, S,  F, F, S, R}, // Relational Operators
-        {S, S, S, F, F, S, R}, // Comparison Operators
-        {S, S, S,  S, S, S, E}, // (
-        {R, R, F,  R, R, F, R}  // )
+int prec_table[9][9] = {
+        //+, *, id, $, <=, (, ), !, ??
+         {R, S,  S, R,  R, S, R, S, R}, // +
+         {R, R,  S, R,  R, S, R, S, R}, // *
+         {R, R,  F, R,  R, F, R, R, R}, // id
+         {S, S,  S, O,  S, S, F, S, S}, // $
+         {S, S,  S, R,  F, S, R, S, R}, // <=
+         {S, S,  S, F,  S, S, E, S, S}, // (
+         {R, R,  F, R,  R, F, R, R, R}  // ),
+         {R, R,  R, R,  R, R, R, R, R}  // !,
+         {S, S,  S, R,  S, S, S, S, R}  // ??,
 };
 
 Token topmostTerminal()
@@ -136,9 +138,27 @@ int reduceRelation()
     return 0;
 }
 
-int reduceComparison()
+int reduceBracket()
 {
+    Token t;
+    stackPop(parser.stack, NULL);
+    stackPop(parser.stack, NULL);
+    stackPop(parser.stack, NULL);
+    stackPop(parser.stack, &t);
+    if (t.type != SHIFT_SYMBOL)
+    {
+        printError(0, 0, "Reduction of expression failed.");
+        return ERR_SYNTAX_AN;
+    }
 
+    t.type = REDUCED;
+    stackPush(parser.stack, t);
+
+    return 0;
+}
+
+int reduceNotNil()
+{
     Token t;
     stackPop(parser.stack, NULL);
     stackPop(parser.stack, &t);
@@ -157,7 +177,7 @@ int reduceComparison()
     return 0;
 }
 
-int reduceBracket()
+int reduceVarOrNil()
 {
     Token t;
     stackPop(parser.stack, NULL);
@@ -195,14 +215,17 @@ tableIndex getTableIndex(Token t)
         case TYPE_MORE:
         case TYPE_LESS_EQUAL:
         case TYPE_LESS:
-            return I_RELATIONAL;
         case TYPE_EQUAL:
         case TYPE_NOT_EQUAL:
-            return I_COMPARISON;
+            return I_RELATIONAL;
         case TYPE_LEFT_BRACKET:
             return I_OPENB;
         case TYPE_RIGHT_BRACKET:
             return I_CLOSEB;
+        case TYPE_EXCLAMATION_MARK:
+            return I_NOTNIl;
+        case TYPE_NIL_COALESCING_OPERATOR:
+            return I_VALORNIL;
         case TYPE_KW:
             if (t.value.keyword == KW_NIL)
                 return I_DATA;
@@ -234,11 +257,14 @@ int reduce()
         case I_RELATIONAL:
             return reduceRelation();
 
-        case I_COMPARISON:
-            return reduceComparison();
-
         case I_CLOSEB:
             return reduceBracket();
+        
+        case I_NOTNIl: 
+            return reduceNotNil();
+            
+        case I_VALORNIL:
+            return reduceVarOrNil();
 
         default:
             printError(0, 0, "No reduction rule for given token.");
