@@ -53,41 +53,31 @@ void genStackPush(Token t)
     {
     case TYPE_STRING:
     {
+        printf("PUSHS string@");
+
         int i = 0, c = 0;
-        char *buffer = (char *)malloc(256); // выделение памяти под буфер
-        size_t buffer_size = 256;
-        size_t buffer_length = 0;
+        char esc[5] = "";
 
         while ((c = t.value.string[i]) != '\0')
         {
-            if (buffer_length + 5 >= buffer_size) // увеличиваем буфер, если не хватает места
-            {
-                buffer_size *= 2;
-                buffer = (char *)realloc(buffer, buffer_size);
-            }
-
             if (c < 33 || c == 35 || c == 92 || c > 126)
             {
-                // Добавляем в буфер экранированный символ
-                buffer_length += sprintf(buffer + buffer_length, "\\%03d", (c < 0) ? (c + 256) : c);
+                putchar('\\');
+                if (c < 0)
+                    c += 256;
+                printf("%03d", c);
             }
             else
             {
-                // Добавляем в буфер обычный символ
-                buffer[buffer_length++] = c;
+                putchar(c);
             }
             i++;
         }
 
-        // Освобождение памяти для оригинальной строки
+        putchar('\n');
+
+        // Освобождаем память для исходной строки
         free(t.value.string);
-
-        // Выводим целую строку
-        printf("PUSHS string@%s\n", buffer);
-
-        // Освобождение памяти для буфера
-        free(buffer);
-
         break;
     }
 
