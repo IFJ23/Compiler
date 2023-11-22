@@ -55,7 +55,7 @@ void genStackPush(Token t)
         printf("PUSHS string@");
 
         int i = 0, c = 0;
-        char esc[5] = "";
+        //char esc[5] = "";
 
         while ((c = t.value.string[i]) != '\0')
         {
@@ -75,7 +75,6 @@ void genStackPush(Token t)
 
         putchar('\n');
 
-        // Освобождаем память для исходной строки
         free(t.value.string);
         break;
     }
@@ -175,7 +174,7 @@ void genStackPush(Token t)
         genConvertBool();
         break;
 
-    case TOKEN_IDENTIFIER_VAR:
+    case TYPE_IDENTIFIER_VAR:
         printf("POPFRAME\n");
         printf("PUSHS LF@%s\n", t.value.string);
         printf("PUSHFRAME\n");

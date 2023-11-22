@@ -408,8 +408,7 @@ int parseBody(Scanner *scanner)
     else if (parser.currToken.type == TYPE_IDENTIFIER_VAR)
     {
         Token nextToken;
-        // if (GETTOKEN(scanner, &nextToken) !== 0)
-        //     return LEXICAL_ERROR;
+        GETTOKEN(scanner, &nextToken)
 
         // <body> -> identifier_var = <assign_v> ;
         if (nextToken.type == TYPE_EQUAL)
@@ -493,7 +492,7 @@ int parseTypeN(Scanner *scanner, LinkedList *ll)
 int parseParamsDefN(Scanner *scanner, LinkedList *ll)
 {
     int err = 0;
-    if (parser.currToken.type != TOKEN_OPTIONAL_TYPE)
+    if (parser.currToken.type != TYPE_OPTIONAL_TYPE)
     {
         CHECKRULE(parseTypeP(ll))
     }
@@ -541,7 +540,7 @@ int parseParamsDef(Scanner *scanner, LinkedList *ll)
 int parseType(Scanner *scanner, LinkedList *ll)
 {
     // <type> -> <type_n>.
-    if (parser.currToken.type == TOKEN_OPTIONAL_TYPE)
+    if (parser.currToken.type == TYPE_OPTIONAL_TYPE)
     {
         return parseTypeN(scanner, ll);
     }

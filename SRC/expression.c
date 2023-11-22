@@ -54,7 +54,7 @@ int reduceI()
 
     Token t;
     stackPop(parser.stack, &t);
-    if (t.type != TOKEN_IDENTIFIER_VAR)
+    if (t.type != TYPE_IDENTIFIER_VAR)
         genStackPush(t);
     else
     {

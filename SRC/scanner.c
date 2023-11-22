@@ -524,10 +524,10 @@ int get_token(Scanner *scanner, Token *token){
                             if(c3 == '{'){
                                 int c4 = fgetc(scanner->file);
                                 
-                                if(isalnum(c4)){
+                                if(isxdigit(c4)){
                                     int c5 = fgetc(scanner->file);
                                     
-                                    if(isalnum(c5)){                                     
+                                    if(isxdigit(c5)){                                     
                                         int c6 = fgetc(scanner->file);
                                         
                                         if(c6 == '}'){

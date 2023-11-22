@@ -49,7 +49,7 @@ typedef struct
         case TYPE_STRING:                                   \
         case TYPE_INT:                                      \
         case TYPE_DOUBLE:                                   \
-        case TOKEN_IDENTIFIER_VAR:                          \
+        case TYPE_IDENTIFIER_VAR:                          \
             expr = true;                                    \
             break;                                          \
         case TYPE_KW:                                       \
