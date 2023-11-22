@@ -483,11 +483,16 @@ int get_token(Scanner *scanner, Token *token){
                     counter++;
                     
                     if(c2 < 32 || c2 > 255){
+                        if(token->type == TYPE_MULTILINE_STRING){
+                            continue;
+                        }
+                        else{
                         token->type = TYPE_ERROR;
                         token->line = scanner->line;
                         free(string);
                         printError(scanner->line, "Lexical error: Invalid character in string");
                         return LEXICAL_ERROR;
+                        }
                     }
                     
                     else if( c2 == '\\'){
