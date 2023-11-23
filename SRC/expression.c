@@ -71,7 +71,7 @@ int reduceI()
     stackPush(parser.stack, t);
 
     return 0;
-};
+}
 
 int reducePlus()
 {
@@ -220,7 +220,7 @@ precValues getRelation(Token top, Token new)
 //        getRelation(top, new);
 //    }
     return prec_table[getTableIndex(top)][getTableIndex(new)];
-};
+}
 
 int reduce()
 {
