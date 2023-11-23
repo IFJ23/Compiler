@@ -1,1 +1,26 @@
-write("ok")
+var a = 2 + 7 / 5 + 6 * 9
+var t = 6 + 9 + a
+
+func foo(par : String, vasia: Int) -> String {
+var ret = "something"
+return ret
+}
+
+var vysl = 4
+
+write(a)
+
+if (a < 0) {
+    write("Faktorial nelze spocitat\n")
+} else {
+    vysl = 7
+}
+
+var str1 = "Toto je nejaky text v programu jazyka IFJ23"
+
+while (str1 != "abcdefgh") {
+    var str1 = "abcdefgh"
+}
+
+var b = Double2Int(t)
+write(b)

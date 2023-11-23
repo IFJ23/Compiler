@@ -1,6 +1,7 @@
 // Compiler to IFJ23 language
 // Faculty of Information Technology Brno University of Technology
 // Authors:
+
 // Sviatoslav Pokhvalenko (xpokhv01)
 
 #ifndef H_EXPRESSION
@@ -10,6 +11,7 @@
 #include "parser.h"
 #include "scanner.h"
 #include "error.h"
+#include "generator.h"
 
 #define DOLLAR 500
 #define SHIFT_SYMBOL 501
@@ -31,10 +33,9 @@ typedef enum
     I_DATA,
     I_DOLLAR,
     I_RELATIONAL,
+    I_COMPARISON,
     I_OPENB,
-    I_CLOSEB,
-    I_NOTNIl,
-    I_VALORNIL,
+    I_CLOSEB
 } tableIndex;
 
 /**

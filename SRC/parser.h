@@ -1,11 +1,11 @@
-// Compiler to IFJ23 language
-// Faculty of Information Technology Brno University of Technology
-// Authors:
-// Vsevolod Pokhvalenko (xpokhv00)
-// Sviatoslav Pokhvalenko (xpokhv01)
+/**
+ * @file parser.h
+ * @author Petr Bartoš (xbarto0g)
+ * @brief Header file for parser module.
+ */
 
-#ifndef IFJ23_PARSER_H
-#define IFJ23_PARSER_H
+#ifndef H_PARSER
+#define H_PARSER
 
 #include "scanner.h"
 #include "structures.h"
@@ -14,7 +14,6 @@
 #include "expression.h"
 #include "symtable.h"
 #include "generator.h"
-
 
 typedef struct
 {
@@ -29,10 +28,16 @@ typedef struct
 } Parser;
 
 #define LINENUM parser.currToken.line
-#define CHARNUM parser.currToken.character
-#define GETTOKEN(scanner, t)        \
+#define GETTOKEN(scanner, t) \
     if (get_token(scanner, t) != 0) \
-        return LEXICAL_ERROR;        
+        return LEXICAL_ERROR;
+
+#define CHECKENDOFEXPRESSION()                                                      \
+    if (parser.currToken.type == TOKEN_SEMICOLON ) \
+    {                                                                         \
+        printError(LINENUM, "Missing semicolon after a statement."); \
+        return SYNTAX_ERROR;                                                 \
+    }
 #define CHECKRULE(r)    \
     do                  \
     {                   \
@@ -40,29 +45,7 @@ typedef struct
         if (err != 0)   \
             return err; \
     } while (0);
-#define BEGINNINGOFEX()                                     \
-    do                                                      \
-    {                                                       \
-        switch (parser.currToken.type)                      \
-        {                                                   \
-        case TYPE_LEFT_BRACKET:                             \
-        case TYPE_STRING:                                   \
-        case TYPE_INT:                                      \
-        case TYPE_DOUBLE:                                   \
-        case TOKEN_IDENTIFIER_VAR:                          \
-            expr = true;                                    \
-            break;                                          \
-        case TYPE_KW:                                       \
-            if (parser.currToken.value.kw == KW_NIL)        \
-                expr = true;                                \
-            else                                            \
-                expr = false;                               \
-            break;                                          \
-        default:                                            \
-            expr = false;                                   \
-            break;                                          \
-        }                                                   \
-    } while (0);
+
 
 /**
  * @brief Initializes all structures, that need to by malloced.
@@ -84,5 +67,11 @@ void parserDestroy();
  */
 int parse(Scanner *scanner);
 
+/**
+ * @brief Checks the "declare(strict_types=1);" part of prologue.
+ *
+ * @return int Non-zero number if prologue isn't in the specified format, zero otherwise.
+ */
+int checkPrologue();
 
 #endif

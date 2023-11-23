@@ -57,9 +57,9 @@ typedef enum {
     TYPE_EXCLAMATION_MARK,
     TYPE_LEFT_CURLY_BRACKET,
     TYPE_RIGHT_CURLY_BRACKET,
-    TOKEN_OPTIONAL_TYPE,
-    TOKEN_IDENTIFIER_FUNC,
-    TOKEN_IDENTIFIER_VAR,
+    TYPE_IDENTIFIER_FUNC,
+    TYPE_IDENTIFIER_VAR,
+    TYPE_OPTIONAL_TYPE,
     TYPE_RETURN_ARROW,
     TYPE_NIL_COALESCING_OPERATOR,
     TYPE_MULTILINE_STRING,
@@ -87,4 +87,7 @@ typedef struct{
 int get_token(Scanner*, Token*);
 
 int keyword_from_token(Token*, char*);
+
+int peek_token(Scanner*, Token*);
+
 #endif //IFJ23_SCANNER_H
