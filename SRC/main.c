@@ -1,5 +1,5 @@
-#include <stdio.h>
-#include "./SRC/parser.h" // Include the header file of your code
+
+#include "parser.h" // Include the header file of your code
 
 int main() {
     // Run the parser with the input from stdin

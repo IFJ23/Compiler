@@ -75,7 +75,7 @@ int reduceI()
     stackPush(parser.stack, t);
 
     return 0;
-};
+}
 
 int reducePlus()
 {
@@ -241,7 +241,7 @@ tableIndex getTableIndex(Token t)
 precValues getRelation(Token top, Token new)
 {
     return prec_table[getTableIndex(top)][getTableIndex(new)];
-};
+}
 
 int reduce()
 {

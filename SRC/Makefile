@@ -6,7 +6,7 @@ CFLAGS = -Wall -Wextra -std=c99 -pedantic
 EXECUTABLE = compiler
 
 # Source files
-SRCS = main.c ./SRC/scanner.c ./SRC/parser.c ./SRC/expression.c ./SRC/symtable.c ./SRC/structures.c ./SRC/generator.c ./SRC/error.c
+SRCS = main.c scanner.c parser.c expression.c symtable.c structures.c generator.c error.c
 
 # Object files (auto-generated)
 OBJS = $(SRCS:.c=.o)
