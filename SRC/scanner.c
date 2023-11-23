@@ -10,18 +10,19 @@ int get_token(Scanner *scanner, Token *token){
         int c = fgetc(scanner->file);
         
         if (c == EOF){
-        token->type = TYPE_EOF;
-        return EXIT_SUCCESS;
-        }
-        
-        if(c == '\n'){
-            scanner->line++;
-        }
+            token->type = TYPE_EOF;
+            return EXIT_SUCCESS;
+        }     
 
         if(isspace(c)){
+            if(c == '\n'){
+                token->type = TYPE_EOL;
+                token->line = scanner->line;
+                scanner->line++;
+                return EXIT_SUCCESS;
+            }
             continue;
         }
-        
         
         if(isdigit(c)){ 
             int counter,exponent,dot,sign;
@@ -131,7 +132,7 @@ int get_token(Scanner *scanner, Token *token){
                 exit(INTERNAL_ERROR);
             }
             
-            while((isalnum(c) || c == '_' || c == '?') && c != EOF){
+            while((isalpha(c) || c == '_' || c == '?') && c != EOF){
                 
                 if(counter == size){
                     size *= 2;
@@ -175,7 +176,9 @@ int get_token(Scanner *scanner, Token *token){
             while(isspace(c2)){
                 c2 = fgetc(scanner->file);
             }
+
             ungetc(c2, scanner->file);
+            
             if(c2 == '('){
                 token->type = TYPE_IDENTIFIER_FUNC;
             }
@@ -233,7 +236,7 @@ int get_token(Scanner *scanner, Token *token){
                         }
                     }
                     scanner->line++;
-                    break;
+                    
                 }
                 
                 else if (c2 == '*'){
@@ -630,7 +633,11 @@ int get_token(Scanner *scanner, Token *token){
                     
                                      
                 }
-                
+            default:
+                token->type = TYPE_ERROR;
+                token->line = scanner->line;
+                printError(scanner->line, "Lexical error: Invalid character");
+                return LEXICAL_ERROR;    
         }       
     }
 }
