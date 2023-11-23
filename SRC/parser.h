@@ -45,29 +45,7 @@ typedef struct
         if (err != 0)   \
             return err; \
     } while (0);
-#define BEGINNINGOFEX()                                     \
-    do                                                      \
-    {                                                       \
-        switch (parser.currToken.type)                      \
-        {                                                   \
-        case TYPE_LEFT_BRACKET:                             \
-        case TYPE_STRING:                                   \
-        case TYPE_INT:                                      \
-        case TYPE_DOUBLE:                                   \
-        case TYPE_IDENTIFIER_VAR:                          \
-            expr = true;                                    \
-            break;                                          \
-        case TYPE_KW:                                       \
-            if (parser.currToken.value.kw == KW_NIL)        \
-                expr = true;                                \
-            else                                            \
-                expr = false;                               \
-            break;                                          \
-        default:                                            \
-            expr = false;                                   \
-            break;                                          \
-        }                                                   \
-    } while (0);
+
 
 /**
  * @brief Initializes all structures, that need to by malloced.

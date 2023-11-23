@@ -1,6 +1,7 @@
 // Compiler to IFJ23 language
 // Faculty of Information Technology Brno University of Technology
 // Authors:
+
 // Sviatoslav Pokhvalenko (xpokhv01)
 
 #ifndef H_EXPRESSION
