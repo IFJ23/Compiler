@@ -189,7 +189,9 @@ int parseReturn(Scanner *scanner) {
     }
 
     bool expr;
-
+    
+    BEGINNINGOFEX() 
+    
     // <return_p>  -> expr.
     if ((!parser.outsideBody || (parser.outsideBody && returning != KW_NIL)) && expr) {
         CHECKRULE(parseExpression(scanner, false))
