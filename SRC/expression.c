@@ -10,6 +10,7 @@
 extern Parser parser;
 
 int prec_table[9][9] = {
+
         //+, *, i, $, R, (, ), !, ??
         {R, S, S, R, R,  S, R, S, R}, // +
         {R, R, S, R, R,  S, R, S, R}, // *
@@ -45,9 +46,9 @@ int reduceI()
 {
     Token head = parser.stack->head->t;
     SymtablePair *foundVar;
-    if (head.type == TYPE_IDENTIFIER_VAR)
+    if (head.type == TYPE_ID)
     {
-        foundVar = symtableFind(parser.outsideBody ? parser.localSymtable : parser.symtable, head.value.string);
+        foundVar = symtableFind(parser.outsideBody ? parser.localSymtable : parser.symtable, head.value.string);  // here may be a problem
         if (foundVar == NULL)
         {
             printError(head.line, "Undefined variable used in an expression.");
@@ -88,7 +89,7 @@ int reducePlus()
     stackPop(parser.stack, &t);
     if (t.type != SHIFT_SYMBOL)
     {
-        printError(0, "Reduction of expression failed.");
+        printError(0, "Reduction of expression failed.1");
         return SYNTAX_ERROR;
     }
 
@@ -108,7 +109,9 @@ int reduceMultiply()
     stackPop(parser.stack, &t);
     if (t.type != SHIFT_SYMBOL)
     {
+
         printError(0, "Reduction of expression failed.");
+
         return SYNTAX_ERROR;
     }
 
@@ -129,7 +132,7 @@ int reduceRelation()
     stackPop(parser.stack, &t);
     if (t.type != SHIFT_SYMBOL)
     {
-        printError(0, "Reduction of expression failed.");
+        printError(0, "Reduction of expression failed.3");
         return SYNTAX_ERROR;
     }
 
@@ -148,6 +151,7 @@ int reduceBracket()
     stackPop(parser.stack, &t);
     if (t.type != SHIFT_SYMBOL)
     {
+
         printError(0, "Reduction of expression failed.");
         return SYNTAX_ERROR;
     }
@@ -168,7 +172,7 @@ int reduceNotNil()
     stackPop(parser.stack, &t);
     if (t.type != SHIFT_SYMBOL)
     {
-        printError(0, "Reduction of expression failed.");
+        printError(0, "Reduction of expression failed.5");
         return SYNTAX_ERROR;
     }
 
@@ -188,7 +192,7 @@ int reduceValOrNil()
     stackPop(parser.stack, &t);
     if (t.type != SHIFT_SYMBOL)
     {
-        printError(0, "Reduction of expression failed.");
+        printError(0, "Reduction of expression failed.2");
         return SYNTAX_ERROR;
     }
 
@@ -215,7 +219,7 @@ tableIndex getTableIndex(Token t)
         case TYPE_STRING:
         case TYPE_INT:
         case TYPE_DOUBLE:
-        case TYPE_IDENTIFIER_VAR:
+        case TYPE_ID:
             return I_DATA;
         case TYPE_MORE_EQUAL:
         case TYPE_MORE:
@@ -228,6 +232,10 @@ tableIndex getTableIndex(Token t)
             return I_OPENB;
         case TYPE_RIGHT_BRACKET:
             return I_CLOSEB;
+        case TYPE_EXCLAMATION_MARK:
+            return I_NOTNIl;
+        case TYPE_NIL_COALESCING_OPERATOR:
+            return I_VALORNIL;
         case TYPE_KW:
             if (t.value.kw == KW_NIL)
                 return I_DATA;
@@ -280,7 +288,7 @@ int shift(Scanner *scanner, Token *preShift)
     Token topmost = topmostTerminal();
     if (topmost.type == 999)
     {
-        printError(parser.currToken.line,  "Couldn't shift symbol, invalid expression.");
+        printError(parser.currToken.line, "Couldn't shift symbol, invalid expression.");
         return SYNTAX_ERROR;
     }
     StackItem *tmp = parser.stack->head;
@@ -309,7 +317,9 @@ int shift(Scanner *scanner, Token *preShift)
 
     stackPush(parser.stack, parser.currToken);
     *preShift = parser.currToken;
+
     int err = get_token(scanner, &(parser.currToken));
+
 
     return err;
 }
@@ -338,7 +348,9 @@ int parseExpression(Scanner *scanner, bool endWithBracket)
             case (E):
                 stackPush(parser.stack, parser.currToken);
                 beforeEnd = parser.currToken;
+
                 err = get_token(scanner, &(parser.currToken));
+
                 break;
 
             case (O):
