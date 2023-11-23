@@ -189,7 +189,7 @@ int parseReturn(Scanner *scanner) {
     }
 
     bool expr;
-      
+
     // <return_p>  -> expr.
     if ((!parser.outsideBody || (parser.outsideBody && returning != KW_NIL)) && expr) {
         CHECKRULE(parseExpression(scanner, false))
@@ -452,7 +452,7 @@ int parseTypeP(LinkedList *ll) {
 int parseTypeN(Scanner *scanner, LinkedList *ll) {
     int err = 0;
     GETTOKEN(scanner, &parser.currToken)
-
+    
     CHECKRULE(parseTypeP(ll))
     ll->head->opt = true;
     return err;
@@ -460,9 +460,7 @@ int parseTypeN(Scanner *scanner, LinkedList *ll) {
 
 int parseParamsDefN(Scanner *scanner, LinkedList *ll) {
     int err = 0;
-
     if (parser.currToken.type != TYPE_OPTIONAL_TYPE) {
-
         CHECKRULE(parseTypeP(ll))
     } else {
         CHECKRULE(parseTypeN(scanner, ll))
@@ -506,9 +504,7 @@ int parseParamsDef(Scanner *scanner, LinkedList *ll) {
 
 int parseType(Scanner *scanner, LinkedList *ll) {
     // <type> -> <type_n>.
-
     if (parser.currToken.type == TYPE_OPTIONAL_TYPE) {
-
         return parseTypeN(scanner, ll);
     }
         // <type> -> void.
@@ -668,14 +664,14 @@ int parseProgram(Scanner *scanner) {
 int parse(Scanner *scanner) {
     LinkedList empty = {.itemCount = -1};
     // Insert builtin functions
-    symtableAdd(parser.symtable, "reads", FUNC, 0, false, empty);
-    symtableAdd(parser.symtable, "readi", FUNC, 0, false, empty);
-    symtableAdd(parser.symtable, "readf", FUNC, 0, false, empty);
+    symtableAdd(parser.symtable, "readString", FUNC, 0, false, empty);
+    symtableAdd(parser.symtable, "readInt", FUNC, 0, false, empty);
+    symtableAdd(parser.symtable, "readDouble", FUNC, 0, false, empty);
     symtableAdd(parser.symtable, "write", FUNC, -1, false, empty);
-    symtableAdd(parser.symtable, "floatval", FUNC, 1, false, empty);
-    symtableAdd(parser.symtable, "intval", FUNC, 1, false, empty);
-    symtableAdd(parser.symtable, "strval", FUNC, 1, false, empty);
-    symtableAdd(parser.symtable, "strlen", FUNC, 1, false, empty);
+    symtableAdd(parser.symtable, "Int2Double", FUNC, 1, false, empty);
+    symtableAdd(parser.symtable, "Double2Int", FUNC, 1, false, empty);
+//    symtableAdd(parser.symtable, "strval", FUNC, 1, false, empty);
+    symtableAdd(parser.symtable, "length", FUNC, 1, false, empty);
     symtableAdd(parser.symtable, "substring", FUNC, 3, false, empty);
     symtableAdd(parser.symtable, "ord", FUNC, 1, false, empty);
     symtableAdd(parser.symtable, "chr", FUNC, 1, false, empty);
