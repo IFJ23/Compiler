@@ -179,11 +179,12 @@ int reduceNotNil()
     return 0;
 }
 
-int reduceVarOrNil()
+int reduceValOrNil()
 {
     Token t;
     stackPop(parser.stack, NULL);
-    stackPop(parser.stack, NULL);
+    stackPop(parser.stack, &t);
+    genStackPush(t);
     stackPop(parser.stack, NULL);
     stackPop(parser.stack, &t);
     if (t.type != SHIFT_SYMBOL)
@@ -270,7 +271,7 @@ int reduce()
             return reduceNotNil();
 
         case I_VALORNIL:
-            return reduceVarOrNil();
+            return reduceValOrNil();
 
         default:
             printError(0, "No reduction rule for given token.");
