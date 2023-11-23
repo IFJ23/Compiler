@@ -2,6 +2,7 @@
 // Faculty of Information Technology Brno University of Technology
 // Authors:
 // Vsevolod Pokhvalenko (xpokhv00)
+// Ivan Onufriienko (xonufr00)
 
 #ifndef IFJ23_STRUCTURES_H
 #define IFJ23_STRUCTURES_H
@@ -36,29 +37,6 @@ typedef struct
 } LinkedList;
 
 /**
- * @brief Initializes the stack structure.
- *
- * @param s Pointer to a stack.
- */
-void stackInit(Stack *s);
-
-/**
- * @brief Pushes a token to the top of the stack.
- *
- * @param s Pointer to a stack.
- * @param t Token to push.
- */
-void stackPush(Stack *s, Token t);
-
-/**
- * @brief Pops a token from the top of the stack.
- *
- * @param s Pointer to a stack.
- * @param t Variable to pop the token to (can be NULL).
- */
-void stackPop(Stack *s, Token *t);
-
-/**
  * @brief Removes all tokens from the stack.
  *
  * @param s Pointer to a stack.
@@ -86,5 +64,28 @@ int listInsert(LinkedList *l, Keyword type);
  * @param l The list to dispose.
  */
 void listDispose(LinkedList *l);
+
+/**
+ * @brief Initializes the stack structure.
+ *
+ * @param s Pointer to a stack.
+ */
+void stackInit(Stack *s);
+
+/**
+ * @brief Pushes a token to the top of the stack.
+ *
+ * @param s Pointer to a stack.
+ * @param t Token to push.
+ */
+void stackPush(Stack *s, Token t);
+
+/**
+ * @brief Pops a token from the top of the stack.
+ *
+ * @param s Pointer to a stack.
+ * @param t Variable to pop the token to (can be NULL).
+ */
+void stackPop(Stack *s, Token *t);
 
 #endif

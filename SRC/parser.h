@@ -1,8 +1,8 @@
-/**
- * @file parser.h
- * @author Petr Bartoš (xbarto0g)
- * @brief Header file for parser module.
- */
+// Compiler to IFJ23 language
+// Faculty of Information Technology Brno University of Technology
+// Authors:
+// Vsevolod Pokhvalenko (xpokhv00)
+// Sviatoslav Pokhvalenko (xpokhv01)
 
 #ifndef H_PARSER
 #define H_PARSER
