@@ -5,15 +5,6 @@
 
 #include "scanner.h"
 
-int peek_token(Scanner *scanner, Token *token) {
-    long int file_pos = ftell(scanner->file); // Store current file position
-
-    int result = get_token(scanner, token); // Get the next token
-
-    fseek(scanner->file, file_pos, SEEK_SET); // Restore file position
-    return result; // Return the result of get_token
-}
-
 int get_token(Scanner *scanner, Token *token) {
     while (true) {
         int c = fgetc(scanner->file);
@@ -222,11 +213,6 @@ int get_token(Scanner *scanner, Token *token) {
 
             case '*':
                 token->type = TYPE_MUL;
-                token->line = scanner->line;
-                return EXIT_SUCCESS;
-
-            case ';':
-                token->type = TOKEN_SEMICOLON;
                 token->line = scanner->line;
                 return EXIT_SUCCESS;
 
