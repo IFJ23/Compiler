@@ -1,7 +1,9 @@
 var a = 2 + 7 / 5 + 6 * 9
-var t = a+  6 + 9 + a
+var t = 6 + 9 + a
 
-func foo(String            par)            -> String {
+func foo(String par) -> String {
 var ret = "something"
 return ret
 }
+
+write(a)
