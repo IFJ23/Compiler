@@ -1,12 +1,12 @@
-var a = 2 + 7 / 5 + 6 * 9
-var t = 6 + 9 + a
+var a : Int = 2 + 7 / 5 + 6 * 9
+var t : String = 6 + 9 + a
 
 func foo(par : String, vasia: Int) -> String {
 var ret = "something"
 return ret
 }
 
-var vysl = 4
+let vysl : Double = 4
 
 write(a)
 
@@ -19,10 +19,30 @@ if (a < 0) {
 var str1 = "Toto je nejaky text v programu jazyka IFJ23"
 
 while (str1 != "abcdefgh") {
-
 write("Spatne zadana posloupnost, zkuste znovu:\n")
 str1 = "abcdefgh"
 }
 
 Double2Int(t)
+
+let x = a ?? t
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

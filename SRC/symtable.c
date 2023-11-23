@@ -2,6 +2,7 @@
 // Faculty of Information Technology Brno University of Technology
 // Authors:
 // Vsevolod Pokhvalenko (xpokhv00)
+// Ivan Onufriienko (xonufr00)
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -41,14 +42,17 @@ Symtable *symtableInit(size_t n)
 
 SymtablePair *symtableFind(Symtable *t, SymtableKey key)
 {
-    if (t == NULL)
+    if (t == NULL) {
+        printf("We are here");
         return NULL;
+    }
 
     size_t hash = symtableHash(key) % t->arr_size;
     SymtableItem *tmp = t->arr_ptr[hash];
 
     while (tmp != NULL)
     {
+        printf("COMPARE");
         if (!strcmp(key, tmp->pair.key))
         {
             return &(tmp->pair);

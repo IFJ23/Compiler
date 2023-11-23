@@ -3,6 +3,7 @@
 // Authors:
 // Ivan Onufriienko (xonufr00)
 
+
 #ifndef IFJ23_SCANNER_H
 #define IFJ23_SCANNER_H
 
@@ -85,6 +86,8 @@ typedef struct{
 } Scanner;
 
 int get_token(Scanner*, Token*);
+
+int peek_token(Scanner*, Token*);
 
 int keyword_from_token(Token*, char*);
 

@@ -1,7 +1,7 @@
 // Compiler to IFJ23 language
 // Faculty of Information Technology Brno University of Technology
 // Authors:
-
+// Vsevolod Pokhvalenko (xpokhv00)
 // Sviatoslav Pokhvalenko (xpokhv01)
 
 #ifndef H_EXPRESSION
@@ -33,11 +33,13 @@ typedef enum
     I_DATA,
     I_DOLLAR,
     I_RELATIONAL,
-    I_COMPARISON,
     I_OPENB,
-    I_CLOSEB
+    I_CLOSEB,
+    I_NOTNIl,
+    I_VALORNIL
 } tableIndex;
 
 int parseExpression(Scanner *scanner, bool endWithBracket);
+
 
 #endif

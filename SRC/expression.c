@@ -1,6 +1,7 @@
 // Compiler to IFJ23 language
 // Faculty of Information Technology Brno University of Technology
 // Authors:
+// Vsevolod Pokhvalenko (xpokhv00)
 // Sviatoslav Pokhvalenko (xpokhv01)
 
 #include "expression.h"
@@ -9,16 +10,19 @@
 extern Parser parser;
 
 int prec_table[9][9] = {
-        //+, *, id, $, <=, (, ), !, ??
-        {R, S,  S, R,  R, S, R, S, R}, // +
-        {R, R,  S, R,  R, S, R, S, R}, // *
-        {R, R,  F, R,  R, F, R, R, R}, // id
-        {S, S,  S, O,  S, S, F, S, S}, // $
-        {S, S,  S, R,  F, S, R, S, R}, // <=
-        {S, S,  S, F,  S, S, E, S, S}, // (
-        {R, R,  F, R,  R, F, R, R, R},  // ),
-        {R, R,  R, R,  R, R, R, R, R},  // !,
-        {S, S,  S, R,  S, S, S, S, R}  // ??,
+
+        //+, *, i, $, R, (, ), !, ??
+        {R, S, S, R, R,  S, R, S, R}, // +
+        {R, R, S, R, R,  S, R, S, R}, // *
+        {R, R, F, R, R,  F, R, R, R}, // i
+        {S, S, S, O, S,  S, F, S, S}, // $
+        {S, S, S, R, F,  S, R, S, R}, // Relational Operators
+
+        {S, S, S, F, S,  S, E, F, S}, // (
+        {R, R, F, R, R,  F, R, R, R},  // )
+        {R, R,  F, R,R, F, R, F, R},  // !,
+        {S, S,  S, R,S, S, R, S, S}  // ??,
+
 };
 
 Token topmostTerminal()
@@ -105,7 +109,9 @@ int reduceMultiply()
     stackPop(parser.stack, &t);
     if (t.type != SHIFT_SYMBOL)
     {
-        printError(0, "Reduction of expression failed.2");
+
+        printError(0, "Reduction of expression failed.");
+
         return SYNTAX_ERROR;
     }
 
@@ -145,7 +151,8 @@ int reduceBracket()
     stackPop(parser.stack, &t);
     if (t.type != SHIFT_SYMBOL)
     {
-        printError(0, "Reduction of expression failed.4");
+
+        printError(0, "Reduction of expression failed.");
         return SYNTAX_ERROR;
     }
 
@@ -202,6 +209,10 @@ tableIndex getTableIndex(Token t)
         case TYPE_PLUS:
         case TYPE_MINUS:
             return I_PLUS;
+        case TYPE_NIL_COALESCING_OPERATOR:
+            return  I_VALORNIL;
+        case TYPE_EXCLAMATION_MARK:
+            return  I_NOTNIl;
         case TYPE_MUL:
         case TYPE_DIV:
             return I_MULTIPLY;
@@ -282,8 +293,6 @@ int shift(Scanner *scanner, Token *preShift)
     }
     StackItem *tmp = parser.stack->head;
 
-    // Prepare stack to temporarily store tokens between
-    // topmost nonterminal and top of the parser stack
     Stack *putaway = malloc(sizeof(Stack));
     if (putaway == NULL)
         return INTERNAL_ERROR;
@@ -297,7 +306,6 @@ int shift(Scanner *scanner, Token *preShift)
         tmp = parser.stack->head;
     }
 
-    // Push the shift symbol and return tokens to parser stack
     stackPush(parser.stack, shift);
     while (putaway->head != NULL)
     {
@@ -309,7 +317,9 @@ int shift(Scanner *scanner, Token *preShift)
 
     stackPush(parser.stack, parser.currToken);
     *preShift = parser.currToken;
-    int err = get_token(scanner, &parser.currToken);
+
+    int err = get_token(scanner, &(parser.currToken));
+
 
     return err;
 }
@@ -338,7 +348,9 @@ int parseExpression(Scanner *scanner, bool endWithBracket)
             case (E):
                 stackPush(parser.stack, parser.currToken);
                 beforeEnd = parser.currToken;
-                err = get_token(scanner, &parser.currToken);
+
+                err = get_token(scanner, &(parser.currToken));
+
                 break;
 
             case (O):
