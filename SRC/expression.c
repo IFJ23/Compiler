@@ -44,7 +44,7 @@ int reduceI()
     SymtablePair *foundVar;
     if (head.type == TYPE_ID)
     {
-        foundVar = symtableFind(parser.outsideBody ? parser.localSymtable : parser.symtable, head.value.string);  // here may be a problem
+        foundVar = symtableFind(parser.outsideBody ? parser.localSymtable : parser.symtable, head.value.string);
         if (foundVar == NULL)
         {
             printError(head.line, "Undefined variable used in an expression.");
@@ -117,7 +117,6 @@ int reduceMultiply()
 
 int reduceRelation()
 {
-
     Token t;
     stackPop(parser.stack, NULL);
     stackPop(parser.stack, &t);
@@ -158,11 +157,10 @@ int reduceBracket()
 int reduceNotNil()
 {
     Token t;
-    stackPop(parser.stack, NULL);
-    stackPop(parser.stack, &t);
+    stackPop(parser.stack, NULL); // Pop '!'
+    stackPop(parser.stack, &t);      // Pop the operand (variable or expression)
     genStackPush(t);
-    stackPop(parser.stack, NULL);
-    stackPop(parser.stack, &t);
+    stackPop(parser.stack, &t); // Pop SHIFT_SYMBOL
     if (t.type != SHIFT_SYMBOL)
     {
         printError(0, "Reduction of expression failed.");
@@ -175,11 +173,12 @@ int reduceNotNil()
     return 0;
 }
 
-int reduceVarOrNil()
+int reduceValOrNil()
 {
     Token t;
     stackPop(parser.stack, NULL);
-    stackPop(parser.stack, NULL);
+    stackPop(parser.stack, &t);
+    genStackPush(t);
     stackPop(parser.stack, NULL);
     stackPop(parser.stack, &t);
     if (t.type != SHIFT_SYMBOL)
@@ -262,7 +261,7 @@ int reduce()
             return reduceNotNil();
 
         case I_VALORNIL:
-            return reduceVarOrNil();
+            return reduceValOrNil();
 
         default:
             printError(0, "No reduction rule for given token.");
@@ -281,8 +280,6 @@ int shift(Scanner *scanner, Token *preShift)
     }
     StackItem *tmp = parser.stack->head;
 
-    // Prepare stack to temporarily store tokens between
-    // topmost nonterminal and top of the parser stack
     Stack *putaway = malloc(sizeof(Stack));
     if (putaway == NULL)
         return INTERNAL_ERROR;
@@ -296,7 +293,6 @@ int shift(Scanner *scanner, Token *preShift)
         tmp = parser.stack->head;
     }
 
-    // Push the shift symbol and return tokens to parser stack
     stackPush(parser.stack, shift);
     while (putaway->head != NULL)
     {
