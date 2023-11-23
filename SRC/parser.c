@@ -451,7 +451,7 @@ int parseTypeP(LinkedList *ll) {
 int parseTypeN(Scanner *scanner, LinkedList *ll) {
     int err = 0;
     GETTOKEN(scanner, &parser.currToken)
-    
+
     CHECKRULE(parseTypeP(ll))
     ll->head->opt = true;
     return err;

@@ -13,7 +13,7 @@ int prec_table[8][8] = {
         //+, *, i, $, R, C, (, )
         {R, S, S, R, R, R, S, R}, // +
         {R, R, S, R, R, R, S, R}, // *
-        {R, R, F, O, R, R, F, R}, // i
+        {R, R, F, R, R, R, F, R}, // i
         {S, S, S, O, S, S, S, F}, // $
         {S, S, S, R, F, F, S, R}, // Relational Operators
         {S, S, S, R, F, F, S, R}, // Comparison Operators
