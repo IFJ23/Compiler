@@ -38,12 +38,6 @@ typedef enum
     I_CLOSEB
 } tableIndex;
 
-/**
- * @brief Parses expression following current token.
- *
- * @param endWithBracket Check whether right bracket was last parsed token.
- * @return int Zero if expression was parsed successfully, non-zero otherwise.
- */
 int parseExpression(Scanner *scanner, bool endWithBracket);
 
 #endif
