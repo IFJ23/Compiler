@@ -8,17 +8,16 @@
 
 extern Parser parser;
 
-int prec_table[9][9] = {
-        //+, *, id, $, <=, (, ), !, ??
-        {R, S,  S, R,  R, S, R, S, R}, // +
-        {R, R,  S, R,  R, S, R, S, R}, // *
-        {R, R,  F, R,  R, F, R, R, R}, // id
-        {S, S,  S, O,  S, S, F, S, S}, // $
-        {S, S,  S, R,  F, S, R, S, R}, // <=
-        {S, S,  S, F,  S, S, E, S, S}, // (
-        {R, R,  F, R,  R, F, R, R, R},  // ),
-        {R, R,  R, R,  R, R, R, R, R},  // !,
-        {S, S,  S, R,  S, S, S, S, R}  // ??,
+int prec_table[8][8] = {
+        //+, *, i, $, R, C, (, )
+        {R, S, S, R, R, R, S, R}, // +
+        {R, R, S, R, R, R, S, R}, // *
+        {R, R, F, R, R, R, F, R}, // i
+        {S, S, S, O, S, S, S, F}, // $
+        {S, S, S, R, F, F, S, R}, // Relational Operators
+        {S, S, S, R, F, F, S, R}, // Comparison Operators
+        {S, S, S, F, S, S, S, E}, // (
+        {R, R, F, R, R, R, F, R}  // )
 };
 
 Token topmostTerminal()
@@ -42,9 +41,9 @@ int reduceI()
 {
     Token head = parser.stack->head->t;
     SymtablePair *foundVar;
-    if (head.type == TYPE_ID)
+    if (head.type == TYPE_IDENTIFIER_VAR)
     {
-        foundVar = symtableFind(parser.outsideBody ? parser.localSymtable : parser.symtable, head.value.string);  // here may be a problem
+        foundVar = symtableFind(parser.outsideBody ? parser.localSymtable : parser.symtable, head.value.string);
         if (foundVar == NULL)
         {
             printError(head.line, "Undefined variable used in an expression.");
@@ -72,7 +71,7 @@ int reduceI()
     stackPush(parser.stack, t);
 
     return 0;
-}
+};
 
 int reducePlus()
 {
@@ -105,6 +104,7 @@ int reduceMultiply()
     stackPop(parser.stack, &t);
     if (t.type != SHIFT_SYMBOL)
     {
+        printf("ERROR IS HERE \n");
         printError(0, "Reduction of expression failed.");
         return SYNTAX_ERROR;
     }
@@ -116,6 +116,27 @@ int reduceMultiply()
 }
 
 int reduceRelation()
+{
+
+    Token t;
+    stackPop(parser.stack, NULL);
+    stackPop(parser.stack, &t);
+    genStackPush(t);
+    stackPop(parser.stack, NULL);
+    stackPop(parser.stack, &t);
+    if (t.type != SHIFT_SYMBOL)
+    {
+        printError(0, "Reduction of expression failed.");
+        return SYNTAX_ERROR;
+    }
+
+    t.type = REDUCED;
+    stackPush(parser.stack, t);
+
+    return 0;
+}
+
+int reduceComparison()
 {
 
     Token t;
@@ -155,45 +176,6 @@ int reduceBracket()
     return 0;
 }
 
-int reduceNotNil()
-{
-    Token t;
-    stackPop(parser.stack, NULL);
-    stackPop(parser.stack, &t);
-    genStackPush(t);
-    stackPop(parser.stack, NULL);
-    stackPop(parser.stack, &t);
-    if (t.type != SHIFT_SYMBOL)
-    {
-        printError(0, "Reduction of expression failed.");
-        return SYNTAX_ERROR;
-    }
-
-    t.type = REDUCED;
-    stackPush(parser.stack, t);
-
-    return 0;
-}
-
-int reduceVarOrNil()
-{
-    Token t;
-    stackPop(parser.stack, NULL);
-    stackPop(parser.stack, NULL);
-    stackPop(parser.stack, NULL);
-    stackPop(parser.stack, &t);
-    if (t.type != SHIFT_SYMBOL)
-    {
-        printError(0, "Reduction of expression failed.");
-        return SYNTAX_ERROR;
-    }
-
-    t.type = REDUCED;
-    stackPush(parser.stack, t);
-
-    return 0;
-}
-
 tableIndex getTableIndex(Token t)
 {
     switch (t.type)
@@ -207,23 +189,20 @@ tableIndex getTableIndex(Token t)
         case TYPE_STRING:
         case TYPE_INT:
         case TYPE_DOUBLE:
-        case TYPE_ID:
+        case TYPE_IDENTIFIER_VAR:
             return I_DATA;
         case TYPE_MORE_EQUAL:
         case TYPE_MORE:
         case TYPE_LESS_EQUAL:
         case TYPE_LESS:
+            return I_RELATIONAL;
         case TYPE_EQUAL:
         case TYPE_NOT_EQUAL:
-            return I_RELATIONAL;
+            return I_COMPARISON;
         case TYPE_LEFT_BRACKET:
             return I_OPENB;
         case TYPE_RIGHT_BRACKET:
             return I_CLOSEB;
-        case TYPE_EXCLAMATION_MARK:
-            return I_NOTNIl;
-        case TYPE_NIL_COALESCING_OPERATOR:
-            return I_VALORNIL;
         case TYPE_KW:
             if (t.value.kw == KW_NIL)
                 return I_DATA;
@@ -236,8 +215,12 @@ tableIndex getTableIndex(Token t)
 
 precValues getRelation(Token top, Token new)
 {
+//    printf("THE TOKEN in table, top type FIRST: %d, new type SECOND: %d, VALUE IN TABLE TOP FIRST %d,  VALUE IN TABLE NEW SECOD %d,  %d \n", top.type, new.type, getTableIndex(top), getTableIndex(new),  prec_table[getTableIndex(top)][getTableIndex(new)]);
+//    if (new.type == TYPE_KW) {
+//        getRelation(top, new);
+//    }
     return prec_table[getTableIndex(top)][getTableIndex(new)];
-}
+};
 
 int reduce()
 {
@@ -255,14 +238,11 @@ int reduce()
         case I_RELATIONAL:
             return reduceRelation();
 
+        case I_COMPARISON:
+            return reduceComparison();
+
         case I_CLOSEB:
             return reduceBracket();
-
-        case I_NOTNIl:
-            return reduceNotNil();
-
-        case I_VALORNIL:
-            return reduceVarOrNil();
 
         default:
             printError(0, "No reduction rule for given token.");
@@ -276,7 +256,7 @@ int shift(Scanner *scanner, Token *preShift)
     Token topmost = topmostTerminal();
     if (topmost.type == 999)
     {
-        printError(parser.currToken.line, "Couldn't shift symbol, invalid expression.");
+        printError(parser.currToken.line,  "Couldn't shift symbol, invalid expression.");
         return SYNTAX_ERROR;
     }
     StackItem *tmp = parser.stack->head;
@@ -308,6 +288,7 @@ int shift(Scanner *scanner, Token *preShift)
 
     stackPush(parser.stack, parser.currToken);
     *preShift = parser.currToken;
+
     int err = get_token(scanner, &parser.currToken);
 
     return err;
@@ -337,7 +318,11 @@ int parseExpression(Scanner *scanner, bool endWithBracket)
             case (E):
                 stackPush(parser.stack, parser.currToken);
                 beforeEnd = parser.currToken;
+<<<<<<< HEAD
+                err = get_token(scanner, &(parser.currToken));
+=======
                 err = get_token(scanner, &parser.currToken);
+>>>>>>> ab8c7fa0e233fbaefd0e682a3d03721bb21c5bf4
                 break;
 
             case (O):
