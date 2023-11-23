@@ -240,10 +240,6 @@ tableIndex getTableIndex(Token t)
 
 precValues getRelation(Token top, Token new)
 {
-//    printf("THE TOKEN in table, top type FIRST: %d, new type SECOND: %d, VALUE IN TABLE TOP FIRST %d,  VALUE IN TABLE NEW SECOD %d,  %d \n", top.type, new.type, getTableIndex(top), getTableIndex(new),  prec_table[getTableIndex(top)][getTableIndex(new)]);
-//    if (new.type == TYPE_KW) {
-//        getRelation(top, new);
-//    }
     return prec_table[getTableIndex(top)][getTableIndex(new)];
 };
 
@@ -289,8 +285,6 @@ int shift(Scanner *scanner, Token *preShift)
     }
     StackItem *tmp = parser.stack->head;
 
-    // Prepare stack to temporarily store tokens between
-    // topmost nonterminal and top of the parser stack
     Stack *putaway = malloc(sizeof(Stack));
     if (putaway == NULL)
         return INTERNAL_ERROR;
@@ -304,7 +298,6 @@ int shift(Scanner *scanner, Token *preShift)
         tmp = parser.stack->head;
     }
 
-    // Push the shift symbol and return tokens to parser stack
     stackPush(parser.stack, shift);
     while (putaway->head != NULL)
     {
