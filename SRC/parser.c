@@ -2,7 +2,6 @@
 // Faculty of Information Technology Brno University of Technology
 // Authors:
 // Vsevolod Pokhvalenko (xpokhv00)
-// Sviatoslav Pokhvalenko (xpokhv01)
 
 #include "parser.h"
 
@@ -195,15 +194,13 @@ int parseReturn(Scanner *scanner) {
             returning = func->data.parameters.last->type;
     }
 
-    bool expr;
-
-    if ((!parser.outsideBody || (parser.outsideBody && returning != KW_NIL)) && expr) {
+    if ((!parser.outsideBody || (parser.outsideBody && returning != KW_NIL)) ) {
         CHECKRULE(parseExpression(scanner, false))
         genReturn(parser.currFunc, true);
     } else {
-        if ((expr && parser.outsideBody) || (returning == KW_VOID && expr)) {
+        if (( parser.outsideBody) || (returning == KW_VOID )) {
             printError(LINENUM,
-                       "Current function doesn't have a return value, so return has to be followed by a semicolon.");
+                       "Current function doesn't have a return value");
             return SYNTAX_ERROR;
         }
         genReturn(parser.currFunc, false);
@@ -225,7 +222,7 @@ int parseParamsCallN(Scanner *scanner, int *pc) {
         case TYPE_IDENTIFIER_VAR:
             if (symtableFind(parser.outsideBody ? parser.localSymtable : parser.symtable,
                              parser.currToken.value.string) == NULL) {
-                printError(LINENUM, "Passing an undefined var to a function.");
+                printError(LINENUM, "Passing an undefined variable to a function.");
                 return SEMANTIC_UNDEFINED_ERROR;
             }
             printf("PUSHS LF@%s\n", parser.currToken.value.string);

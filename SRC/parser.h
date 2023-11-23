@@ -2,7 +2,6 @@
 // Faculty of Information Technology Brno University of Technology
 // Authors:
 // Vsevolod Pokhvalenko (xpokhv00)
-// Sviatoslav Pokhvalenko (xpokhv01)
 
 #ifndef H_PARSER
 #define H_PARSER
