@@ -1,6 +1,7 @@
 // Compiler to IFJ23 language
 // Faculty of Information Technology Brno University of Technology
 // Authors:
+// Vsevolod Pokhvalenko (xpokhv00)
 // Sviatoslav Pokhvalenko (xpokhv01)
 
 #include "expression.h"
@@ -8,16 +9,19 @@
 
 extern Parser parser;
 
-int prec_table[8][8] = {
-        //+, *, i, $, R, C, (, )
-        {R, S, S, R, R, R, S, R}, // +
-        {R, R, S, R, R, R, S, R}, // *
-        {R, R, F, R, R, R, F, R}, // i
-        {S, S, S, O, S, S, S, F}, // $
-        {S, S, S, R, F, F, S, R}, // Relational Operators
-        {S, S, S, R, F, F, S, R}, // Comparison Operators
-        {S, S, S, F, S, S, S, E}, // (
-        {R, R, F, R, R, R, F, R}  // )
+int prec_table[9][9] = {
+        //+, *, i, $, R, (, ), !, ??
+        {R, S, S, R, R,  S, R, S, R}, // +
+        {R, R, S, R, R,  S, R, S, R}, // *
+        {R, R, F, R, R,  F, R, R, R}, // i
+        {S, S, S, O, S,  S, F, S, S}, // $
+        {S, S, S, R, F,  S, R, S, R}, // Relational Operators
+
+        {S, S, S, F, S,  S, E, F, S}, // (
+        {R, R, F, R, R,  F, R, R, R},  // )
+        {R, R,  F, R,R, F, R, F, R},  // !,
+        {S, S,  S, R,S, S, R, S, S}  // ??,
+
 };
 
 Token topmostTerminal()
@@ -104,7 +108,6 @@ int reduceMultiply()
     stackPop(parser.stack, &t);
     if (t.type != SHIFT_SYMBOL)
     {
-        printf("ERROR IS HERE \n");
         printError(0, "Reduction of expression failed.");
         return SYNTAX_ERROR;
     }
@@ -116,27 +119,6 @@ int reduceMultiply()
 }
 
 int reduceRelation()
-{
-
-    Token t;
-    stackPop(parser.stack, NULL);
-    stackPop(parser.stack, &t);
-    genStackPush(t);
-    stackPop(parser.stack, NULL);
-    stackPop(parser.stack, &t);
-    if (t.type != SHIFT_SYMBOL)
-    {
-        printError(0, "Reduction of expression failed.");
-        return SYNTAX_ERROR;
-    }
-
-    t.type = REDUCED;
-    stackPush(parser.stack, t);
-
-    return 0;
-}
-
-int reduceComparison()
 {
 
     Token t;
@@ -176,6 +158,46 @@ int reduceBracket()
     return 0;
 }
 
+int reduceNotNil()
+{
+    Token t;
+    stackPop(parser.stack, NULL);
+    stackPop(parser.stack, &t);
+    genStackPush(t);
+    stackPop(parser.stack, NULL);
+    stackPop(parser.stack, &t);
+    if (t.type != SHIFT_SYMBOL)
+    {
+        printError(0, "Reduction of expression failed.");
+        return SYNTAX_ERROR;
+    }
+
+    t.type = REDUCED;
+    stackPush(parser.stack, t);
+
+    return 0;
+}
+
+int reduceValOrNil()
+{
+    Token t;
+    stackPop(parser.stack, NULL);
+    stackPop(parser.stack, &t);
+    genStackPush(t);
+    stackPop(parser.stack, NULL);
+    stackPop(parser.stack, &t);
+    if (t.type != SHIFT_SYMBOL)
+    {
+        printError(0, "Reduction of expression failed.");
+        return SYNTAX_ERROR;
+    }
+
+    t.type = REDUCED;
+    stackPush(parser.stack, t);
+
+    return 0;
+}
+
 tableIndex getTableIndex(Token t)
 {
     switch (t.type)
@@ -183,6 +205,10 @@ tableIndex getTableIndex(Token t)
         case TYPE_PLUS:
         case TYPE_MINUS:
             return I_PLUS;
+        case TYPE_NIL_COALESCING_OPERATOR:
+            return  I_VALORNIL;
+        case TYPE_EXCLAMATION_MARK:
+            return  I_NOTNIl;
         case TYPE_MUL:
         case TYPE_DIV:
             return I_MULTIPLY;
@@ -195,10 +221,9 @@ tableIndex getTableIndex(Token t)
         case TYPE_MORE:
         case TYPE_LESS_EQUAL:
         case TYPE_LESS:
-            return I_RELATIONAL;
         case TYPE_EQUAL:
         case TYPE_NOT_EQUAL:
-            return I_COMPARISON;
+            return I_RELATIONAL;
         case TYPE_LEFT_BRACKET:
             return I_OPENB;
         case TYPE_RIGHT_BRACKET:
@@ -215,10 +240,6 @@ tableIndex getTableIndex(Token t)
 
 precValues getRelation(Token top, Token new)
 {
-//    printf("THE TOKEN in table, top type FIRST: %d, new type SECOND: %d, VALUE IN TABLE TOP FIRST %d,  VALUE IN TABLE NEW SECOD %d,  %d \n", top.type, new.type, getTableIndex(top), getTableIndex(new),  prec_table[getTableIndex(top)][getTableIndex(new)]);
-//    if (new.type == TYPE_KW) {
-//        getRelation(top, new);
-//    }
     return prec_table[getTableIndex(top)][getTableIndex(new)];
 };
 
@@ -238,11 +259,14 @@ int reduce()
         case I_RELATIONAL:
             return reduceRelation();
 
-        case I_COMPARISON:
-            return reduceComparison();
-
         case I_CLOSEB:
             return reduceBracket();
+
+        case I_NOTNIl:
+            return reduceNotNil();
+
+        case I_VALORNIL:
+            return reduceValOrNil();
 
         default:
             printError(0, "No reduction rule for given token.");
@@ -261,8 +285,6 @@ int shift(Scanner *scanner, Token *preShift)
     }
     StackItem *tmp = parser.stack->head;
 
-    // Prepare stack to temporarily store tokens between
-    // topmost nonterminal and top of the parser stack
     Stack *putaway = malloc(sizeof(Stack));
     if (putaway == NULL)
         return INTERNAL_ERROR;
@@ -276,7 +298,6 @@ int shift(Scanner *scanner, Token *preShift)
         tmp = parser.stack->head;
     }
 
-    // Push the shift symbol and return tokens to parser stack
     stackPush(parser.stack, shift);
     while (putaway->head != NULL)
     {
@@ -288,9 +309,7 @@ int shift(Scanner *scanner, Token *preShift)
 
     stackPush(parser.stack, parser.currToken);
     *preShift = parser.currToken;
-
     int err = get_token(scanner, &(parser.currToken));
-
 
     return err;
 }
@@ -319,9 +338,7 @@ int parseExpression(Scanner *scanner, bool endWithBracket)
             case (E):
                 stackPush(parser.stack, parser.currToken);
                 beforeEnd = parser.currToken;
-
                 err = get_token(scanner, &(parser.currToken));
-
                 break;
 
             case (O):

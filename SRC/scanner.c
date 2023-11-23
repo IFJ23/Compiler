@@ -1,18 +1,19 @@
 // Compiler to IFJ23 language
 // Faculty of Information Technology Brno University of Technology
 // Authors:
-// Ivan Onufriienko (xonufr00)
+// Vsevolod Pokhvalenko (xpokhv00)
+// Sviatoslav Pokhvalenko (xpokhv01)
 
 #include "scanner.h"
 
 int get_token(Scanner *scanner, Token *token) {
     while (true) {
         int c = fgetc(scanner->file);
-        
-        if (c == EOF){
+
+        if (c == EOF) {
             token->type = TYPE_EOF;
             return EXIT_SUCCESS;
-        }     
+        }
 
         if(isspace(c)){
             if(c == '\n'){
@@ -20,12 +21,14 @@ int get_token(Scanner *scanner, Token *token) {
                 token->line = scanner->line;
                 scanner->line++;
                 return EXIT_SUCCESS;
+            } else {
+                continue;
             }
-            continue;
         }
-        
-        if(isdigit(c)){ 
-            int counter,exponent,dot,sign;
+
+
+        if (isdigit(c)) {
+            int counter, exponent, dot, sign;
             counter = exponent = dot = sign = 0;
             int size = 20;
             char *number = malloc(sizeof(char) * size);
@@ -128,10 +131,10 @@ int get_token(Scanner *scanner, Token *token) {
             if (id == NULL) {
                 exit(INTERNAL_ERROR);
             }
-            
-            while((isalpha(c) || c == '_' || c == '?') && c != EOF){
-                
-                if(counter == size){
+
+            while ((isalnum(c) || c == '_' || c == '?') && c != EOF) {
+
+                if (counter == size) {
                     size *= 2;
                     id = realloc(id, sizeof(char) * size);
 
@@ -167,23 +170,22 @@ int get_token(Scanner *scanner, Token *token) {
                 printError(scanner->line, "Lexical error: This is not a keyword that is nullable");
                 return LEXICAL_ERROR;
             }
-            
-            int c2 = fgetc(scanner->file);
-            
-            while(isspace(c2)){
-                c2 = fgetc(scanner->file);
-            }
 
-            ungetc(c2, scanner->file);
-            
-            if(c2 == '('){
-                token->type = TYPE_IDENTIFIER_FUNC;
+            // Check the context to distinguish between function and variable identifiers
+            bool isFunction = false;  // Assume it's a variable unless proven otherwise
+
+            // Check if the next character is '(' to indicate a function identifier
+            int nextChar = getc(scanner->file);
+            if (nextChar == '(') {
+                isFunction = true;  // It's a function identifier
             }
-            
-            else{
+            ungetc(nextChar, scanner->file);  // Return the read character back to the input stream
+
+            if (isFunction) {
+                token->type = TYPE_IDENTIFIER_FUNC;
+            } else {
                 token->type = TYPE_IDENTIFIER_VAR;
             }
-
             token->value.id = id;
             token->line = scanner->line;
             return EXIT_SUCCESS;
@@ -230,34 +232,35 @@ int get_token(Scanner *scanner, Token *token) {
                             return EXIT_SUCCESS;
                         }
                     }
-                    scanner->line++;
                     
+                    scanner->line++;
+
+                    break;
                 }
-                
-                else if (c2 == '*'){
+
+                else if (c2 == '*') {
                     
                     int nested = 0;
                     
-                    while(true){                   
-                        c2 = fgetc(scanner->file);          
-                        
-                        if(c2 == EOF){
-                            printError(scanner->line, "Lexical error: Missing closing comment ");
+                    while (true) {
+                        c2 = fgetc(scanner->file);
+
+                        if (c2 == EOF) {
+                            printError(scanner->line, "Lexical error: Missing closing comment");
                             exit(LEXICAL_ERROR);
                         }
-                        
-                        else if(c2 == '\n'){
+
+                        else if (c2 == '\n') {
                             scanner->line++;
                         }
-                        
-                        else if(c2 == '/'){
+                        else if (c2 == '/') {
                             c2 = fgetc(scanner->file);
-                            
-                            if(c2 == EOF){
-                                printError(scanner->line, "Lexical error: Missing closing comment ");
+
+                            if (c2 == EOF) {
+                                printError(scanner->line, "Lexical error: Missing closing comment");
                                 exit(LEXICAL_ERROR);
                             }
-                            
+
                             else if(c2 == '*'){
                                 int c3 = fgetc(scanner->file);
                                 if(c3 == '/'){
@@ -275,36 +278,29 @@ int get_token(Scanner *scanner, Token *token) {
                                 
                             }
                             
-                            else{
+                            else{ 
                                 ungetc(c2, scanner->file);
                             }
                         }
-                        
-                        else if(c2 == '*'){
+                        else if (c2 == '*') {
                             c2 = fgetc(scanner->file);
-                            
-                            if(c2 == EOF){
-                                printError(scanner->line, "Lexical error: Missing closing comment ");
+
+                            if (c2 == EOF) {
+                                printError(scanner->line, "Lexical error: Missing closing comment");
                                 exit(LEXICAL_ERROR);
                             }
-                            
-                            else if(c2 == '/'){
-                                if(nested == 0){
+
+                            else if (c2 == '/') {
+                                if (nested == 0) {
                                     break;
                                 } else {
                                     nested--;
                                 }
-                            }
-                            
-                            else{
-                                if(c2 == '\n') {
-                                scanner->line++;
+                            } else {
+                                if (c2 == '\n') {
+                                    scanner->line += 1;
                                 }
                             }
-                        }
-                        
-                        else{
-                            continue;
                         }
                     }
                 }
@@ -447,10 +443,11 @@ int get_token(Scanner *scanner, Token *token) {
                 if (string == NULL) {
                     exit(INTERNAL_ERROR);
                 }
-                
-                while(true){
-                    c2 = fgetc(scanner->file); 
-                    if (counter == size){
+
+                while (true) {
+                    c2 = fgetc(scanner->file);
+
+                    if (counter == size) {
                         size *= 2;
                         string = realloc(string, sizeof(char) * size);
 
@@ -461,7 +458,7 @@ int get_token(Scanner *scanner, Token *token) {
 
                     string[counter] = c2;
                     counter++;
-                    
+
                     if(c2 < 32 || c2 > 255){
                         if(token->type == TYPE_MULTILINE_STRING){
                             continue;
@@ -473,9 +470,7 @@ int get_token(Scanner *scanner, Token *token) {
                         printError(scanner->line, "Lexical error: Invalid character in string");
                         return LEXICAL_ERROR;
                         }
-                    }
-                    
-                    else if( c2 == '\\'){
+                    } else if (c2 == '\\') {
                         c2 = fgetc(scanner->file);
 
                         if (c2 == 'n') {
@@ -493,11 +488,11 @@ int get_token(Scanner *scanner, Token *token) {
 
                             if (c3 == '{') {
                                 int c4 = fgetc(scanner->file);
-                                
-                                if(isxdigit(c4)){
+
+                                if (isalnum(c4)) {
                                     int c5 = fgetc(scanner->file);
-                                    
-                                    if(isxdigit(c5)){                                     
+
+                                    if (isalnum(c5)) {
                                         int c6 = fgetc(scanner->file);
 
                                         if (c6 == '}') {
@@ -547,9 +542,7 @@ int get_token(Scanner *scanner, Token *token) {
                             if (c3 == '"') {
                                 int c4 = fgetc(scanner->file);
 
-                                if(c4 == '"'){
-                                    string[counter-1] = '\0';
-                                    token->value.string = string;
+                                if (c4 == '"') {
                                     token->line = scanner->line;
                                     free(string);
                                     return EXIT_SUCCESS;
@@ -581,15 +574,14 @@ int get_token(Scanner *scanner, Token *token) {
                         printError(scanner->line, "Lexical error: Missing closing quote");
                         return LEXICAL_ERROR;
                     }
-                    
-                                     
                 }
             default:
                 token->type = TYPE_ERROR;
                 token->line = scanner->line;
                 printError(scanner->line, "Lexical error: Invalid character");
                 return LEXICAL_ERROR;    
-        }       
+               
+        }
     }
 }
 
