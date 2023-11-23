@@ -1,9 +1,18 @@
-var a = 2 + 7 / 5 + 6 * 9
-var t = 6 + 9 + a
+var a : Int = 2 + 7 / 5 + 6 * 9
+var t : String = 6 + 9 + a
 
-func foo(String par) -> String {
-var ret = "something"
-return ret
-}
 
-write(a)
+
+
+
+
+
+
+
+
+
+
+
+
+
+

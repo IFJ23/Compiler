@@ -341,87 +341,6 @@ int parseAssign(Scanner *scanner, Token variable) {
     return err;
 }
 
-int parseBody(Scanner *scanner) {
-    int err = 0;
-
-    if (parser.currToken.type == TYPE_KW)
-        switch (parser.currToken.value.kw) {
-            // <body> -> <if>
-            case KW_IF:
-                CHECKRULE(parseIf(scanner))
-                break;
-
-                // <body> -> <while>
-            case KW_WHILE:
-                CHECKRULE(parseWhile(scanner))
-                break;
-
-                // <body> -> <return> ;
-            case KW_RETURN:
-                CHECKRULE(parseReturn(scanner))
-
-                break;
-            case KW_VAR:
-
-
-                if (peek_token(scanner, &parser.currToken) != 0)
-                    return LEXICAL_ERROR;
-
-                if (parser.currToken.type == TYPE_KW) {
-                    parseBody(scanner);
-                }
-
-                if (parser.currToken.type == TYPE_IDENTIFIER_VAR) {
-                    GETTOKEN(scanner, &parser.currToken)
-                    GETTOKEN(scanner, &parser.currToken)
-                    // <body> -> identifier_var = <assign_v> ;
-                    if (parser.currToken.type == TYPE_ASSIGN) {
-                        Token variable = parser.currToken;
-                        SymtablePair *alrDefined = symtableFind(
-                                parser.outsideBody ? parser.localSymtable : parser.symtable, variable.value.string);
-                        if (alrDefined == NULL) {
-                            genDefineVariable(variable);
-                        }
-                        CHECKRULE(parseAssign(scanner, variable))
-                        LinkedList empty = {.itemCount = 0};
-                        if (alrDefined == NULL || alrDefined->data.possiblyUndefined) {
-                            symtableAdd(parser.outsideBody ? parser.localSymtable : parser.symtable,
-                                        variable.value.string, VAR, -1, parser.condDec, empty);
-                        }
-                    }
-                        // <body> -> expr ;
-                    else {
-                        CHECKRULE(parseExpression(scanner, false))
-                    }
-                }
-
-                break;
-
-                // <body> -> expr ;
-            case KW_NIL:
-                CHECKRULE(parseExpression(scanner, false))
-
-                break;
-
-            default:
-                printError(LINENUM, "Unexpected keyword found.");
-                return SYNTAX_ERROR;
-                break;
-        }
-    else if (parser.currToken.type == TYPE_IDENTIFIER_FUNC) {
-        CHECKRULE(parseFunctionCall(scanner))
-
-    } else if (parser.currToken.type == TYPE_RETURN_ARROW) {
-        return SYNTAX_ERROR;
-    } else {
-        // <body> -> expr ;
-        CHECKRULE(parseExpression(scanner, false))
-
-    }
-
-    return err;
-}
-
 int parseTypeP(LinkedList *ll) {
     if (parser.currToken.type != TYPE_KW) {
         printError(LINENUM, "Expected variable type.");
@@ -454,6 +373,104 @@ int parseTypeN(Scanner *scanner, LinkedList *ll) {
 
     CHECKRULE(parseTypeP(ll))
     ll->head->opt = true;
+    return err;
+}
+
+int parseBody(Scanner *scanner) {
+    int err = 0;
+
+    if (parser.currToken.type == TYPE_KW)
+        switch (parser.currToken.value.kw) {
+            // <body> -> <if>
+            case KW_IF:
+                CHECKRULE(parseIf(scanner))
+                break;
+
+                // <body> -> <while>
+            case KW_WHILE:
+                CHECKRULE(parseWhile(scanner))
+                break;
+
+                // <body> -> <return> ;
+            case KW_RETURN:
+                CHECKRULE(parseReturn(scanner))
+
+                break;
+            case KW_VAR:
+            case KW_LET:
+
+                GETTOKEN(scanner, &parser.currToken)
+
+                if (parser.currToken.type == TYPE_IDENTIFIER_VAR) {
+
+                    Token variable = parser.currToken;
+
+                    if (peek_token(scanner, &parser.currToken) != 0)
+                        return LEXICAL_ERROR;
+
+                    if (parser.currToken.type == TYPE_COLON) {
+
+                        GETTOKEN(scanner, &parser.currToken)
+
+                        GETTOKEN(scanner, &parser.currToken)
+
+                        LinkedList ll;
+                        listInit(&ll);
+
+                        CHECKRULE(parseTypeP(&ll))
+
+                        if (peek_token(scanner, &parser.currToken) != 0)
+                            return LEXICAL_ERROR;
+
+                    }
+                    // <body> -> identifier_var = <assign_v> ;
+                    if (parser.currToken.type == TYPE_ASSIGN) {
+
+                        SymtablePair *alrDefined = symtableFind(
+                                parser.outsideBody ? parser.localSymtable : parser.symtable, variable.value.string);
+                        if (alrDefined == NULL) {
+                            genDefineVariable(variable);
+                        }
+                        GETTOKEN(scanner, &parser.currToken)
+                        CHECKRULE(parseAssign(scanner, variable))
+                        LinkedList empty = {.itemCount = 0};
+                        if (alrDefined == NULL || alrDefined->data.possiblyUndefined) {
+                            symtableAdd(parser.outsideBody ? parser.localSymtable : parser.symtable,
+                                        variable.value.string, VAR, -1, parser.condDec, empty);
+                        }
+                    }
+                        // <body> -> expr ;
+                    else {
+                        CHECKRULE(parseExpression(scanner, false))
+                    }
+                }
+
+                break;
+
+                // <body> -> expr ;
+            case KW_NIL:
+                CHECKRULE(parseExpression(scanner, false))
+
+                break;
+
+            default:
+                printError(LINENUM, "Unexpected keyword found.");
+                return SYNTAX_ERROR;
+                break;
+        }
+    else if (parser.currToken.type == TYPE_IDENTIFIER_FUNC) {
+        CHECKRULE(parseFunctionCall(scanner))
+
+    } else if (parser.currToken.type == TYPE_RETURN_ARROW) {
+        return SYNTAX_ERROR;
+    } else if (parser.currToken.type == TYPE_EOL) {
+        return 0;
+    } else {
+        // <body> -> expr ;
+        CHECKRULE(parseExpression(scanner, false))
+
+    }
+
     return err;
 }
 
@@ -681,7 +698,6 @@ int parse(Scanner *scanner) {
     symtableAdd(parser.symtable, "write", FUNC, -1, false, empty);
     symtableAdd(parser.symtable, "Int2Double", FUNC, 1, false, empty);
     symtableAdd(parser.symtable, "Double2Int", FUNC, 1, false, empty);
-//    symtableAdd(parser.symtable, "strval", FUNC, 1, false, empty);
     symtableAdd(parser.symtable, "length", FUNC, 1, false, empty);
     symtableAdd(parser.symtable, "substring", FUNC, 3, false, empty);
     symtableAdd(parser.symtable, "ord", FUNC, 1, false, empty);
