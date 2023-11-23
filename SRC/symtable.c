@@ -2,6 +2,7 @@
 // Faculty of Information Technology Brno University of Technology
 // Authors:
 // Vsevolod Pokhvalenko (xpokhv00)
+// Ivan Onufriienko (xonufr00)
 
 #include <stdlib.h>
 #include <stdint.h>

@@ -2,6 +2,7 @@
 // Faculty of Information Technology Brno University of Technology
 // Authors:
 // Ivan Onufriienko (xonufr00)
+// Vsevolod Pokhvalenko (xpokhv00)
 
 #ifndef IFJ23_ERROR_H
 #define IFJ23_ERROR_H

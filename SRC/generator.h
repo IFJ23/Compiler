@@ -49,4 +49,6 @@ void genReturn(char *funcname, bool expr);
 
 void genPushString(char *str);
 
+void genConvertBool();
+
 #endif // IFJ23_GENERATOR_H
