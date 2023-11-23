@@ -2,7 +2,7 @@ var a = 2 + 7 / 5 + 6 * 9
 var t = 6 + 9 + a
 var t = 4.3
 
-func foo(String par) -> String {
+func foo(par : String, vasia: Int) -> String {
 var ret = "something"
 return ret
 }

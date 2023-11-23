@@ -423,7 +423,6 @@ int parseBody(Scanner *scanner) {
 }
 
 int parseTypeP(LinkedList *ll) {
-    printf("TOKEN, %d\n", parser.currToken.type);
     if (parser.currToken.type != TYPE_KW) {
         printError(LINENUM, "Expected variable type.");
         return SYNTAX_ERROR;
@@ -460,25 +459,37 @@ int parseTypeN(Scanner *scanner, LinkedList *ll) {
 
 int parseParamsDefN(Scanner *scanner, LinkedList *ll) {
     int err = 0;
-    if (parser.currToken.type != TOKEN_OPTIONAL_TYPE) {
-        CHECKRULE(parseTypeP(ll))
-    } else {
-        CHECKRULE(parseTypeN(scanner, ll))
-    }
 
-    GETTOKEN(scanner, &parser.currToken)
+    Token variable = parser.currToken;
 
     if (parser.currToken.type != TYPE_IDENTIFIER_VAR) {
         printError(LINENUM, "Type has to be followed by a variable.");
         return SYNTAX_ERROR;
     }
 
-    ll->head->name = parser.currToken.value.string;
+    GETTOKEN(scanner, &parser.currToken)
 
-    stackPush(parser.undefStack, parser.currToken);
+    if (parser.currToken.type != TYPE_COLON) {
+        printError(LINENUM, "Expected ':' after variable name.");
+        return SYNTAX_ERROR;
+    }
+
+    GETTOKEN(scanner, &parser.currToken)
+
+    if (parser.currToken.type != TOKEN_OPTIONAL_TYPE) {
+        CHECKRULE(parseTypeP(ll))
+    } else {
+        CHECKRULE(parseTypeN(scanner, ll))
+    }
+
+    printf("THE TOKEN I HAVE SAVED, %s \n", variable.value.string);
+
+    ll->head->name = variable.value.string;
+
+    stackPush(parser.undefStack, variable);
 
     LinkedList empty = {.itemCount = 0};
-    symtableAdd(parser.localSymtable, parser.currToken.value.string, VAR, -1, parser.condDec, empty);
+    symtableAdd(parser.localSymtable, variable.value.string, VAR, -1, parser.condDec, empty);
 
     GETTOKEN(scanner, &parser.currToken)
 
