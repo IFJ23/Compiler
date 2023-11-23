@@ -14,12 +14,12 @@ int main() {
 
     Scanner scanner;
     scanner.file = file;
-
+    parserInit();
     int result = parse(&scanner);
 
     // Add your own assertions for testing
     if (result != 0) {
-        printf("Parsing failed\n");
+        printf("Parsing failed %d\n", result);
         return 1;
     }
 

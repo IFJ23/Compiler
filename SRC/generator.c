@@ -176,7 +176,7 @@ void genStackPush(Token t)
         genConvertBool();
         break;
 
-    case TOKEN_IDENTIFIER_VAR:
+    case TYPE_IDENTIFIER_VAR:
         printf("POPFRAME\n");
         printf("PUSHS LF@%s\n", t.value.string);
         printf("PUSHFRAME\n");
