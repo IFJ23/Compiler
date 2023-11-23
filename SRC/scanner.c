@@ -175,7 +175,7 @@ int get_token(Scanner *scanner, Token *token){
             while(isspace(c2)){
                 c2 = fgetc(scanner->file);
             }
-            
+            ungetc(c2, scanner->file);
             if(c2 == '('){
                 token->type = TYPE_IDENTIFIER_FUNC;
             }
