@@ -729,3 +729,12 @@ int keyword_from_token(Token *token, char *c) {
     
     return EXIT_FAILURE;
 }
+
+int peek_token(Scanner *scanner, Token *token) {
+    long int file_pos = ftell(scanner->file); // Store current file position
+
+    int result = get_token(scanner, token); // Get the next token
+
+    fseek(scanner->file, file_pos, SEEK_SET); // Restore file position
+    return result; // Return the result of get_token
+}

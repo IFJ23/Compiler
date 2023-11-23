@@ -31,12 +31,7 @@ typedef struct
 #define GETTOKEN(scanner, t) \
     if (get_token(scanner, t) != 0) \
         return LEXICAL_ERROR;
-//#define CHECKSEMICOLON()                                                      \
-//    if (parser.currToken.type != TOKEN_SEMICOLON ) \
-//    {                                                                         \
-//        printError(LINENUM, "Missing semicolon after a statement."); \
-//        return SYNTAX_ERROR;                                                 \
-//    }
+
 #define CHECKENDOFEXPRESSION()                                                      \
     if (parser.currToken.type == TOKEN_SEMICOLON ) \
     {                                                                         \

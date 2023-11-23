@@ -71,7 +71,7 @@ int reduceI()
     stackPush(parser.stack, t);
 
     return 0;
-};
+}
 
 int reducePlus()
 {
@@ -220,7 +220,7 @@ precValues getRelation(Token top, Token new)
 //        getRelation(top, new);
 //    }
     return prec_table[getTableIndex(top)][getTableIndex(new)];
-};
+}
 
 int reduce()
 {
@@ -318,11 +318,7 @@ int parseExpression(Scanner *scanner, bool endWithBracket)
             case (E):
                 stackPush(parser.stack, parser.currToken);
                 beforeEnd = parser.currToken;
-<<<<<<< HEAD
-                err = get_token(scanner, &(parser.currToken));
-=======
                 err = get_token(scanner, &parser.currToken);
->>>>>>> ab8c7fa0e233fbaefd0e682a3d03721bb21c5bf4
                 break;
 
             case (O):

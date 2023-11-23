@@ -64,7 +64,6 @@ typedef enum {
     TYPE_NIL_COALESCING_OPERATOR,
     TYPE_MULTILINE_STRING,
     TYPE_ERROR,
-    TYPE_EOL,
 } Token_type;
 
 typedef union {
@@ -88,4 +87,7 @@ typedef struct{
 int get_token(Scanner*, Token*);
 
 int keyword_from_token(Token*, char*);
+
+int peek_token(Scanner*, Token*);
+
 #endif //IFJ23_SCANNER_H
