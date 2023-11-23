@@ -10,7 +10,6 @@
 #include "scanner.h"
 #include "parser.h"
 
-
 /**
  * @brief Prints info about used lang.
  *

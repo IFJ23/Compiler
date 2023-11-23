@@ -86,6 +86,8 @@ typedef struct{
 
 int get_token(Scanner*, Token*);
 
+int peek_token(Scanner*, Token*);
+
 int keyword_from_token(Token*, char*);
 
 int peek_token(Scanner*, Token*);

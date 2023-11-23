@@ -46,4 +46,5 @@ typedef enum
  */
 int parseExpression(Scanner *scanner, bool endWithBracket);
 
+
 #endif

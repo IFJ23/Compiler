@@ -1,5 +1,6 @@
 var a = 2 + 7 / 5 + 6 * 9
 var t = 6 + 9 + a
+var t = 4.3
 
 func foo(String par) -> String {
 var ret = "something"
@@ -7,3 +8,18 @@ return ret
 }
 
 write(a)
+
+if (a < 0) {
+    write("Faktorial nelze spocitat\n")
+} else {
+    vysl = 7
+}
+
+var str1 = "Toto je nejaky text v programu jazyka IFJ23"
+
+while (str1 != "abcdefgh") {
+write("Spatne zadana posloupnost, zkuste znovu:\n")
+str1 = "abcdefgh"
+}
+
+Double2Int(t)
