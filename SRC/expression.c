@@ -1,8 +1,7 @@
-/**
- * @file expression.c
- * @author Petr Bartoš (xbarto0g)
- * @brief Expression LR parser.
- */
+// Compiler to IFJ23 language
+// Faculty of Information Technology Brno University of Technology
+// Authors:
+// Sviatoslav Pokhvalenko (xpokhv01)
 
 #include "expression.h"
 #include "generator.h"
@@ -289,7 +288,9 @@ int shift(Scanner *scanner, Token *preShift)
 
     stackPush(parser.stack, parser.currToken);
     *preShift = parser.currToken;
+
     int err = get_token(scanner, &(parser.currToken));
+
 
     return err;
 }
@@ -318,7 +319,9 @@ int parseExpression(Scanner *scanner, bool endWithBracket)
             case (E):
                 stackPush(parser.stack, parser.currToken);
                 beforeEnd = parser.currToken;
+
                 err = get_token(scanner, &(parser.currToken));
+
                 break;
 
             case (O):

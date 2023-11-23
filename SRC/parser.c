@@ -189,7 +189,7 @@ int parseReturn(Scanner *scanner) {
     }
 
     bool expr;
-
+      
     // <return_p>  -> expr.
     if ((!parser.outsideBody || (parser.outsideBody && returning != KW_NIL)) && expr) {
         CHECKRULE(parseExpression(scanner, false))
@@ -460,7 +460,9 @@ int parseTypeN(Scanner *scanner, LinkedList *ll) {
 
 int parseParamsDefN(Scanner *scanner, LinkedList *ll) {
     int err = 0;
-    if (parser.currToken.type != TOKEN_OPTIONAL_TYPE) {
+
+    if (parser.currToken.type != TYPE_OPTIONAL_TYPE) {
+
         CHECKRULE(parseTypeP(ll))
     } else {
         CHECKRULE(parseTypeN(scanner, ll))
@@ -504,7 +506,9 @@ int parseParamsDef(Scanner *scanner, LinkedList *ll) {
 
 int parseType(Scanner *scanner, LinkedList *ll) {
     // <type> -> <type_n>.
-    if (parser.currToken.type == TOKEN_OPTIONAL_TYPE) {
+
+    if (parser.currToken.type == TYPE_OPTIONAL_TYPE) {
+
         return parseTypeN(scanner, ll);
     }
         // <type> -> void.

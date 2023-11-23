@@ -10,18 +10,17 @@ int get_token(Scanner *scanner, Token *token){
         int c = fgetc(scanner->file);
         
         if (c == EOF){
-        token->type = TYPE_EOF;
-        return EXIT_SUCCESS;
-        }
-        
-        scanner->line = 0;
-        
+            token->type = TYPE_EOF;
+            return EXIT_SUCCESS;
+        }     
+
         if(isspace(c)){
-            continue;
-        }
-        
-        if(c == '\n'){
-            scanner->line++;
+            if(c == '\n'){
+                token->type = TYPE_EOL;
+                token->line = scanner->line;
+                scanner->line++;
+                return EXIT_SUCCESS;
+            }
             continue;
         }
         
@@ -133,7 +132,7 @@ int get_token(Scanner *scanner, Token *token){
                 exit(INTERNAL_ERROR);
             }
             
-            while((isalnum(c) || c == '_' || c == '?') && c != EOF){
+            while((isalpha(c) || c == '_' || c == '?') && c != EOF){
                 
                 if(counter == size){
                     size *= 2;
@@ -172,7 +171,22 @@ int get_token(Scanner *scanner, Token *token){
                 return LEXICAL_ERROR;
             }
             
-            token->type = TYPE_ID;
+            int c2 = fgetc(scanner->file);
+            
+            while(isspace(c2)){
+                c2 = fgetc(scanner->file);
+            }
+
+            ungetc(c2, scanner->file);
+            
+            if(c2 == '('){
+                token->type = TYPE_IDENTIFIER_FUNC;
+            }
+            
+            else{
+                token->type = TYPE_IDENTIFIER_VAR;
+            }
+
             token->value.id = id;
             token->line = scanner->line;
             return EXIT_SUCCESS;
@@ -221,50 +235,65 @@ int get_token(Scanner *scanner, Token *token){
                             return EXIT_SUCCESS;
                         }
                     }
+                    scanner->line++;
                     
-                    break;
                 }
                 
-                if (c2 == '*'){
+                else if (c2 == '*'){
+                    
+                    int nested = 0;
                     
                     while(true){                   
-                        c2 = fgetc(scanner->file);
-                        
-                        int nested = 0;
+                        c2 = fgetc(scanner->file);          
                         
                         if(c2 == EOF){
-                            printError(scanner->line, "Lexical error: Missing closing comment");
+                            printError(scanner->line, "Lexical error: Missing closing comment ");
                             exit(LEXICAL_ERROR);
                         }
                         
-                        if(c2 == '\n'){
+                        else if(c2 == '\n'){
                             scanner->line++;
                         }
-                        if(c2 == '/'){
+                        
+                        else if(c2 == '/'){
                             c2 = fgetc(scanner->file);
                             
                             if(c2 == EOF){
-                                printError(scanner->line, "Lexical error: Missing closing comment");
+                                printError(scanner->line, "Lexical error: Missing closing comment ");
                                 exit(LEXICAL_ERROR);
                             }
                             
-                            if(c2 == '*'){
-                                nested++;
+                            else if(c2 == '*'){
+                                int c3 = fgetc(scanner->file);
+                                if(c3 == '/'){
+                                    if(nested == 0){
+                                        break;
+                                    }
+                                    else{
+                                        nested--;
+                                    }
+                                }
+                                else{
+                                    nested++;
+                                    ungetc(c3, scanner->file);
+                                }
+                                
                             }
                             
                             else{
                                 ungetc(c2, scanner->file);
                             }
                         }
-                        if(c2 == '*'){
+                        
+                        else if(c2 == '*'){
                             c2 = fgetc(scanner->file);
                             
                             if(c2 == EOF){
-                                printError(scanner->line, "Lexical error: Missing closing comment");
+                                printError(scanner->line, "Lexical error: Missing closing comment ");
                                 exit(LEXICAL_ERROR);
                             }
                             
-                            if(c2 == '/'){
+                            else if(c2 == '/'){
                                 if(nested == 0){
                                     break;
                                 }
@@ -276,18 +305,24 @@ int get_token(Scanner *scanner, Token *token){
                             
                             else{
                                 if(c2 == '\n') {
-                                scanner->line += 1;
+                                scanner->line++;
                                 }
                             }
                         }
+                        
+                        else{
+                            continue;
+                        }
                     }
                 }
-                
+                else {
                 ungetc(c2, scanner->file);
                 token->type = TYPE_DIV;
                 token->line = scanner->line;
                 return EXIT_SUCCESS;
-                
+                }
+                break;
+
             case '<':
                 c2 = fgetc(scanner->file);
                 
@@ -435,7 +470,7 @@ int get_token(Scanner *scanner, Token *token){
                 }
                 
                 while(true){
-                    
+                    c2 = fgetc(scanner->file); 
                     if (counter == size){
                         size *= 2;
                         string = realloc(string, sizeof(char) * size);
@@ -448,12 +483,17 @@ int get_token(Scanner *scanner, Token *token){
                     string[counter] = c2;
                     counter++;
                     
-                    if( c2 < 32 || c2 > 255){
+                    if(c2 < 32 || c2 > 255){
+                        if(token->type == TYPE_MULTILINE_STRING){
+                            continue;
+                        }
+                        else{
                         token->type = TYPE_ERROR;
                         token->line = scanner->line;
                         free(string);
                         printError(scanner->line, "Lexical error: Invalid character in string");
                         return LEXICAL_ERROR;
+                        }
                     }
                     
                     else if( c2 == '\\'){
@@ -485,10 +525,10 @@ int get_token(Scanner *scanner, Token *token){
                             if(c3 == '{'){
                                 int c4 = fgetc(scanner->file);
                                 
-                                if(isalnum(c4)){
+                                if(isxdigit(c4)){
                                     int c5 = fgetc(scanner->file);
                                     
-                                    if(isalnum(c5)){                                     
+                                    if(isxdigit(c5)){                                     
                                         int c6 = fgetc(scanner->file);
                                         
                                         if(c6 == '}'){
@@ -551,6 +591,8 @@ int get_token(Scanner *scanner, Token *token){
                                 int c4 = fgetc(scanner->file);
 
                                 if(c4 == '"'){
+                                    string[counter-1] = '\0';
+                                    token->value.string = string;
                                     token->line = scanner->line;
                                     free(string);
                                     return EXIT_SUCCESS;
@@ -589,9 +631,13 @@ int get_token(Scanner *scanner, Token *token){
                         return LEXICAL_ERROR;
                     }
                     
-                    c2 = fgetc(scanner->file);                  
+                                     
                 }
-                
+            default:
+                token->type = TYPE_ERROR;
+                token->line = scanner->line;
+                printError(scanner->line, "Lexical error: Invalid character");
+                return LEXICAL_ERROR;    
         }       
     }
 }
@@ -682,4 +728,13 @@ int keyword_from_token(Token *token, char *c) {
     }
     
     return EXIT_FAILURE;
+}
+
+int peek_token(Scanner *scanner, Token *token) {
+    long int file_pos = ftell(scanner->file); // Store current file position
+
+    int result = get_token(scanner, token); // Get the next token
+
+    fseek(scanner->file, file_pos, SEEK_SET); // Restore file position
+    return result; // Return the result of get_token
 }
