@@ -1,16 +1,14 @@
-// Compiler to IFJ23 language
-// Faculty of Information Technology Brno University of Technology
-// Authors:
-// Ivan Onufriienko (xonufr00)
-// Oleksii Shelest (xshele02)
-
+/**
+ * @file codegen.h
+ * @author Lukáš Zedek (xzedek03)
+ * @brief Header file for code generator.
+ */
 
 #ifndef H_GENERATOR
 #define H_GENERATOR
 
 #include "scanner.h"
 #include "parser.h"
-
 
 /**
  * @brief Prints info about used lang.
