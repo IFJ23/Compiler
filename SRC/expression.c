@@ -10,18 +10,16 @@
 extern Parser parser;
 
 int prec_table[9][9] = {
-        //+, *, i, $, R, (, ), !, ??
-        {R, S, S, R, R,  S, R, S, R}, // +
-        {R, R, S, R, R,  S, R, S, R}, // *
-        {R, R, F, R, R,  F, R, R, R}, // i
-        {S, S, S, O, S,  S, F, S, S}, // $
-        {S, S, S, R, F,  S, R, S, R}, // Relational Operators
-
-        {S, S, S, F, S,  S, E, F, S}, // (
-        {R, R, F, R, R,  F, R, R, R},  // )
-        {R, R,  F, R,R, F, R, F, R},  // !,
-        {S, S,  S, R,S, S, R, S, S}  // ??,
-
+   //+, *, i, $, <=, (, ), !, ??
+    {R, S, S, R,  R, S, R, S, R}, // +
+    {R, R, S, R,  R, S, R, S, R}, // *
+    {R, R, F, R,  R, F, R, R, R}, // i
+    {S, S, S, O,  S, S, F, S, S}, // $
+    {S, S, S, R,  F, S, R, S, R}, // <=
+    {S, S, S, F,  S, S, E, F, S}, // (
+    {R, R, F, R,  R, F, R, R, R}, // )
+    {R, R, F, R,  R, F, R, F, R}, // !,
+    {S, S, S, R,  S, S, R, S, S}  // ??,
 };
 
 Token topmostTerminal()
