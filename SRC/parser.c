@@ -505,8 +505,6 @@ int parseParamsDefN(Scanner *scanner, LinkedList *ll) {
         CHECKRULE(parseTypeN(scanner, ll))
     }
 
-    printf("THE TOKEN I HAVE SAVED, %s \n", variable.value.string);
-
     ll->head->name = variable.value.string;
 
     stackPush(parser.undefStack, variable);
@@ -578,7 +576,6 @@ int parseFunctionDef(Scanner *scanner) {
         return SYNTAX_ERROR;
     }
     parser.currFunc = parser.currToken.value.string;
-    printf("We are taking string, %s \n", parser.currToken.value.string);
 
     if (symtableFind(parser.symtable, parser.currToken.value.string) != NULL) {
         printError(LINENUM, "Redefinition of function.");
@@ -636,7 +633,6 @@ int parseFunctionDef(Scanner *scanner) {
     CHECKRULE(parsePeBody(scanner))
 
     genFuncDef2(func.value.string);
-    printf("WHAT THE TOKEN IS HERE? %d %d \n", parser.currToken.type, parser.currToken.value.integer);
     if (parser.currToken.type != TYPE_RIGHT_CURLY_BRACKET) {
         printError(LINENUM, "The body of function has to be wrapped by braces (closing).");
         return SYNTAX_ERROR;
@@ -652,7 +648,6 @@ int parseMainBody(Scanner *scanner) {
     int err = 0;
     // <body_main> -> <func_def> <body_main>
     if (parser.currToken.type == TYPE_KW && parser.currToken.value.kw == KW_FUNC) {
-        printf("kw_func is here");
         CHECKRULE(parseFunctionDef(scanner))
     }
         // <body_main> -> ε

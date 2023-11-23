@@ -108,7 +108,6 @@ int reduceMultiply()
     stackPop(parser.stack, &t);
     if (t.type != SHIFT_SYMBOL)
     {
-        printf("ERROR IS HERE \n");
         printError(0, "Reduction of expression failed.");
         return SYNTAX_ERROR;
     }
