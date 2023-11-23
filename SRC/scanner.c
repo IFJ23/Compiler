@@ -14,16 +14,14 @@ int get_token(Scanner *scanner, Token *token){
         return EXIT_SUCCESS;
         }
         
-        scanner->line = 0;
-        
+        if(c == '\n'){
+            scanner->line++;
+        }
+
         if(isspace(c)){
             continue;
         }
         
-        if(c == '\n'){
-            scanner->line++;
-            continue;
-        }
         
         if(isdigit(c)){ 
             int counter,exponent,dot,sign;
@@ -234,7 +232,7 @@ int get_token(Scanner *scanner, Token *token){
                             return EXIT_SUCCESS;
                         }
                     }
-                    
+                    scanner->line++;
                     break;
                 }
                 
@@ -304,7 +302,7 @@ int get_token(Scanner *scanner, Token *token){
                             
                             else{
                                 if(c2 == '\n') {
-                                scanner->line += 1;
+                                scanner->line++;
                                 }
                             }
                         }
@@ -590,6 +588,8 @@ int get_token(Scanner *scanner, Token *token){
                                 int c4 = fgetc(scanner->file);
 
                                 if(c4 == '"'){
+                                    string[counter-1] = '\0';
+                                    token->value.string = string;
                                     token->line = scanner->line;
                                     free(string);
                                     return EXIT_SUCCESS;
