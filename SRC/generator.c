@@ -690,18 +690,9 @@ void genFuncDef1(char *funcname, int parCount, LinkedList ll)
     ListNode *tmp = ll.head;
     for (size_t i = parCount; i > 0; i--)
     {
-        if (tmp->name == NULL)
-        {
-            printf("DEFVAR TF@nil\n");
-            printf("POPS TF@nil\n");
-            tmp = tmp->next;
-        }
-        else
-        {
-            printf("DEFVAR TF@%s\n", tmp->name);
-            printf("POPS TF@%s\n", tmp->name);
-            tmp = tmp->next;
-        }
+        printf("DEFVAR TF@%s\n", tmp->name);
+        printf("POPS TF@%s\n", tmp->name);
+        tmp = tmp->next;
     }
     tmp = ll.head;
     for (size_t i = parCount; i > 0; i--)
@@ -719,23 +710,11 @@ void genFuncDef1(char *funcname, int parCount, LinkedList ll)
         {
             matchingType = "string";
         }
-
-        if (tmp->name == NULL)
-        {
-            printf("DEFVAR TF@nil\n");
-            printf("MOVE GF@$$corrtype$$2 string@%s\n", matchingType);
-            printf("MOVE GF@$$corrtype$$opt int@%d\n", tmp->opt);
-            printf("CALL $$corrtype$$func\n");
-            tmp = tmp->next;
-        }
-        else
-        {
-            printf("TYPE GF@$$corrtype$$1 TF@%s\n", tmp->name);
-            printf("MOVE GF@$$corrtype$$2 string@%s\n", matchingType);
-            printf("MOVE GF@$$corrtype$$opt int@%d\n", tmp->opt);
-            printf("CALL $$corrtype$$func\n");
-            tmp = tmp->next;
-        }
+        printf("TYPE GF@$$corrtype$$1 TF@%s\n", tmp->name);
+        printf("MOVE GF@$$corrtype$$2 string@%s\n", matchingType);
+        printf("MOVE GF@$$corrtype$$opt int@%d\n", tmp->opt);
+        printf("CALL $$corrtype$$func\n");
+        tmp = tmp->next;
     }
     printf("PUSHFRAME\n");
 }
