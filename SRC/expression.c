@@ -54,7 +54,7 @@ int reduceI()
 
     Token t;
     stackPop(parser.stack, &t);
-    if (t.type != TOKEN_IDENTIFIER_VAR)
+    if (t.type != TYPE_IDENTIFIER_VAR)
         genStackPush(t);
     else
     {
@@ -85,7 +85,7 @@ int reducePlus()
     stackPop(parser.stack, &t);
     if (t.type != SHIFT_SYMBOL)
     {
-        printError(0, "Reduction of expression failed.");
+        printError(0, "Reduction of expression failed.1");
         return SYNTAX_ERROR;
     }
 
@@ -105,7 +105,7 @@ int reduceMultiply()
     stackPop(parser.stack, &t);
     if (t.type != SHIFT_SYMBOL)
     {
-        printError(0, "Reduction of expression failed.");
+        printError(0, "Reduction of expression failed.2");
         return SYNTAX_ERROR;
     }
 
@@ -126,7 +126,7 @@ int reduceRelation()
     stackPop(parser.stack, &t);
     if (t.type != SHIFT_SYMBOL)
     {
-        printError(0, "Reduction of expression failed.");
+        printError(0, "Reduction of expression failed.3");
         return SYNTAX_ERROR;
     }
 
@@ -145,7 +145,7 @@ int reduceBracket()
     stackPop(parser.stack, &t);
     if (t.type != SHIFT_SYMBOL)
     {
-        printError(0, "Reduction of expression failed.");
+        printError(0, "Reduction of expression failed.4");
         return SYNTAX_ERROR;
     }
 
@@ -165,7 +165,7 @@ int reduceNotNil()
     stackPop(parser.stack, &t);
     if (t.type != SHIFT_SYMBOL)
     {
-        printError(0, "Reduction of expression failed.");
+        printError(0, "Reduction of expression failed.5");
         return SYNTAX_ERROR;
     }
 
@@ -184,7 +184,7 @@ int reduceVarOrNil()
     stackPop(parser.stack, &t);
     if (t.type != SHIFT_SYMBOL)
     {
-        printError(0, "Reduction of expression failed.");
+        printError(0, "Reduction of expression failed.6");
         return SYNTAX_ERROR;
     }
 
