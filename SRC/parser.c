@@ -7,7 +7,8 @@
 
 Parser parser;
 
-int parserInit() {
+int parserInit()
+{
     Stack *s = malloc(sizeof(Stack));
     if (s == NULL)
         return INTERNAL_ERROR;
@@ -31,14 +32,15 @@ int parserInit() {
     parser.currFunc = "main";
 
     genPrintHead();
-    genConvertBool();
+    // genConvertBool();
     genCheckTruth();
     genMathInstCheck();
 
     return 0;
 }
 
-void parserDestroy() {
+void parserDestroy()
+{
     symtableFree(parser.symtable);
     symtableFree(parser.localSymtable);
     stackFree(parser.stack);
@@ -46,17 +48,17 @@ void parserDestroy() {
     free(parser.stack);
 }
 
-
 int parseBody(Scanner *scanner);
 
-
-int parsePeBody(Scanner *scanner) {
+int parsePeBody(Scanner *scanner)
+{
     int err = 0;
 
     if (parser.currToken.type == TYPE_RIGHT_CURLY_BRACKET)
         return 0;
 
-    else {
+    else
+    {
         CHECKRULE(parseBody(scanner))
         GETTOKEN(scanner, &parser.currToken)
 
@@ -66,12 +68,14 @@ int parsePeBody(Scanner *scanner) {
     return err;
 }
 
-int parseWhile(Scanner *scanner) {
+int parseWhile(Scanner *scanner)
+{
     int err = 0;
     static int whileCnt = 0;
     GETTOKEN(scanner, &parser.currToken)
 
-    if (parser.currToken.type != TYPE_LEFT_BRACKET) {
+    if (parser.currToken.type != TYPE_LEFT_BRACKET)
+    {
         printError(LINENUM, "While condition has to be wrapped by brackets.");
         return SYNTAX_ERROR;
     }
@@ -84,8 +88,8 @@ int parseWhile(Scanner *scanner) {
 
     genWhileLoop2(currWhile);
 
-
-    if (parser.currToken.type != TYPE_LEFT_CURLY_BRACKET) {
+    if (parser.currToken.type != TYPE_LEFT_CURLY_BRACKET)
+    {
         printError(LINENUM, "The body of while has to be wrapped by braces (opening).");
         return SYNTAX_ERROR;
     }
@@ -98,7 +102,8 @@ int parseWhile(Scanner *scanner) {
 
     parser.condDec = false;
 
-    if (parser.currToken.type != TYPE_RIGHT_CURLY_BRACKET) {
+    if (parser.currToken.type != TYPE_RIGHT_CURLY_BRACKET)
+    {
         printError(LINENUM, "The body of while has to be wrapped by braces (closing).");
         return SYNTAX_ERROR;
     }
@@ -108,12 +113,14 @@ int parseWhile(Scanner *scanner) {
     return err;
 }
 
-int parseIf(Scanner *scanner) {
+int parseIf(Scanner *scanner)
+{
     int err = 0;
     static int ifCnt = 0;
     GETTOKEN(scanner, &parser.currToken)
 
-    if (parser.currToken.type != TYPE_LEFT_BRACKET) {
+    if (parser.currToken.type != TYPE_LEFT_BRACKET)
+    {
         printError(LINENUM, "If condition has to be wrapped by brackets.");
         return SYNTAX_ERROR;
     }
@@ -127,8 +134,8 @@ int parseIf(Scanner *scanner) {
     int currentCnt = ifCnt;
     genIfElse1(currentCnt);
 
-
-    if (parser.currToken.type != TYPE_LEFT_CURLY_BRACKET) {
+    if (parser.currToken.type != TYPE_LEFT_CURLY_BRACKET)
+    {
         printError(LINENUM, "The body of if has to be wrapped by braces (opening).");
         return SYNTAX_ERROR;
     }
@@ -141,14 +148,16 @@ int parseIf(Scanner *scanner) {
 
     parser.condDec = false;
 
-    if (parser.currToken.type != TYPE_RIGHT_CURLY_BRACKET) {
+    if (parser.currToken.type != TYPE_RIGHT_CURLY_BRACKET)
+    {
         printError(LINENUM, "The body of if has to be wrapped by braces (closing).");
         return SYNTAX_ERROR;
     }
 
     GETTOKEN(scanner, &parser.currToken)
 
-    if (parser.currToken.type != TYPE_KW || parser.currToken.value.kw != KW_ELSE) {
+    if (parser.currToken.type != TYPE_KW || parser.currToken.value.kw != KW_ELSE)
+    {
         printError(LINENUM, "If has to have else clause.");
         return SYNTAX_ERROR;
     }
@@ -157,7 +166,8 @@ int parseIf(Scanner *scanner) {
 
     GETTOKEN(scanner, &parser.currToken)
 
-    if (parser.currToken.type != TYPE_LEFT_CURLY_BRACKET) {
+    if (parser.currToken.type != TYPE_LEFT_CURLY_BRACKET)
+    {
         printError(LINENUM, "The body of else has to be wrapped by braces (opening).");
         return SYNTAX_ERROR;
     }
@@ -173,7 +183,8 @@ int parseIf(Scanner *scanner) {
 
     parser.condDec = false;
 
-    if (parser.currToken.type != TYPE_RIGHT_CURLY_BRACKET) {
+    if (parser.currToken.type != TYPE_RIGHT_CURLY_BRACKET)
+    {
         printError(LINENUM, "The body of else has to be wrapped by braces (closing).");
         return SYNTAX_ERROR;
     }
@@ -183,22 +194,28 @@ int parseIf(Scanner *scanner) {
     return err;
 }
 
-int parseReturn(Scanner *scanner) {
+int parseReturn(Scanner *scanner)
+{
     int err = 0;
     GETTOKEN(scanner, &parser.currToken)
 
     Keyword returning = KW_NIL;
-    if (strcmp(parser.currFunc, "main") != 0) {
+    if (strcmp(parser.currFunc, "main") != 0)
+    {
         SymtablePair *func = symtableFind(parser.symtable, parser.currFunc);
         if (func->data.parameters.itemCount != -1)
             returning = func->data.parameters.last->type;
     }
 
-    if ((!parser.outsideBody || (parser.outsideBody && returning != KW_NIL)) ) {
+    if ((!parser.outsideBody || (parser.outsideBody && returning != KW_NIL)))
+    {
         CHECKRULE(parseExpression(scanner, false))
         genReturn(parser.currFunc, true);
-    } else {
-        if (( parser.outsideBody) || (returning == KW_VOID )) {
+    }
+    else
+    {
+        if ((parser.outsideBody) || (returning == KW_VOID))
+        {
             printError(LINENUM,
                        "Current function doesn't have a return value");
             return SYNTAX_ERROR;
@@ -209,46 +226,53 @@ int parseReturn(Scanner *scanner) {
     return err;
 }
 
-int parseParamsCallN(Scanner *scanner, int *pc) {
+int parseParamsCallN(Scanner *scanner, int *pc)
+{
     int err = 0;
-    switch (parser.currToken.type) {
-        case TYPE_STRING:
-        case TYPE_INT:
-        case TYPE_DOUBLE:
+    switch (parser.currToken.type)
+    {
+    case TYPE_STRING:
+    case TYPE_INT:
+    case TYPE_DOUBLE:
+        genStackPush(parser.currToken);
+        ++(*pc);
+        break;
+
+    case TYPE_IDENTIFIER_VAR:
+        if (symtableFind(parser.outsideBody ? parser.localSymtable : parser.symtable,
+                         parser.currToken.value.string) == NULL)
+        {
+            printError(LINENUM, "Passing an undefined variable to a function.");
+            return SEMANTIC_UNDEFINED_ERROR;
+        }
+        printf("PUSHS LF@%s\n", parser.currToken.value.string);
+        ++(*pc);
+        break;
+
+    case TYPE_KW:
+        if (parser.currToken.value.kw == KW_NIL)
+        {
             genStackPush(parser.currToken);
             ++(*pc);
             break;
-
-        case TYPE_IDENTIFIER_VAR:
-            if (symtableFind(parser.outsideBody ? parser.localSymtable : parser.symtable,
-                             parser.currToken.value.string) == NULL) {
-                printError(LINENUM, "Passing an undefined variable to a function.");
-                return SEMANTIC_UNDEFINED_ERROR;
-            }
-            printf("PUSHS LF@%s\n", parser.currToken.value.string);
-            ++(*pc);
-            break;
-
-        case TYPE_KW:
-            if (parser.currToken.value.kw == KW_NIL) {
-                genStackPush(parser.currToken);
-                ++(*pc);
-                break;
-            } else {
-                printError(LINENUM, "Function can only be called with a variable or a literal.");
-                return SYNTAX_ERROR;
-                break;
-            }
-
-        default:
+        }
+        else
+        {
             printError(LINENUM, "Function can only be called with a variable or a literal.");
             return SYNTAX_ERROR;
             break;
+        }
+
+    default:
+        printError(LINENUM, "Function can only be called with a variable or a literal.");
+        return SYNTAX_ERROR;
+        break;
     }
 
     GETTOKEN(scanner, &parser.currToken)
 
-    if (parser.currToken.type == TYPE_COMMA) {
+    if (parser.currToken.type == TYPE_COMMA)
+    {
         GETTOKEN(scanner, &parser.currToken)
 
         return parseParamsCallN(scanner, pc);
@@ -257,26 +281,30 @@ int parseParamsCallN(Scanner *scanner, int *pc) {
         return err;
 }
 
-int parseParamsCall(Scanner *scanner, int *pc) {
+int parseParamsCall(Scanner *scanner, int *pc)
+{
     if (parser.currToken.type == TYPE_RIGHT_BRACKET)
         return 0;
     else
         return parseParamsCallN(scanner, pc);
 }
 
-int parseFunctionCall(Scanner *scanner) {
+int parseFunctionCall(Scanner *scanner)
+{
     int err = 0;
 
     SymtablePair *foundFunction = symtableFind(parser.symtable, parser.currToken.value.string);
 
-    if (foundFunction == NULL) {
+    if (foundFunction == NULL)
+    {
         printError(LINENUM, "Calling an undefined function.");
         return SEMANTIC_DEFINITION_ERROR;
     }
 
     GETTOKEN(scanner, &parser.currToken)
 
-    if (parser.currToken.type != TYPE_LEFT_BRACKET) {
+    if (parser.currToken.type != TYPE_LEFT_BRACKET)
+    {
         printError(LINENUM, "Function's parameters have to be in a bracket (opening).");
         return SYNTAX_ERROR;
     }
@@ -287,45 +315,53 @@ int parseFunctionCall(Scanner *scanner) {
 
     CHECKRULE(parseParamsCall(scanner, &parametersRealCount))
 
-    if (!parser.outsideBody) {
-        if ((parametersRealCount != foundFunction->data.paramsCnt) && foundFunction->data.paramsCnt != -1) {
+    if (!parser.outsideBody)
+    {
+        if ((parametersRealCount != foundFunction->data.paramsCnt) && foundFunction->data.paramsCnt != -1)
+        {
             printError(LINENUM, "Wrong number of parameters passed");
             return SEMANTIC_TYPE_ERROR;
         }
     }
 
-    if (parser.currToken.type != TYPE_RIGHT_BRACKET) {
+    if (parser.currToken.type != TYPE_RIGHT_BRACKET)
+    {
         printError(LINENUM, "Function's parameters have to be in a bracket (closing).");
         return SYNTAX_ERROR;
     }
 
     GETTOKEN(scanner, &parser.currToken)
 
-
     ListNode *rv;
-    if (foundFunction->data.parameters.itemCount == -1) {
+    if (foundFunction->data.parameters.itemCount == -1)
+    {
         rv = NULL;
-    } else {
+    }
+    else
+    {
         rv = foundFunction->data.parameters.last;
     }
-    genFuncCall((char *) foundFunction->key, parametersRealCount, rv);
+    genFuncCall((char *)foundFunction->key, parametersRealCount, rv);
 
     return err;
 }
 
-int parseAssign(Scanner *scanner, Token variable) {
+int parseAssign(Scanner *scanner, Token variable)
+{
     int err = 0;
     GETTOKEN(scanner, &parser.currToken)
 
-
-    if (parser.currToken.type == TYPE_IDENTIFIER_FUNC) {
+    if (parser.currToken.type == TYPE_IDENTIFIER_FUNC)
+    {
         CHECKRULE(parseFunctionCall(scanner))
     }
-    else {
+    else
+    {
         CHECKRULE(parseExpression(scanner, false))
     }
 
-    if (parser.condDec) {
+    if (parser.condDec)
+    {
         stackPush(parser.undefStack, variable);
     }
     genAssignVariable(variable);
@@ -333,29 +369,34 @@ int parseAssign(Scanner *scanner, Token variable) {
     return err;
 }
 
-int parseTypeP(LinkedList *ll) {
-    if (parser.currToken.type != TYPE_KW) {
+int parseTypeP(LinkedList *ll)
+{
+    if (parser.currToken.type != TYPE_KW)
+    {
         printError(LINENUM, "Expected variable type.");
         return SYNTAX_ERROR;
     }
 
-    switch (parser.currToken.value.kw) {
-        case KW_STRING:
-        case KW_INT:
-        case KW_DOUBLE:
-            if (ll != NULL) {
-                listInsert(ll, parser.currToken.value.kw);
-                ll->head->opt = false;
-            }
-            return 0;
+    switch (parser.currToken.value.kw)
+    {
+    case KW_STRING:
+    case KW_INT:
+    case KW_DOUBLE:
+        if (ll != NULL)
+        {
+            listInsert(ll, parser.currToken.value.kw);
+            ll->head->opt = false;
+        }
+        return 0;
 
-        default:
-            printError(LINENUM, "Expected variable type.");
-            return SYNTAX_ERROR;
+    default:
+        printError(LINENUM, "Expected variable type.");
+        return SYNTAX_ERROR;
     }
 }
 
-int parseTypeN(Scanner *scanner, LinkedList *ll) {
+int parseTypeN(Scanner *scanner, LinkedList *ll)
+{
     int err = 0;
     GETTOKEN(scanner, &parser.currToken)
 
@@ -364,119 +405,137 @@ int parseTypeN(Scanner *scanner, LinkedList *ll) {
     return err;
 }
 
-int parseBody(Scanner *scanner) {
+int parseBody(Scanner *scanner)
+{
     int err = 0;
 
     if (parser.currToken.type == TYPE_KW)
-        switch (parser.currToken.value.kw) {
-            case KW_IF:
-                CHECKRULE(parseIf(scanner))
-                break;
+        switch (parser.currToken.value.kw)
+        {
+        case KW_IF:
+            CHECKRULE(parseIf(scanner))
+            break;
 
-            case KW_WHILE:
-                CHECKRULE(parseWhile(scanner))
-                break;
+        case KW_WHILE:
+            CHECKRULE(parseWhile(scanner))
+            break;
 
-            case KW_RETURN:
-                CHECKRULE(parseReturn(scanner))
+        case KW_RETURN:
+            CHECKRULE(parseReturn(scanner))
 
-                break;
-            case KW_VAR:
-            case KW_LET:
+            break;
+        case KW_VAR:
+        case KW_LET:
 
-                GETTOKEN(scanner, &parser.currToken)
+            GETTOKEN(scanner, &parser.currToken)
 
-                if (parser.currToken.type == TYPE_IDENTIFIER_VAR) {
+            if (parser.currToken.type == TYPE_IDENTIFIER_VAR)
+            {
 
-                    Token variable = parser.currToken;
+                Token variable = parser.currToken;
+
+                if (peek_token(scanner, &parser.currToken) != 0)
+                    return LEXICAL_ERROR;
+
+                if (parser.currToken.type == TYPE_COLON)
+                {
+
+                    GETTOKEN(scanner, &parser.currToken)
+
+                    GETTOKEN(scanner, &parser.currToken)
+
+                    LinkedList ll;
+                    listInit(&ll);
+
+                    CHECKRULE(parseTypeP(&ll))
 
                     if (peek_token(scanner, &parser.currToken) != 0)
                         return LEXICAL_ERROR;
+                }
+                if (parser.currToken.type == TYPE_ASSIGN)
+                {
 
-                    if (parser.currToken.type == TYPE_COLON) {
-
-                        GETTOKEN(scanner, &parser.currToken)
-
-                        GETTOKEN(scanner, &parser.currToken)
-
-                        LinkedList ll;
-                        listInit(&ll);
-
-                        CHECKRULE(parseTypeP(&ll))
-
-                        if (peek_token(scanner, &parser.currToken) != 0)
-                            return LEXICAL_ERROR;
-
+                    SymtablePair *alrDefined = symtableFind(
+                        parser.outsideBody ? parser.localSymtable : parser.symtable, variable.value.string);
+                    if (alrDefined == NULL)
+                    {
+                        genDefineVariable(variable);
                     }
-                    if (parser.currToken.type == TYPE_ASSIGN) {
-
-                        SymtablePair *alrDefined = symtableFind(
-                                parser.outsideBody ? parser.localSymtable : parser.symtable, variable.value.string);
-                        if (alrDefined == NULL) {
-                            genDefineVariable(variable);
-                        }
-                        GETTOKEN(scanner, &parser.currToken)
-                        CHECKRULE(parseAssign(scanner, variable))
-                        LinkedList empty = {.itemCount = 0};
-                        if (alrDefined == NULL || alrDefined->data.possiblyUndefined) {
-                            symtableAdd(parser.outsideBody ? parser.localSymtable : parser.symtable,
-                                        variable.value.string, VAR, -1, parser.condDec, empty);
-                        }
-                    }
-                    else {
-                        CHECKRULE(parseExpression(scanner, false))
+                    GETTOKEN(scanner, &parser.currToken)
+                    CHECKRULE(parseAssign(scanner, variable))
+                    LinkedList empty = {.itemCount = 0};
+                    if (alrDefined == NULL || alrDefined->data.possiblyUndefined)
+                    {
+                        symtableAdd(parser.outsideBody ? parser.localSymtable : parser.symtable,
+                                    variable.value.string, VAR, -1, parser.condDec, empty);
                     }
                 }
+                else
+                {
+                    CHECKRULE(parseExpression(scanner, false))
+                }
+            }
 
-                break;
+            break;
 
-            case KW_NIL:
-                CHECKRULE(parseExpression(scanner, false))
+        case KW_NIL:
+            CHECKRULE(parseExpression(scanner, false))
 
-                break;
+            break;
 
-            default:
-                printError(LINENUM, "Unexpected keyword found.");
-                return SYNTAX_ERROR;
-                break;
+        default:
+            printError(LINENUM, "Unexpected keyword found.");
+            return SYNTAX_ERROR;
+            break;
         }
-    else if (parser.currToken.type == TYPE_IDENTIFIER_FUNC) {
+    else if (parser.currToken.type == TYPE_IDENTIFIER_FUNC)
+    {
         CHECKRULE(parseFunctionCall(scanner))
-
-    } else if (parser.currToken.type == TYPE_RETURN_ARROW) {
+    }
+    else if (parser.currToken.type == TYPE_RETURN_ARROW)
+    {
         return SYNTAX_ERROR;
-    } else if (parser.currToken.type == TYPE_EOL) {
+    }
+    else if (parser.currToken.type == TYPE_EOL)
+    {
         return 0;
-    } else {
+    }
+    else
+    {
         CHECKRULE(parseExpression(scanner, false))
-
     }
 
     return err;
 }
 
-int parseParamsDefN(Scanner *scanner, LinkedList *ll) {
+int parseParamsDefN(Scanner *scanner, LinkedList *ll)
+{
     int err = 0;
 
     Token variable = parser.currToken;
 
-    if (parser.currToken.type != TYPE_IDENTIFIER_VAR) {
+    if (parser.currToken.type != TYPE_IDENTIFIER_VAR)
+    {
         printError(LINENUM, "Type has to be followed by a variable.");
         return SYNTAX_ERROR;
     }
 
     GETTOKEN(scanner, &parser.currToken)
 
-    if (parser.currToken.type != TYPE_COLON) {
+    if (parser.currToken.type != TYPE_COLON)
+    {
         printError(LINENUM, "Expected ':' after variable name.");
         return SYNTAX_ERROR;
     }
 
     GETTOKEN(scanner, &parser.currToken)
 
-    if (parser.currToken.type != TYPE_OPTIONAL_TYPE) {
+    if (parser.currToken.type != TYPE_OPTIONAL_TYPE)
+    {
         CHECKRULE(parseTypeP(ll))
-    } else {
+    }
+    else
+    {
         CHECKRULE(parseTypeN(scanner, ll))
     }
 
@@ -489,7 +548,8 @@ int parseParamsDefN(Scanner *scanner, LinkedList *ll) {
 
     GETTOKEN(scanner, &parser.currToken)
 
-    if (parser.currToken.type == TYPE_COMMA) {
+    if (parser.currToken.type == TYPE_COMMA)
+    {
         GETTOKEN(scanner, &parser.currToken)
 
         return parseParamsDefN(scanner, ll);
@@ -498,18 +558,22 @@ int parseParamsDefN(Scanner *scanner, LinkedList *ll) {
         return err;
 }
 
-int parseParamsDef(Scanner *scanner, LinkedList *ll) {
+int parseParamsDef(Scanner *scanner, LinkedList *ll)
+{
     if (parser.currToken.type == TYPE_RIGHT_BRACKET)
         return 0;
     else
         return parseParamsDefN(scanner, ll);
 }
 
-int parseType(Scanner *scanner, LinkedList *ll) {
-    if (parser.currToken.type == TYPE_OPTIONAL_TYPE) {
+int parseType(Scanner *scanner, LinkedList *ll)
+{
+    if (parser.currToken.type == TYPE_OPTIONAL_TYPE)
+    {
         return parseTypeN(scanner, ll);
     }
-    else if (parser.currToken.type == TYPE_KW && parser.currToken.value.kw == KW_VOID) {
+    else if (parser.currToken.type == TYPE_KW && parser.currToken.value.kw == KW_VOID)
+    {
         listInsert(ll, parser.currToken.value.kw);
         return 0;
     }
@@ -517,11 +581,14 @@ int parseType(Scanner *scanner, LinkedList *ll) {
     return parseTypeP(ll);
 }
 
-int findDuplicateParams() {
+int findDuplicateParams()
+{
     StackItem *curr = parser.undefStack->head;
-    while (curr != NULL) {
+    while (curr != NULL)
+    {
         StackItem *next = curr->next;
-        while (next != NULL) {
+        while (next != NULL)
+        {
             if (strcmp(next->t.value.string, curr->t.value.string) == 0)
                 return 1;
             next = next->next;
@@ -531,20 +598,23 @@ int findDuplicateParams() {
     return 0;
 }
 
-int parseFunctionDef(Scanner *scanner) {
+int parseFunctionDef(Scanner *scanner)
+{
     int err = 0;
     stackFree(parser.undefStack);
     parser.outsideBody = true;
 
     GETTOKEN(scanner, &parser.currToken)
 
-    if (parser.currToken.type != TYPE_IDENTIFIER_FUNC) {
+    if (parser.currToken.type != TYPE_IDENTIFIER_FUNC)
+    {
         printError(LINENUM, "Keyword function has to be followed by function identifier.");
         return SYNTAX_ERROR;
     }
     parser.currFunc = parser.currToken.value.string;
 
-    if (symtableFind(parser.symtable, parser.currToken.value.string) != NULL) {
+    if (symtableFind(parser.symtable, parser.currToken.value.string) != NULL)
+    {
         printError(LINENUM, "Redefinition of function.");
         return SEMANTIC_DEFINITION_ERROR;
     }
@@ -553,7 +623,8 @@ int parseFunctionDef(Scanner *scanner) {
 
     GETTOKEN(scanner, &parser.currToken)
 
-    if (parser.currToken.type != TYPE_LEFT_BRACKET) {
+    if (parser.currToken.type != TYPE_LEFT_BRACKET)
+    {
         printError(LINENUM, "Function definition has to have (empty) set of params.");
         return SYNTAX_ERROR;
     }
@@ -564,14 +635,16 @@ int parseFunctionDef(Scanner *scanner) {
 
     CHECKRULE(parseParamsDef(scanner, &ll))
 
-    if (parser.currToken.type != TYPE_RIGHT_BRACKET) {
+    if (parser.currToken.type != TYPE_RIGHT_BRACKET)
+    {
         printError(LINENUM, "Function definition has to have (empty) set of params.");
         return SYNTAX_ERROR;
     }
 
     GETTOKEN(scanner, &parser.currToken)
 
-    if (parser.currToken.type != TYPE_RETURN_ARROW) {
+    if (parser.currToken.type != TYPE_RETURN_ARROW)
+    {
         printError(LINENUM, "Incorrect function definition syntax, missing colon.");
         return SYNTAX_ERROR;
     }
@@ -582,14 +655,16 @@ int parseFunctionDef(Scanner *scanner) {
 
     GETTOKEN(scanner, &parser.currToken)
 
-    if (parser.currToken.type != TYPE_LEFT_CURLY_BRACKET) {
+    if (parser.currToken.type != TYPE_LEFT_CURLY_BRACKET)
+    {
         printError(LINENUM, "The body of function has to be wrapped by braces (opening).");
         return SYNTAX_ERROR;
     }
 
     symtableAdd(parser.symtable, func.value.string, FUNC, ll.itemCount - 1, parser.condDec, ll);
 
-    if (findDuplicateParams() != 0) {
+    if (findDuplicateParams() != 0)
+    {
         return SEMANTIC_TYPE_ERROR;
     }
 
@@ -600,7 +675,8 @@ int parseFunctionDef(Scanner *scanner) {
     CHECKRULE(parsePeBody(scanner))
 
     genFuncDef2(func.value.string);
-    if (parser.currToken.type != TYPE_RIGHT_CURLY_BRACKET) {
+    if (parser.currToken.type != TYPE_RIGHT_CURLY_BRACKET)
+    {
         printError(LINENUM, "The body of function has to be wrapped by braces (closing).");
         return SYNTAX_ERROR;
     }
@@ -611,9 +687,11 @@ int parseFunctionDef(Scanner *scanner) {
     return err;
 }
 
-int parseMainBody(Scanner *scanner) {
+int parseMainBody(Scanner *scanner)
+{
     int err = 0;
-    if (parser.currToken.type == TYPE_KW && parser.currToken.value.kw == KW_FUNC) {
+    if (parser.currToken.type == TYPE_KW && parser.currToken.value.kw == KW_FUNC)
+    {
         CHECKRULE(parseFunctionDef(scanner))
     }
     else if (parser.currToken.type == TYPE_EOF)
@@ -627,13 +705,16 @@ int parseMainBody(Scanner *scanner) {
     return err;
 }
 
-int parseProgramEnd(Scanner *scanner) {
-    if (parser.currToken.type == TYPE_MORE) {
+int parseProgramEnd(Scanner *scanner)
+{
+    if (parser.currToken.type == TYPE_MORE)
+    {
         GETTOKEN(scanner, &parser.currToken)
 
         if (parser.currToken.type == TYPE_EOF)
             return 0;
-        else {
+        else
+        {
             printError(LINENUM, "Closing tag can only be followed by EOL.");
             return SYNTAX_ERROR;
         }
@@ -644,14 +725,16 @@ int parseProgramEnd(Scanner *scanner) {
         return SYNTAX_ERROR;
 }
 
-int parseProgram(Scanner *scanner) {
+int parseProgram(Scanner *scanner)
+{
     int err = 0;
     CHECKRULE(parseMainBody(scanner))
     CHECKRULE(parseProgramEnd(scanner))
     return err;
 }
 
-int parse(Scanner *scanner) {
+int parse(Scanner *scanner)
+{
     LinkedList empty = {.itemCount = -1};
     symtableAdd(parser.symtable, "readString", FUNC, 0, false, empty);
     symtableAdd(parser.symtable, "readInt", FUNC, 0, false, empty);
