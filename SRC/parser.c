@@ -346,6 +346,9 @@ int parseTypeP(LinkedList *ll) {
         case KW_STRING:
         case KW_INT:
         case KW_DOUBLE:
+        case KW_UNDEFINED_DOUBLE:
+        case KW_UNDEFINED_INT:
+        case KW_UNDEFINED_STRING:
             if (ll != NULL) {
                 listInsert(ll, parser.currToken.value.kw);
                 ll->head->opt = false;

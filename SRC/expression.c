@@ -16,7 +16,6 @@ int prec_table[9][9] = {
         {R, R, F, R, R,  F, R, R, R}, // i
         {S, S, S, O, S,  S, F, S, S}, // $
         {S, S, S, R, F,  S, R, S, R}, // Relational Operators
-
         {S, S, S, F, S,  S, E, F, S}, // (
         {R, R, F, R, R,  F, R, R, R},  // )
         {R, R,  F, R,R, F, R, F, R},  // !,
