@@ -55,7 +55,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/home/dell/Compiler/cmake-build-debug"
+			"value" : "/home/dell/Desktop/newComp/Compiler/cmake-build-debug"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -415,7 +415,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/home/dell/Compiler/cmake-build-debug/CMakeFiles/pkgRedirects"
+			"value" : "/home/dell/Desktop/newComp/Compiler/cmake-build-debug/CMakeFiles/pkgRedirects"
 		},
 		{
 			"name" : "CMAKE_GENERATOR",
@@ -475,7 +475,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/home/dell/Compiler"
+			"value" : "/home/dell/Desktop/newComp/Compiler"
 		},
 		{
 			"name" : "CMAKE_INSTALL_PREFIX",
@@ -1007,7 +1007,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/home/dell/Compiler/cmake-build-debug"
+			"value" : "/home/dell/Desktop/newComp/Compiler/cmake-build-debug"
 		},
 		{
 			"name" : "Compiler_IS_TOP_LEVEL",
@@ -1031,7 +1031,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/home/dell/Compiler"
+			"value" : "/home/dell/Desktop/newComp/Compiler"
 		},
 		{
 			"name" : "_CMAKE_LINKER_PUSHPOP_STATE_SUPPORTED",

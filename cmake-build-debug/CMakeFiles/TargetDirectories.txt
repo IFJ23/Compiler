@@ -1,3 +1,3 @@
-/home/dell/Compiler/cmake-build-debug/CMakeFiles/Compiler.dir
-/home/dell/Compiler/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/dell/Compiler/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/dell/Desktop/newComp/Compiler/cmake-build-debug/CMakeFiles/Compiler.dir
+/home/dell/Desktop/newComp/Compiler/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/dell/Desktop/newComp/Compiler/cmake-build-debug/CMakeFiles/rebuild_cache.dir

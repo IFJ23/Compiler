@@ -1,3 +1,6 @@
+# Include the header file of your code
+#include "parser.h"
+
 # Compiler and flags
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c99 -pedantic
@@ -10,6 +13,9 @@ SRCS = main.c scanner.c parser.c expression.c symtable.c structures.c generator.
 
 # Object files (auto-generated)
 OBJS = $(SRCS:.c=.o)
+
+# Default target
+all: $(EXECUTABLE)
 
 # Linking rule
 $(EXECUTABLE): $(OBJS)

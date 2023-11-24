@@ -7,11 +7,5 @@ int main() {
     parserInit();
     int result = parse(&scanner);
 
-    // Check parsing result
-    if (result != 0) {
-        fprintf(stderr, "Parsing failed %d\n", result);
-        return 1;
-    }
-
-    return 0;
+    return result;
 }

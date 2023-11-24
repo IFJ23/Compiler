@@ -1,4 +1,4 @@
-/snap/clion/250/bin/cmake/linux/x64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/snap/clion/250/bin/ninja/linux/x64/ninja -G Ninja -S /home/dell/Compiler -B /home/dell/Compiler/cmake-build-debug
+/snap/clion/250/bin/cmake/linux/x64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/snap/clion/250/bin/ninja/linux/x64/ninja -G Ninja -S /home/dell/Desktop/newComp/Compiler -B /home/dell/Desktop/newComp/Compiler/cmake-build-debug
 -- The C compiler identification is GNU 11.4.0
 -- Detecting C compiler ABI info
 -- Detecting C compiler ABI info - done
@@ -7,4 +7,4 @@
 -- Detecting C compile features - done
 -- Configuring done (0.2s)
 -- Generating done (0.0s)
--- Build files have been written to: /home/dell/Compiler/cmake-build-debug
+-- Build files have been written to: /home/dell/Desktop/newComp/Compiler/cmake-build-debug
