@@ -1,0 +1,501 @@
+.IFJcode23
+DEFVAR GF@$$funcname
+MOVE GF@$$funcname string@main
+DEFVAR GF@$$mainresult
+MOVE GF@$$mainresult nil@nil
+DEFVAR GF@$$operator
+MOVE GF@$$operator nil@nil
+DEFVAR GF@$$je
+DEFVAR GF@$$param$$type$$1
+MOVE GF@$$param$$type$$1 nil@nil
+DEFVAR GF@$$param$$type$$2
+MOVE GF@$$param$$type$$2 nil@nil
+DEFVAR GF@$$param$$type$$opt
+MOVE GF@$$param$$type$$opt nil@nil
+CREATEFRAME
+PUSHFRAME
+JUMP $$skip$$checking
+LABEL $$truth$$check
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@$$iftype
+TYPE LF@$$iftype GF@$$mainresult
+DEFVAR LF@$$helpbool
+JUMPIFEQ $$iftype$$int LF@$$iftype string@int
+JUMPIFEQ $$iftype$$float LF@$$iftype string@float
+JUMPIFEQ $$iftype$$nil LF@$$iftype string@nil
+JUMPIFEQ $$iftype$$string LF@$$iftype string@string
+EXIT int@7
+LABEL $$iftype$$int
+EQ LF@$$helpbool GF@$$mainresult int@0
+NOT LF@$$helpbool LF@$$helpbool
+MOVE GF@$$mainresult LF@$$helpbool
+JUMP $$out
+LABEL $$iftype$$float
+EQ LF@$$helpbool GF@$$mainresult float@0x0.0p+0
+NOT LF@$$helpbool LF@$$helpbool
+MOVE GF@$$mainresult LF@$$helpbool
+JUMP $$out
+LABEL $$iftype$$nil
+MOVE GF@$$mainresult bool@false
+JUMP $$out
+LABEL $$iftype$$string
+JUMPIFEQ $$iftype$$string$$false GF@$$mainresult string@0
+JUMPIFEQ $$iftype$$string$$false GF@$$mainresult string@
+MOVE GF@$$mainresult bool@true
+JUMP $$out
+LABEL $$iftype$$string$$false
+MOVE GF@$$mainresult bool@false
+JUMP $$out
+LABEL $$out
+POPFRAME
+RETURN
+LABEL $$skip$$checking
+JUMP $$skipcheck
+LABEL $$math$$check
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@tmp1$$value
+DEFVAR LF@tmp1$$value$$type
+POPS LF@tmp1$$value
+TYPE LF@tmp1$$value$$type LF@tmp1$$value
+DEFVAR LF@tmp2$$value
+DEFVAR LF@tmp2$$value$$type
+POPS LF@tmp2$$value
+TYPE LF@tmp2$$value$$type LF@tmp2$$value
+JUMPIFEQ $$ADDS$$check GF@$$operator string@ADDS
+JUMPIFEQ $$SUBS$$MULS$$check GF@$$operator string@SUBS
+JUMPIFEQ $$SUBS$$MULS$$check GF@$$operator string@MULS
+JUMPIFEQ $$DIVS$$check GF@$$operator string@DIVS
+JUMPIFEQ $$EQS$$check GF@$$operator string@EQS
+JUMPIFEQ $$LTS$$GTS$$check$$1 GF@$$operator string@GTS
+JUMPIFEQ $$LTS$$GTS$$check$$1 GF@$$operator string@LTS
+JUMPIFEQ $$LTS$$GTS$$check$$1 GF@$$operator string@GTE
+JUMPIFEQ $$LTS$$GTS$$check$$1 GF@$$operator string@LTE
+JUMPIFEQ $$COALESCING$$check$$ GF@$$operator string@COALESCING
+JUMP $$math$$check$$exit
+LABEL $$ADDS$$check
+JUMPIFEQ $$ADDS$$check$$1 LF@tmp1$$value$$type string@string
+JUMP $$ADDS$$checkk
+LABEL $$ADDS$$check$$1
+JUMPIFEQ $$ADDS$$check$$2 LF@tmp2$$value$$type string@string
+EXIT int@7
+LABEL $$ADDS$$check$$2
+CONCAT LF@tmp1$$value LF@tmp2$$value LF@tmp1$$value
+JUMP $$math$$check$$exit
+LABEL $$ADDS$$checkk
+JUMPIFEQ $$ADDS$$checkk$$1 LF@tmp1$$value$$type string@int
+JUMPIFEQ $$ADDS$$checkk$$1 LF@tmp1$$value$$type string@float
+JUMPIFEQ $$ADDS$$checkk$$1 LF@tmp1$$value$$type string@nil
+EXIT int@7
+LABEL $$ADDS$$checkk$$1
+JUMPIFEQ $$ADDS$$checkk$$2 LF@tmp2$$value$$type string@int
+JUMPIFEQ $$ADDS$$checkk$$2 LF@tmp2$$value$$type string@float
+JUMPIFEQ $$ADDS$$checkk$$2 LF@tmp2$$value$$type string@nil
+EXIT int@7
+LABEL $$ADDS$$checkk$$2
+TYPE LF@tmp1$$value$$type LF@tmp1$$value
+TYPE LF@tmp2$$value$$type LF@tmp2$$value
+JUMPIFEQ $$ADDS$$checkk$$tmp1$$valuetozero LF@tmp1$$value$$type string@nil
+JUMPIFEQ $$ADDS$$checkk$$help2tozero LF@tmp2$$value$$type string@nil
+JUMPIFEQ $$control LF@tmp1$$value$$type LF@tmp2$$value$$type
+LABEL $$ADDS$$checkk$$3
+JUMPIFEQ $$ADDS$$checkk$$tmp1$$valuetofloat LF@tmp1$$value$$type string@int
+JUMPIFEQ $$ADDS$$checkk$$help2tofloat LF@tmp2$$value$$type string@int
+JUMP $$control
+LABEL $$ADDS$$checkk$$tmp1$$valuetofloat
+INT2FLOAT LF@tmp1$$value LF@tmp1$$value
+JUMP $$control
+LABEL $$ADDS$$checkk$$help2tofloat
+INT2FLOAT LF@tmp2$$value LF@tmp2$$value
+JUMP $$control
+LABEL $$ADDS$$checkk$$tmp1$$valuetozero
+MOVE LF@tmp1$$value int@0
+JUMP $$ADDS$$checkk$$2
+LABEL $$ADDS$$checkk$$help2tozero
+MOVE LF@tmp2$$value int@0
+JUMP $$ADDS$$checkk$$2
+LABEL $$control
+ADD LF@tmp1$$value LF@tmp1$$value LF@tmp2$$value
+JUMP $$math$$check$$exit
+LABEL $$SUBS$$MULS$$check
+JUMPIFEQ $$SUBS$$MULS$$check$$1 LF@tmp1$$value$$type string@int
+JUMPIFEQ $$SUBS$$MULS$$check$$1 LF@tmp1$$value$$type string@float
+JUMPIFEQ $$SUBS$$MULS$$check$$1 LF@tmp1$$value$$type string@nil
+EXIT int@7
+LABEL $$SUBS$$MULS$$check$$1
+JUMPIFEQ $$SUBS$$MULS$$check$$2 LF@tmp2$$value$$type string@int
+JUMPIFEQ $$SUBS$$MULS$$check$$2 LF@tmp2$$value$$type string@float
+JUMPIFEQ $$SUBS$$MULS$$check$$2 LF@tmp2$$value$$type string@nil
+EXIT int@7
+LABEL $$SUBS$$MULS$$check$$2
+TYPE LF@tmp1$$value$$type LF@tmp1$$value
+TYPE LF@tmp2$$value$$type LF@tmp2$$value
+JUMPIFEQ $$SUBS$$MULS$$check$$tmp1$$valuetozero LF@tmp1$$value$$type string@nil
+JUMPIFEQ $$SUBS$$MULS$$check$$help2tozero LF@tmp2$$value$$type string@nil
+JUMPIFEQ $$math$$check$$exit LF@tmp1$$value$$type LF@tmp2$$value$$type
+LABEL $$SUBS$$MULS$$check$$3
+JUMPIFEQ $$SUBS$$MULS$$check$$tmp1$$valuetofloat LF@tmp1$$value$$type string@int
+JUMPIFEQ $$SUBS$$MULS$$check$$help2tofloat LF@tmp2$$value$$type string@int
+JUMP $$math$$check$$exit
+LABEL $$SUBS$$MULS$$check$$tmp1$$valuetofloat
+INT2FLOAT LF@tmp1$$value LF@tmp1$$value
+JUMP $$math$$check$$exit
+LABEL $$SUBS$$MULS$$check$$help2tofloat
+INT2FLOAT LF@tmp2$$value LF@tmp2$$value
+JUMP $$math$$check$$exit
+LABEL $$SUBS$$MULS$$check$$tmp1$$valuetozero
+MOVE LF@tmp1$$value int@0
+JUMP $$SUBS$$MULS$$check$$2
+LABEL $$SUBS$$MULS$$check$$help2tozero
+MOVE LF@tmp2$$value int@0
+JUMP $$SUBS$$MULS$$check$$2
+LABEL $$DIVS$$check
+JUMPIFEQ $$DIVS$$check$$1 LF@tmp1$$value$$type string@int
+JUMPIFEQ $$DIVS$$check$$1 LF@tmp1$$value$$type string@float
+JUMPIFEQ $$DIVS$$check$$1 LF@tmp1$$value$$type string@nil
+EXIT int@7
+LABEL $$DIVS$$check$$1
+JUMPIFEQ $$DIVS$$check$$2 LF@tmp2$$value$$type string@int
+JUMPIFEQ $$DIVS$$check$$2 LF@tmp2$$value$$type string@float
+JUMPIFEQ $$DIVS$$check$$2 LF@tmp2$$value$$type string@nil
+EXIT int@7
+LABEL $$DIVS$$check$$2
+TYPE LF@tmp1$$value$$type LF@tmp1$$value
+TYPE LF@tmp2$$value$$type LF@tmp2$$value
+JUMPIFEQ $$DIVS$$check$$tmp1$$valuetozero LF@tmp1$$value$$type string@nil
+JUMPIFEQ $$DIVS$$check$$help2tozero LF@tmp2$$value$$type string@nil
+JUMPIFEQ $$DIVS$$check$$next LF@tmp1$$value$$type string@float
+JUMP $$DIVS$$check$$tmp1$$valuetofloat
+LABEL $$DIVS$$check$$next
+JUMPIFEQ $$math$$check$$exit LF@tmp2$$value$$type string@float
+JUMP $$DIVS$$check$$help2tofloat
+LABEL $$DIVS$$check$$tmp1$$valuetofloat
+INT2FLOAT LF@tmp1$$value LF@tmp1$$value
+JUMP $$DIVS$$check$$2
+LABEL $$DIVS$$check$$help2tofloat
+INT2FLOAT LF@tmp2$$value LF@tmp2$$value
+JUMP $$DIVS$$check$$2
+LABEL $$DIVS$$check$$tmp1$$valuetozero
+MOVE LF@tmp1$$value int@0
+JUMP $$DIVS$$check$$2
+LABEL $$DIVS$$check$$help2tozero
+MOVE LF@tmp2$$value int@0
+JUMP $$DIVS$$check$$2
+LABEL $$EQS$$check
+JUMPIFEQ $$EQS$$check$$1 LF@tmp1$$value$$type LF@tmp2$$value$$type
+EXIT int@7
+LABEL $$EQS$$check$$1
+JUMP $$math$$check$$exit
+LABEL $$COALESCING$$check$$
+JUMPIFNEQ $$COALESCING$$check$$1 LF@tmp1$$value int@0
+JUMPIFEQ $$COALESCING$$check$$2 LF@tmp1$$value int@0
+LABEL $$COALESCING$$check$$1
+MOVE LF@tmp2$$value int@0
+JUMP $$math$$check$$exit
+LABEL $$COALESCING$$check$$2
+MOVE LF@tmp1$value int@0
+JUMP $$math$$check$$exit
+LABEL $$LTS$$GTS$$check$$1
+TYPE LF@tmp1$$value$$type LF@tmp1$$value
+TYPE LF@tmp2$$value$$type LF@tmp2$$value
+JUMPIFEQ $$LTS$$GTS$$check$$nil$$tmp1$$value LF@tmp1$$value$$type nil@nil
+JUMPIFEQ $$LTS$$GTS$$check$$nil$$help2 LF@tmp2$$value$$type nil@nil
+JUMP $$LTS$$GTS$$check$$2
+LABEL $$LTS$$GTS$$check$$nil$$tmp1$$value
+JUMPIFEQ $$LTS$$GTS$$check$$tmp1$$valuetozero$$int LF@tmp2$$value$$type string@nil
+JUMPIFEQ $$LTS$$GTS$$check$$tmp1$$valuetozero$$int LF@tmp2$$value$$type string@int
+JUMPIFEQ $$LTS$$GTS$$check$$tmp1$$valuetozero$$float LF@tmp2$$value$$type string@float
+JUMPIFEQ $$LTS$$GTS$$check$$tmp1$$valuetoempty LF@tmp2$$value$$type string@string
+JUMP $$LTS$$GTS$$check$$1
+LABEL $$LTS$$GTS$$check$$tmp1$$valuetozero$$int
+MOVE LF@tmp1$$value int@0
+JUMP $$LTS$$GTS$$check$$1
+LABEL $$LTS$$GTS$$check$$tmp1$$valuetozero$$float
+MOVE LF@tmp1$$value float@0x0.0p+0
+JUMP $$LTS$$GTS$$check$$1
+LABEL $$LTS$$GTS$$check$$tmp1$$valuetoempty
+MOVE LF@tmp1$$value string@
+JUMP $$LTS$$GTS$$check$$1
+LABEL $$LTS$$GTS$$check$$nil$$help2
+JUMPIFEQ $$LTS$$GTS$$check$$help2tozero$$int LF@tmp1$$value$$type string@int
+JUMPIFEQ $$LTS$$GTS$$check$$help2tozero$$float LF@tmp1$$value$$type string@float
+JUMPIFEQ $$LTS$$GTS$$check$$help2toempty LF@tmp1$$value$$type string@string
+JUMP $$LTS$$GTS$$check$$1
+LABEL $$LTS$$GTS$$check$$help2tozero$$int
+MOVE LF@tmp2$$value int@0
+JUMP $$LTS$$GTS$$check$$1
+LABEL $$LTS$$GTS$$check$$help2tozero$$float
+MOVE LF@tmp2$$value float@0x0.0p+0
+JUMP $$LTS$$GTS$$check$$1
+LABEL $$LTS$$GTS$$check$$help2toempty
+MOVE LF@tmp2$$value string@
+JUMP $$LTS$$GTS$$check$$1
+LABEL $$LTS$$GTS$$check$$2
+TYPE LF@tmp1$$value$$type LF@tmp1$$value
+TYPE LF@tmp2$$value$$type LF@tmp2$$value
+JUMPIFEQ $$LTS$$GTS$$check$$str LF@tmp1$$value$$type string@string
+JUMPIFEQ $$LTS$$GTS$$check$$str LF@tmp2$$value$$type string@string
+JUMPIFEQ $$LTS$$GTS$$check$$tmp1$$valueint LF@tmp1$$value$$type string@int
+JUMPIFEQ $$LTS$$GTS$$check$$help2int LF@tmp2$$value$$type string@int
+JUMPIFEQ $$math$$check$$exit LF@tmp1$$value$$type LF@tmp2$$value$$type
+JUMP $$math$$check$$exit
+LABEL $$LTS$$GTS$$check$$str
+JUMPIFEQ $$math$$check$$exit LF@tmp1$$value$$type LF@tmp2$$value$$type
+EXIT int@7
+LABEL $$LTS$$GTS$$check$$tmp1$$valueint
+JUMPIFEQ $$math$$check$$exit LF@tmp1$$value$$type LF@tmp2$$value$$type
+INT2FLOAT LF@tmp1$$value LF@tmp1$$value
+JUMP $$LTS$$GTS$$check$$2
+LABEL $$LTS$$GTS$$check$$help2int
+INT2FLOAT LF@tmp2$$value LF@tmp2$$value
+JUMP $$LTS$$GTS$$check$$2
+JUMPIFEQ $$OR$$EQUAL$$VARIANT GF@$$operator string@LTE
+JUMPIFEQ $$OR$$EQUAL$$VARIANT GF@$$operator string@GTE
+JUMP $$math$$check$$exit
+LABEL $$OR$$EQUAL$$VARIANT
+PUSHS LF@tmp2$$value
+PUSHS LF@tmp1$$value
+JUMP $$math$$check$$exit
+LABEL $$math$$check$$exit
+PUSHS LF@tmp2$$value
+PUSHS LF@tmp1$$value
+POPFRAME
+RETURN
+LABEL $$param$$type$$func
+JUMPIFEQ $$match$$nil$$incl GF@$$param$$type$$opt int@1
+JUMPIFEQ $$match$$exact GF@$$param$$type$$opt int@0
+LABEL $$match$$nil$$incl
+JUMPIFEQ $$match$$passed GF@$$param$$type$$1 GF@$$param$$type$$2
+JUMPIFEQ $$match$$passed GF@$$param$$type$$1 string@nil
+EXIT int@4
+LABEL $$match$$exact
+JUMPIFEQ $$match$$passed GF@$$param$$type$$1 GF@$$param$$type$$2
+EXIT int@4
+LABEL $$match$$passed
+RETURN
+LABEL $$skipcheck
+DEFVAR LF@a
+CREATEFRAME
+PUSHFRAME
+PUSHS int@2
+PUSHS int@7
+PUSHS int@5
+MOVE GF@$$operator string@DIVS
+CALL $$math$$check
+DIVS
+MOVE GF@$$operator string@ADDS
+CALL $$math$$check
+PUSHS int@6
+PUSHS int@9
+MOVE GF@$$operator string@MULS
+CALL $$math$$check
+MULS
+MOVE GF@$$operator string@ADDS
+CALL $$math$$check
+POPS GF@$$mainresult
+POPFRAME
+MOVE LF@a GF@$$mainresult
+DEFVAR LF@t
+CREATEFRAME
+PUSHFRAME
+PUSHS int@6
+PUSHS int@9
+MOVE GF@$$operator string@ADDS
+CALL $$math$$check
+POPFRAME
+PUSHS LF@a
+PUSHFRAME
+MOVE GF@$$operator string@ADDS
+CALL $$math$$check
+POPS GF@$$mainresult
+POPFRAME
+MOVE LF@t GF@$$mainresult
+JUMP $$jump$$over$$foo
+LABEL $$func$$foo
+CREATEFRAME
+DEFVAR TF@foo$$retval
+DEFVAR TF@vasia
+POPS TF@vasia
+DEFVAR TF@nil
+POPS TF@nil
+TYPE GF@$$param$$type$$1 TF@vasia
+MOVE GF@$$param$$type$$2 string@
+MOVE GF@$$param$$type$$opt int@0
+CALL $$param$$type$$func
+DEFVAR TF@nil
+MOVE GF@$$param$$type$$2 string@int
+MOVE GF@$$param$$type$$opt int@5
+CALL $$param$$type$$func
+PUSHFRAME
+DEFVAR LF@ret
+CREATEFRAME
+PUSHFRAME
+PUSHS string@omething
+POPS GF@$$mainresult
+POPFRAME
+MOVE LF@ret GF@$$mainresult
+CREATEFRAME
+PUSHFRAME
+POPFRAME
+PUSHS LF@ret
+PUSHFRAME
+POPS GF@$$mainresult
+POPFRAME
+MOVE LF@foo$$retval GF@$$mainresult
+POPFRAME
+RETURN
+POPFRAME
+RETURN
+LABEL $$jump$$over$$foo
+DEFVAR LF@vysl
+CREATEFRAME
+PUSHFRAME
+PUSHS int@4
+POPS GF@$$mainresult
+POPFRAME
+MOVE LF@vysl GF@$$mainresult
+POPFRAME
+PUSHS LF@a
+PUSHFRAME
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@$$write1
+POPS LF@$$write1
+WRITE LF@$$write1
+POPFRAME
+CREATEFRAME
+PUSHFRAME
+POPFRAME
+PUSHS LF@a
+PUSHFRAME
+PUSHS int@0
+MOVE GF@$$operator string@LTS
+CALL $$math$$check
+LTS
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@$$bool$$value
+POPS LF@$$bool$$value
+JUMPIFEQ $$bool0$$true LF@$$bool$$value bool@true
+MOVE LF@$$bool$$value int@0
+JUMP $$bool0$$out
+LABEL $$bool0$$true
+MOVE LF@$$bool$$value int@1
+LABEL $$bool0$$out
+PUSHS LF@$$bool$$value
+POPFRAME
+POPS GF@$$mainresult
+POPFRAME
+CALL $$truth$$check
+JUMPIFEQ if$$1$$else GF@$$mainresult bool@false
+PUSHS string@aktorial\032nelze\032spocitat\010
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@$$write1
+POPS LF@$$write1
+WRITE LF@$$write1
+POPFRAME
+JUMP if$$1$$else$$2
+LABEL if$$1$$else
+CREATEFRAME
+PUSHFRAME
+POPFRAME
+PUSHS LF@vysl
+PUSHFRAME
+POPS GF@$$mainresult
+POPFRAME
+CREATEFRAME
+PUSHFRAME
+PUSHS int@7
+POPS GF@$$mainresult
+POPFRAME
+LABEL if$$1$$else$$2
+JUMP if$$1$$else$$end
+LABEL if$$1$$else$$end
+DEFVAR LF@str1
+CREATEFRAME
+PUSHFRAME
+PUSHS string@oto\032je\032nejaky\032text\032v\032programu\032jazyka\032IFJ23
+POPS GF@$$mainresult
+POPFRAME
+MOVE LF@str1 GF@$$mainresult
+LABEL while$$1$$start
+CREATEFRAME
+PUSHFRAME
+POPFRAME
+PUSHS LF@str1
+PUSHFRAME
+PUSHS string@bcdefgh
+MOVE GF@$$operator string@EQS
+CALL $$math$$check
+EQS
+NOTS
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@$$bool$$value
+POPS LF@$$bool$$value
+JUMPIFEQ $$bool1$$true LF@$$bool$$value bool@true
+MOVE LF@$$bool$$value int@0
+JUMP $$bool1$$out
+LABEL $$bool1$$true
+MOVE LF@$$bool$$value int@1
+LABEL $$bool1$$out
+PUSHS LF@$$bool$$value
+POPFRAME
+POPS GF@$$mainresult
+POPFRAME
+CALL $$truth$$check
+JUMPIFEQ while$$1$$end GF@$$mainresult bool@false
+PUSHS string@patne\032zadana\032posloupnost,\032zkuste\032znovu:\010
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@$$write1
+POPS LF@$$write1
+WRITE LF@$$write1
+POPFRAME
+CREATEFRAME
+PUSHFRAME
+POPFRAME
+PUSHS LF@str1
+PUSHFRAME
+POPS GF@$$mainresult
+POPFRAME
+CREATEFRAME
+PUSHFRAME
+PUSHS string@bcdefgh
+POPS GF@$$mainresult
+POPFRAME
+JUMP while$$1$$start
+LABEL while$$1$$end
+POPFRAME
+PUSHS LF@t
+PUSHFRAME
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@$$Double2Int$$0$$retval
+DEFVAR LF@$$Double2Int$$0$$val
+DEFVAR LF@$$Double2Int$$0$$type
+POPS LF@$$Double2Int$$0$$val
+TYPE LF@$$Double2Int$$0$$type LF@$$Double2Int$$0$$val
+JUMPIFEQ $$func$$Double2Int$$0$$float LF@$$Double2Int$$0$$type string@float
+EXIT int@4
+LABEL $$func$$Double2Int$$0$$float
+FLOAT2INT LF@$$Double2Int$$0$$retval LF@$$Double2Int$$0$$val
+POPFRAME
+MOVE GF@$$mainresult TF@$$Double2Int$$0$$retval
+DEFVAR LF@x
+CREATEFRAME
+PUSHFRAME
+POPFRAME
+PUSHS LF@a
+PUSHFRAME
+POPFRAME
+PUSHS LF@t
+PUSHFRAME
+MOVE GF@$$operator string@COALESCING
+CALL $$math$$check
+ADDS
+POPS GF@$$mainresult
+POPFRAME
+MOVE LF@x GF@$$mainresult

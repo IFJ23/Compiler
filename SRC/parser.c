@@ -225,7 +225,8 @@ int parseParamsCallN(Scanner *scanner, int *pc) {
                 printError(LINENUM, "Passing an undefined var to a function.");
                 return SEMANTIC_UNDEFINED_ERROR;
             }
-            printf("PUSHS LF@%s\n", parser.currToken.value.string);
+
+            genStackPush(parser.currToken);
             ++(*pc);
             break;
 

@@ -52,7 +52,6 @@ SymtablePair *symtableFind(Symtable *t, SymtableKey key)
 
     while (tmp != NULL)
     {
-        printf("COMPARE");
         if (!strcmp(key, tmp->pair.key))
         {
             return &(tmp->pair);
