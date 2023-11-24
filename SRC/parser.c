@@ -32,7 +32,6 @@ int parserInit() {
     parser.currFunc = "main";
 
     genPrintHead();
-    genConvertBool();
     genCheckTruth();
     genMathInstCheck();
 
@@ -195,13 +194,11 @@ int parseReturn(Scanner *scanner) {
             returning = func->data.parameters.last->type;
     }
 
-    bool expr;
-
-    if ((!parser.outsideBody || (parser.outsideBody && returning != KW_NIL)) && expr) {
+    if ((!parser.outsideBody || (parser.outsideBody && returning != KW_NIL))) {
         CHECKRULE(parseExpression(scanner, false))
         genReturn(parser.currFunc, true);
     } else {
-        if ((expr && parser.outsideBody) || (returning == KW_VOID && expr)) {
+        if ((parser.outsideBody) || (returning == KW_VOID )) {
             printError(LINENUM,
                        "Current function doesn't have a return value, so return has to be followed by a semicolon.");
             return SYNTAX_ERROR;
