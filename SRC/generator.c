@@ -55,10 +55,11 @@ void genStackPush(Token t)
         printf("PUSHS string@");
 
         int i = 0;
-        char currentChar;
 
-        while ((currentChar = t.value.string[i]) != '\0')
+        while (t.value.string[i] != '\0')
         {
+            char currentChar = t.value.string[i];
+
             if (currentChar < 33 || currentChar == 35 || currentChar == 92 || currentChar > 126)
             {
                 putchar('\\');

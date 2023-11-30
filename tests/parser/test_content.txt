@@ -1,11 +1,4 @@
-var a = 2
-var b = 10.0
-var c = a + b
-write(c)
-var k = 33.0
-var n = 7
-var w = k - n
-write(w)
+write("ABCD")
 
 
 
