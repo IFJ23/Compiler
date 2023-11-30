@@ -1,19 +1,21 @@
 var a : Int = 2 + 7 / 5 + 6 * 9
 var t : String? = 6 + 9 + a
 
-func foo(par : String, vasia: Int) -> String {
+func foo(_ par : String?, vasia: Int) -> String {
 var ret = "something"
 return ret
 }
 
 let vysl : Double? = 4
 
+vysl = 7 +6
+
 write(a)
 
-if (a < 0) {
+if (a <= 0) {
     write("Faktorial nelze spocitat\n")
 } else {
-    vysl = 7
+    vysl = 7 +6
 }
 
 var str1 = "Toto je nejaky text v programu jazyka IFJ23"

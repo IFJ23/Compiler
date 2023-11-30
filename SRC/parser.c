@@ -302,7 +302,6 @@ int parseFunctionCall(Scanner *scanner) {
 
     GETTOKEN(scanner, &parser.currToken)
 
-
     ListNode *rv;
     if (foundFunction->data.parameters.itemCount == -1) {
         rv = NULL;
@@ -330,6 +329,22 @@ int parseAssign(Scanner *scanner, Token variable) {
         stackPush(parser.undefStack, variable);
     }
     genAssignVariable(variable);
+
+    return err;
+}
+
+int parseVariableRedefinition(Scanner *scanner, Token variable) {
+    int err = 0;
+
+    SymtablePair *alrDefined = symtableFind(
+            parser.outsideBody ? parser.localSymtable : parser.symtable, variable.value.string);
+
+    if (alrDefined && alrDefined->data.type == LET) {
+        printError(LINENUM, "It is not allowed to redefine constant.");
+        return SEMANTIC_DEFINITION_ERROR;
+    } else {
+        parseAssign(scanner, variable);
+    }
 
     return err;
 }
@@ -386,7 +401,6 @@ int parseBody(Scanner *scanner) {
 
                 break;
             case KW_VAR:
-            case KW_LET:
 
                 GETTOKEN(scanner, &parser.currToken)
 
@@ -433,6 +447,53 @@ int parseBody(Scanner *scanner) {
                 }
 
                 break;
+            case KW_LET:
+
+                GETTOKEN(scanner, &parser.currToken)
+
+                if (parser.currToken.type == TYPE_IDENTIFIER_VAR) {
+
+                    Token variable = parser.currToken;
+
+                    if (peek_token(scanner, &parser.currToken) != 0)
+                        return LEXICAL_ERROR;
+
+                    if (parser.currToken.type == TYPE_COLON) {
+
+                        GETTOKEN(scanner, &parser.currToken)
+
+                        GETTOKEN(scanner, &parser.currToken)
+
+                        LinkedList ll;
+                        listInit(&ll);
+
+                        CHECKRULE(parseTypeP(&ll))
+
+                        if (peek_token(scanner, &parser.currToken) != 0)
+                            return LEXICAL_ERROR;
+
+                    }
+                    if (parser.currToken.type == TYPE_ASSIGN) {
+
+                        SymtablePair *alrDefined = symtableFind(
+                                parser.outsideBody ? parser.localSymtable : parser.symtable, variable.value.string);
+                        if (alrDefined == NULL) {
+                            genDefineVariable(variable);
+                        }
+                        GETTOKEN(scanner, &parser.currToken)
+                        CHECKRULE(parseAssign(scanner, variable))
+                        LinkedList empty = {.itemCount = 0};
+                        if (alrDefined == NULL || alrDefined->data.possiblyUndefined) {
+                            symtableAdd(parser.outsideBody ? parser.localSymtable : parser.symtable,
+                                        variable.value.string, LET, -1, parser.condDec, empty);
+                        }
+                    }
+                    else {
+                        CHECKRULE(parseExpression(scanner, false))
+                    }
+                }
+
+                break;
 
             case KW_NIL:
                 CHECKRULE(parseExpression(scanner, false))
@@ -446,6 +507,9 @@ int parseBody(Scanner *scanner) {
         }
     else if (parser.currToken.type == TYPE_IDENTIFIER_FUNC) {
         CHECKRULE(parseFunctionCall(scanner))
+
+    } else if (parser.currToken.type == TYPE_IDENTIFIER_VAR) {
+        CHECKRULE(parseVariableRedefinition(scanner, parser.currToken))
 
     } else if (parser.currToken.type == TYPE_RETURN_ARROW) {
         return SYNTAX_ERROR;
@@ -462,7 +526,8 @@ int parseBody(Scanner *scanner) {
 int parseParamsDefN(Scanner *scanner, LinkedList *ll) {
     int err = 0;
 
-    Token variable = parser.currToken;
+    Token name = parser.currToken;
+    Token id;
 
     if (parser.currToken.type != TYPE_IDENTIFIER_VAR) {
         printError(LINENUM, "Type has to be followed by a variable.");
@@ -470,6 +535,11 @@ int parseParamsDefN(Scanner *scanner, LinkedList *ll) {
     }
 
     GETTOKEN(scanner, &parser.currToken)
+
+    if (parser.currToken.type == TYPE_IDENTIFIER_VAR) {
+        id = parser.currToken;
+        GETTOKEN(scanner, &parser.currToken)
+    }
 
     if (parser.currToken.type != TYPE_COLON) {
         printError(LINENUM, "Expected ':' after variable name.");
@@ -484,12 +554,12 @@ int parseParamsDefN(Scanner *scanner, LinkedList *ll) {
         CHECKRULE(parseTypeN(scanner, ll))
     }
 
-    ll->head->name = variable.value.string;
+    ll->head->name = name.value.string;
 
-    stackPush(parser.undefStack, variable);
+    stackPush(parser.undefStack, name);
 
     LinkedList empty = {.itemCount = 0};
-    symtableAdd(parser.localSymtable, variable.value.string, VAR, -1, parser.condDec, empty);
+    symtableAdd(parser.localSymtable, name.value.string, VAR, -1, parser.condDec, empty);
 
     GETTOKEN(scanner, &parser.currToken)
 

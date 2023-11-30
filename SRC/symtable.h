@@ -16,7 +16,8 @@ typedef const char *SymtableKey;
 typedef enum
 {
     FUNC,
-    VAR
+    VAR,
+    LET
 } ElType;
 
 typedef struct SymtableData
