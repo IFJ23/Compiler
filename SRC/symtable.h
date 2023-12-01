@@ -9,7 +9,8 @@
 
 #include <string.h>
 #include <stdbool.h>
-#include "structures.h"
+#include "symstack.h"
+#include "linlist.h"
 
 typedef const char *SymtableKey;
 

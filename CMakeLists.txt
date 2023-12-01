@@ -16,8 +16,8 @@ add_executable(Compiler
         SRC/parser.h
         SRC/scanner.c
         SRC/scanner.h
-        SRC/structures.c
-        SRC/structures.h
+        SRC/symstack.c
+        SRC/symstack.h
         SRC/symtable.c
         SRC/symtable.h
         tests/parser/test.c

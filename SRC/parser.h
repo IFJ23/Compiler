@@ -8,7 +8,8 @@
 #define H_PARSER
 
 #include "scanner.h"
-#include "structures.h"
+#include "symstack.h"
+#include "linlist.h"
 #include "error.h"
 #include <stdlib.h>
 #include "expression.h"

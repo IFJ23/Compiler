@@ -5,8 +5,7 @@ func foo(_ par : String?, vasia: Int) -> String {
 var ret = "something"
 return ret
 }
-
-let vysl : Double? = 4
+var vysl : Double? = 4
 
 vysl = 7 +6
 
