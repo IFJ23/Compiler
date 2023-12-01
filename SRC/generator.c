@@ -183,7 +183,6 @@ void genStackPush(Token t)
     case TYPE_NIL_COALESCING_OPERATOR:
         printf("MOVE GF@$$operator string@COALESCING\n");
         printf("CALL $$math$$check\n");
-        printf("ADDS\n");
         break;
 
     case TYPE_IDENTIFIER_VAR:
@@ -450,15 +449,10 @@ void genMathInstCheck()
     printf("JUMP $$math$$check$$exit\n");
     // Checking for ??
     printf("LABEL $$COALESCING$$check$$\n");
-    printf("JUMPIFNEQ $$COALESCING$$check$$1 LF@tmp1$$value int@0\n");
-    printf("JUMPIFEQ $$COALESCING$$check$$2 LF@tmp1$$value int@0\n");
-
-    printf("LABEL $$COALESCING$$check$$1\n");
-    printf("MOVE LF@tmp2$$value int@0\n");
+    printf("JUMPIFEQ $$COALESCING$$check$$2 LF@tmp2$$value nil@nil\n");
+    printf("MOVE LF@tmp1$$value LF@tmp2$$value\n");
     printf("JUMP $$math$$check$$exit\n");
-
     printf("LABEL $$COALESCING$$check$$2\n");
-    printf("MOVE LF@tmp1$value int@0\n");
     printf("JUMP $$math$$check$$exit\n");
     // Checking for >, <, >=, <=
     printf("LABEL $$LTS$$GTS$$check$$1\n");
@@ -838,7 +832,7 @@ void genFuncCall(char *funcname, int paramCount, ListNode *returnType)
     {
         genWrite(paramCount);
     }
-    else if (strcmp(funcname, "strlen") == 0)
+    else if (strcmp(funcname, "length") == 0)
     {
         genLength();
     }
