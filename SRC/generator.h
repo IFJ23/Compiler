@@ -13,7 +13,7 @@ void genPrintHead();
 
 void genStackPush(Token t);
 
-void genMathInstCheck();
+void genOperatorCheck();
 
 void genExpressionBegin();
 
@@ -46,8 +46,6 @@ void genFuncDef2(char *funcname);
 void genFuncCall(char *funcname, int paramCount, ListNode *returnType);
 
 void genReturn(char *funcname, bool expr);
-
-void genPushString(char *str);
 
 void genConvertBool();
 

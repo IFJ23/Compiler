@@ -100,30 +100,30 @@ void genStackPush(Token t)
 
     case TYPE_PLUS:
         printf("MOVE GF@$$operator string@ADDS\n");
-        printf("CALL $$math$$check\n");
+        printf("CALL $$operator$$check\n");
         break;
 
     case TYPE_MINUS:
         printf("MOVE GF@$$operator string@SUBS\n");
-        printf("CALL $$math$$check\n");
+        printf("CALL $$operator$$check\n");
         printf("SUBS\n");
         break;
 
     case TYPE_MUL:
         printf("MOVE GF@$$operator string@MULS\n");
-        printf("CALL $$math$$check\n");
+        printf("CALL $$operator$$check\n");
         printf("MULS\n");
         break;
 
     case TYPE_DIV:
         printf("MOVE GF@$$operator string@DIVS\n");
-        printf("CALL $$math$$check\n");
+        printf("CALL $$operator$$check\n");
         printf("DIVS\n");
         break;
 
     case TYPE_MORE_EQUAL:
         printf("MOVE GF@$$operator string@GTE\n");
-        printf("CALL $$math$$check\n");
+        printf("CALL $$operator$$check\n");
         printf("GTS\n");
         printf("CREATEFRAME\n");
         printf("PUSHFRAME\n");
@@ -138,7 +138,7 @@ void genStackPush(Token t)
 
     case TYPE_LESS_EQUAL:
         printf("MOVE GF@$$operator string@LTE\n");
-        printf("CALL $$math$$check\n");
+        printf("CALL $$operator$$check\n");
         printf("LTS\n");
         printf("CREATEFRAME\n");
         printf("PUSHFRAME\n");
@@ -153,28 +153,28 @@ void genStackPush(Token t)
 
     case TYPE_MORE:
         printf("MOVE GF@$$operator string@GTS\n");
-        printf("CALL $$math$$check\n");
+        printf("CALL $$operator$$check\n");
         printf("GTS\n");
         genConvertBool();
         break;
 
     case TYPE_LESS:
         printf("MOVE GF@$$operator string@LTS\n");
-        printf("CALL $$math$$check\n");
+        printf("CALL $$operator$$check\n");
         printf("LTS\n");
         genConvertBool();
         break;
 
     case TYPE_EQUAL:
         printf("MOVE GF@$$operator string@EQS\n");
-        printf("CALL $$math$$check\n");
+        printf("CALL $$operator$$check\n");
         printf("EQS\n");
         genConvertBool();
         break;
 
     case TYPE_NOT_EQUAL:
         printf("MOVE GF@$$operator string@EQS\n");
-        printf("CALL $$math$$check\n");
+        printf("CALL $$operator$$check\n");
         printf("EQS\n");
         printf("NOTS\n");
         genConvertBool();
@@ -182,7 +182,7 @@ void genStackPush(Token t)
 
     case TYPE_NIL_COALESCING_OPERATOR:
         printf("MOVE GF@$$operator string@COALESCING\n");
-        printf("CALL $$math$$check\n");
+        printf("CALL $$operator$$check\n");
         break;
 
     case TYPE_IDENTIFIER_VAR:
@@ -284,10 +284,10 @@ void genWhileLoop3(int num)
     printf("LABEL while$$%d$$end\n", num);
 }
 
-void genMathInstCheck()
+void genOperatorCheck()
 {
     printf("JUMP $$skipcheck\n");
-    printf("LABEL $$math$$check\n");
+    printf("LABEL $$operator$$check\n");
     printf("CREATEFRAME\n");
     printf("PUSHFRAME\n");
     printf("DEFVAR LF@tmp1$$value\n");
@@ -308,7 +308,7 @@ void genMathInstCheck()
     printf("JUMPIFEQ $$LTS$$GTS$$check$$1 GF@$$operator string@GTE\n");
     printf("JUMPIFEQ $$LTS$$GTS$$check$$1 GF@$$operator string@LTE\n");
     printf("JUMPIFEQ $$COALESCING$$check$$ GF@$$operator string@COALESCING\n");
-    printf("JUMP $$math$$check$$exit\n");
+    printf("JUMP $$operator$$check$$exit\n");
     // Checking for all +, -, *, /
     printf("LABEL $$ADDS$$check\n");
     printf("JUMPIFEQ $$ADDS$$check$$1 LF@tmp1$$value$$type string@string\n");
@@ -318,7 +318,7 @@ void genMathInstCheck()
     printf("EXIT int@7\n");
     printf("LABEL $$ADDS$$check$$2\n");
     printf("CONCAT LF@tmp1$$value LF@tmp2$$value LF@tmp1$$value\n");
-    printf("JUMP $$math$$check$$exit\n");
+    printf("JUMP $$operator$$check$$exit\n");
     printf("LABEL $$ADDS$$checkk\n");
     printf("JUMPIFEQ $$ADDS$$checkk$$1 LF@tmp1$$value$$type string@int\n");
     printf("JUMPIFEQ $$ADDS$$checkk$$1 LF@tmp1$$value$$type string@float\n");
@@ -359,7 +359,7 @@ void genMathInstCheck()
 
     printf("LABEL $$control\n");
     printf("ADD LF@tmp1$$value LF@tmp1$$value LF@tmp2$$value\n");
-    printf("JUMP $$math$$check$$exit\n");
+    printf("JUMP $$operator$$check$$exit\n");
 
     printf("LABEL $$SUBS$$MULS$$check\n");
     printf("JUMPIFEQ $$SUBS$$MULS$$check$$1 LF@tmp1$$value$$type string@int\n");
@@ -378,20 +378,20 @@ void genMathInstCheck()
     printf("TYPE LF@tmp2$$value$$type LF@tmp2$$value\n");
     printf("JUMPIFEQ $$SUBS$$MULS$$check$$tmp1$$valuetozero LF@tmp1$$value$$type string@nil\n");
     printf("JUMPIFEQ $$SUBS$$MULS$$check$$help2tozero LF@tmp2$$value$$type string@nil\n");
-    printf("JUMPIFEQ $$math$$check$$exit LF@tmp1$$value$$type LF@tmp2$$value$$type\n");
+    printf("JUMPIFEQ $$operator$$check$$exit LF@tmp1$$value$$type LF@tmp2$$value$$type\n");
 
     printf("LABEL $$SUBS$$MULS$$check$$3\n");
     printf("JUMPIFEQ $$SUBS$$MULS$$check$$tmp1$$valuetofloat LF@tmp1$$value$$type string@int\n");
     printf("JUMPIFEQ $$SUBS$$MULS$$check$$help2tofloat LF@tmp2$$value$$type string@int\n");
-    printf("JUMP $$math$$check$$exit\n");
+    printf("JUMP $$operator$$check$$exit\n");
 
     printf("LABEL $$SUBS$$MULS$$check$$tmp1$$valuetofloat\n");
     printf("INT2FLOAT LF@tmp1$$value LF@tmp1$$value\n");
-    printf("JUMP $$math$$check$$exit\n");
+    printf("JUMP $$operator$$check$$exit\n");
 
     printf("LABEL $$SUBS$$MULS$$check$$help2tofloat\n");
     printf("INT2FLOAT LF@tmp2$$value LF@tmp2$$value\n");
-    printf("JUMP $$math$$check$$exit\n");
+    printf("JUMP $$operator$$check$$exit\n");
 
     printf("LABEL $$SUBS$$MULS$$check$$tmp1$$valuetozero\n");
     printf("MOVE LF@tmp1$$value int@0\n");
@@ -422,7 +422,7 @@ void genMathInstCheck()
     printf("JUMP $$DIVS$$check$$tmp1$$valuetofloat\n");
 
     printf("LABEL $$DIVS$$check$$next\n");
-    printf("JUMPIFEQ $$math$$check$$exit LF@tmp2$$value$$type string@float\n");
+    printf("JUMPIFEQ $$operator$$check$$exit LF@tmp2$$value$$type string@float\n");
     printf("JUMP $$DIVS$$check$$help2tofloat\n");
 
     printf("LABEL $$DIVS$$check$$tmp1$$valuetofloat\n");
@@ -446,14 +446,14 @@ void genMathInstCheck()
     printf("EXIT int@7\n");
 
     printf("LABEL $$EQS$$check$$1\n");
-    printf("JUMP $$math$$check$$exit\n");
+    printf("JUMP $$operator$$check$$exit\n");
     // Checking for ??
     printf("LABEL $$COALESCING$$check$$\n");
     printf("JUMPIFEQ $$COALESCING$$check$$2 LF@tmp2$$value nil@nil\n");
     printf("MOVE LF@tmp1$$value LF@tmp2$$value\n");
-    printf("JUMP $$math$$check$$exit\n");
+    printf("JUMP $$operator$$check$$exit\n");
     printf("LABEL $$COALESCING$$check$$2\n");
-    printf("JUMP $$math$$check$$exit\n");
+    printf("JUMP $$operator$$check$$exit\n");
     // Checking for >, <, >=, <=
     printf("LABEL $$LTS$$GTS$$check$$1\n");
     printf("TYPE LF@tmp1$$value$$type LF@tmp1$$value\n");
@@ -505,15 +505,15 @@ void genMathInstCheck()
     printf("JUMPIFEQ $$LTS$$GTS$$check$$str LF@tmp2$$value$$type string@string\n");
     printf("JUMPIFEQ $$LTS$$GTS$$check$$tmp1$$valueint LF@tmp1$$value$$type string@int\n");
     printf("JUMPIFEQ $$LTS$$GTS$$check$$help2int LF@tmp2$$value$$type string@int\n");
-    printf("JUMPIFEQ $$math$$check$$exit LF@tmp1$$value$$type LF@tmp2$$value$$type\n");
-    printf("JUMP $$math$$check$$exit\n");
+    printf("JUMPIFEQ $$operator$$check$$exit LF@tmp1$$value$$type LF@tmp2$$value$$type\n");
+    printf("JUMP $$operator$$check$$exit\n");
 
     printf("LABEL $$LTS$$GTS$$check$$str\n");
-    printf("JUMPIFEQ $$math$$check$$exit LF@tmp1$$value$$type LF@tmp2$$value$$type\n");
+    printf("JUMPIFEQ $$operator$$check$$exit LF@tmp1$$value$$type LF@tmp2$$value$$type\n");
     printf("EXIT int@7\n");
 
     printf("LABEL $$LTS$$GTS$$check$$tmp1$$valueint\n");
-    printf("JUMPIFEQ $$math$$check$$exit LF@tmp1$$value$$type LF@tmp2$$value$$type\n");
+    printf("JUMPIFEQ $$operator$$check$$exit LF@tmp1$$value$$type LF@tmp2$$value$$type\n");
     printf("INT2FLOAT LF@tmp1$$value LF@tmp1$$value\n");
     printf("JUMP $$LTS$$GTS$$check$$2\n");
 
@@ -523,14 +523,14 @@ void genMathInstCheck()
     // End of checking
     printf("JUMPIFEQ $$OR$$EQUAL$$VARIANT GF@$$operator string@LTE\n");
     printf("JUMPIFEQ $$OR$$EQUAL$$VARIANT GF@$$operator string@GTE\n");
-    printf("JUMP $$math$$check$$exit\n");
+    printf("JUMP $$operator$$check$$exit\n");
 
     printf("LABEL $$OR$$EQUAL$$VARIANT\n");
     printf("PUSHS LF@tmp2$$value\n");
     printf("PUSHS LF@tmp1$$value\n");
-    printf("JUMP $$math$$check$$exit\n");
+    printf("JUMP $$operator$$check$$exit\n");
     // EXIT
-    printf("LABEL $$math$$check$$exit\n");
+    printf("LABEL $$operator$$check$$exit\n");
     printf("PUSHS LF@tmp2$$value\n");
     printf("PUSHS LF@tmp1$$value\n");
     printf("POPFRAME\n");
@@ -570,7 +570,7 @@ void genWrite(int numofparams)
     printf("POPFRAME\n");
 }
 
-void genLength() // length
+void genLength()
 {
     static int i = 0;
     printf("CREATEFRAME\n");
@@ -631,7 +631,7 @@ void genChr()
     i++;
 }
 
-void genReadString() // readString
+void genReadString()
 {
     printf("CREATEFRAME\n");
     printf("PUSHFRAME\n");
@@ -641,7 +641,7 @@ void genReadString() // readString
     printf("MOVE GF@$$mainresult TF@readString$$retval\n");
 }
 
-void genReadInt() // readInt
+void genReadInt()
 {
     printf("CREATEFRAME\n");
     printf("PUSHFRAME\n");
@@ -651,7 +651,7 @@ void genReadInt() // readInt
     printf("MOVE GF@$$mainresult TF@readInt$$retval\n");
 }
 
-void genReadDouble() // readDouble
+void genReadDouble()
 {
     printf("CREATEFRAME\n");
     printf("PUSHFRAME\n");
@@ -661,7 +661,7 @@ void genReadDouble() // readDouble
     printf("MOVE GF@$$mainresult TF@readDouble$$retval\n");
 }
 
-void genInt2Double() // Int2Double
+void genInt2Double()
 {
     static int i = 0;
     printf("CREATEFRAME\n");
@@ -680,7 +680,7 @@ void genInt2Double() // Int2Double
     i++;
 }
 
-void genDouble2Int() // Double2Int
+void genDouble2Int()
 {
     static int i = 0;
     printf("CREATEFRAME\n");

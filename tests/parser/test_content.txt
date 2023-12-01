@@ -1,4 +1,29 @@
-write("ABCD")
+var a = 5
+var b = 7.2
+write(a, "\n")
+write(b, "\n")
 
+var f = a + b
+var d = a - b
+var k = a * b
+var w = a / b
+write("+", f, "\n")
+write("-", d, "\n")
+write("*", k, "\n")
+write("/", w, "\n")
 
+let str1 = "ABCD"
+let str2 = "abcd"
+let final = str1 + str2
+write(final, "\n")
 
+var c = a ?? b
+write(c)
+write("\n")
+
+var m = nil
+var n = m ?? str1
+write(n, "\n")
+
+var din = Double2Int(b)
+write(din)
