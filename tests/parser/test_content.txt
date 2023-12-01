@@ -1,32 +1,14 @@
 var a : Int = 2 + 7 / 5 + 6 * 9
 var t : String? = 6 + 9 + a
 
-func foo(_ par : String?, vasia: Int) -> String {
+func foo(x vasia: Int, _ par : Int) -> String {
 var ret = "something"
+var hey = 6 + vasia
 return ret
 }
-var vysl : Double? = 4
 
-vysl = 7 +6
+foo(x: a, t)
 
-write(a)
-
-if (a <= 0) {
-    write("Faktorial nelze spocitat\n")
-} else {
-    vysl = 7 +6
-}
-
-var str1 = "Toto je nejaky text v programu jazyka IFJ23"
-
-while (str1 != "abcdefgh") {
-write("Spatne zadana posloupnost, zkuste znovu:\n")
-str1 = "abcdefgh"
-}
-
-Double2Int(t)
-
-let x = a ?? t
 
 
 
