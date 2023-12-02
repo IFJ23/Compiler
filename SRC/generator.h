@@ -13,6 +13,22 @@ void genPrintHead();
 
 void genStackPush(Token t);
 
+void genFRAME();
+
+void genPLUS();
+
+void genMINUS();
+
+void genMULTIPLY();
+
+void genDIVISION();
+
+void genEQUALS();
+
+void genMORE_LESS();
+
+void genCOALESCING();
+
 void genOperatorCheck();
 
 void genExpressionBegin();
