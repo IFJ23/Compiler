@@ -189,12 +189,12 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "SRC/structures.c",
+			"path" : "SRC/symstack.c",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
-			"path" : "SRC/structures.h",
+			"path" : "SRC/symstack.h",
 			"sourceGroupIndex" : 1
 		},
 		{

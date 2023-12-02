@@ -22,13 +22,15 @@ typedef struct ListNode
 typedef struct
 {
     struct ListNode *head;
-    struct ListNode *last;
+    struct ListNode *active;
     int itemCount;
 } LinkedList;
 
 void listInit(LinkedList *l);
 
-int listInsert(LinkedList *l, Keyword type);
+int listInsert(LinkedList *l, Keyword type, char *name);
+
+ListNode *listGetByIndex(LinkedList *l, int index);
 
 void listDispose(LinkedList *l);
 

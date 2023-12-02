@@ -112,13 +112,32 @@ int parseIf(Scanner *scanner) {
     int err = 0;
     static int ifCnt = 0;
     GETTOKEN(scanner, &parser.currToken)
+///////////////////////
 
-    if (parser.currToken.type != TYPE_LEFT_BRACKET) {
-        printError(LINENUM, "If condition has to be wrapped by brackets.");
-        return SYNTAX_ERROR;
+    if (parser.currToken.type == TYPE_KW && parser.currToken.value.kw == KW_LET) {
+        GETTOKEN(scanner, &parser.currToken)
+        if (parser.currToken.type != TYPE_IDENTIFIER_VAR) {
+            printError(LINENUM, "Let has to be followed by a variable.");
+            return SYNTAX_ERROR;
+        }
+
+        if (symtableFind(parser.outsideBody ? parser.localSymtable : parser.symtable,
+                         parser.currToken.value.string) == NULL) {
+            printError(LINENUM, "Passing an undefined let to the if.");
+            return SEMANTIC_UNDEFINED_ERROR;
+        }
+
+        GETTOKEN(scanner, &parser.currToken)
+
+    } else {
+        if (parser.currToken.type != TYPE_LEFT_BRACKET) {
+            printError(LINENUM, "If condition has to be wrapped by brackets.");
+            return SYNTAX_ERROR;
+        }
+
+        CHECKRULE(parseExpression(scanner, true))
     }
-
-    CHECKRULE(parseExpression(scanner, true))
+//////////////////////////
 
     Token tmp = {.type = DOLLAR};
     stackPush(parser.undefStack, tmp);
@@ -126,7 +145,6 @@ int parseIf(Scanner *scanner) {
     ifCnt++;
     int currentCnt = ifCnt;
     genIfElse1(currentCnt);
-
 
     if (parser.currToken.type != TYPE_LEFT_CURLY_BRACKET) {
         printError(LINENUM, "The body of if has to be wrapped by braces (opening).");
@@ -191,14 +209,14 @@ int parseReturn(Scanner *scanner) {
     if (strcmp(parser.currFunc, "main") != 0) {
         SymtablePair *func = symtableFind(parser.symtable, parser.currFunc);
         if (func->data.parameters.itemCount != -1)
-            returning = func->data.parameters.last->type;
+            returning = func->data.parameters.active->type;
     }
 
     if ((!parser.outsideBody || (parser.outsideBody && returning != KW_NIL))) {
         CHECKRULE(parseExpression(scanner, false))
         genReturn(parser.currFunc, true);
     } else {
-        if ((parser.outsideBody) || (returning == KW_VOID )) {
+        if ((parser.outsideBody) || (returning == KW_VOID)) {
             printError(LINENUM,
                        "Current function doesn't have a return value, so return has to be followed by a semicolon.");
             return SYNTAX_ERROR;
@@ -209,42 +227,97 @@ int parseReturn(Scanner *scanner) {
     return err;
 }
 
-int parseParamsCallN(Scanner *scanner, int *pc) {
+int parseParamsCallN(Scanner *scanner, int *pc, SymtablePair *foundFunction) {
     int err = 0;
-    switch (parser.currToken.type) {
-        case TYPE_STRING:
-        case TYPE_INT:
-        case TYPE_DOUBLE:
-            genStackPush(parser.currToken);
-            ++(*pc);
-            break;
 
-        case TYPE_IDENTIFIER_VAR:
-            if (symtableFind(parser.outsideBody ? parser.localSymtable : parser.symtable,
-                             parser.currToken.value.string) == NULL) {
-                printError(LINENUM, "Passing an undefined var to a function.");
-                return SEMANTIC_UNDEFINED_ERROR;
-            }
-
-            genStackPush(parser.currToken);
-            ++(*pc);
-            break;
-
-        case TYPE_KW:
-            if (parser.currToken.value.kw == KW_NIL) {
+    if (foundFunction->data.paramsCnt == -1) {
+        switch (parser.currToken.type) {
+            case TYPE_STRING:
+            case TYPE_INT:
+            case TYPE_DOUBLE:
                 genStackPush(parser.currToken);
                 ++(*pc);
                 break;
-            } else {
+            case TYPE_IDENTIFIER_VAR:
+                if (symtableFind(parser.outsideBody ? parser.localSymtable : parser.symtable,
+                                 parser.currToken.value.string) == NULL) {
+                    printError(LINENUM, "Passing an undefined var to a function.");
+                    return SEMANTIC_UNDEFINED_ERROR;
+                }
+
+                genStackPush(parser.currToken);
+                ++(*pc);
+                break;
+
+            case TYPE_KW:
+                if (parser.currToken.value.kw == KW_NIL) {
+                    genStackPush(parser.currToken);
+                    ++(*pc);
+                    break;
+                } else {
+                    printError(LINENUM, "Function can only be called with a variable or a literal.");
+                    return SYNTAX_ERROR;
+                    break;
+                }
+
+            default:
                 printError(LINENUM, "Function can only be called with a variable or a literal.");
                 return SYNTAX_ERROR;
                 break;
-            }
+        }
+    } else {
+        LinkedList params = foundFunction->data.parameters;
+        ListNode *prop = listGetByIndex(&params, *pc);
+        if (prop && strcmp(prop->name, "_") != 0) {
+            if (strcmp(prop->name, parser.currToken.value.string) != 0) {
+                printError(LINENUM, "Name is wrong.");
+                return SEMANTIC_OTHER_ERROR;
+            } else {
 
-        default:
-            printError(LINENUM, "Function can only be called with a variable or a literal.");
-            return SYNTAX_ERROR;
-            break;
+                GETTOKEN(scanner, &parser.currToken)
+
+                if (parser.currToken.type != TYPE_COLON) {
+                    printError(LINENUM, "Expected ':' after variable name.");
+                    return SYNTAX_ERROR;
+                }
+
+                GETTOKEN(scanner, &parser.currToken)
+            }
+        }
+        switch (parser.currToken.type) {
+            case TYPE_STRING:
+            case TYPE_INT:
+            case TYPE_DOUBLE:
+                genStackPush(parser.currToken);
+                ++(*pc);
+                break;
+            case TYPE_IDENTIFIER_VAR:
+                if (symtableFind(parser.outsideBody ? parser.localSymtable : parser.symtable,
+                                 parser.currToken.value.string) == NULL) {
+                    printError(LINENUM, "Passing an undefined var to a function.");
+                    return SEMANTIC_UNDEFINED_ERROR;
+                }
+
+                genStackPush(parser.currToken);
+                ++(*pc);
+                break;
+
+            case TYPE_KW:
+                if (parser.currToken.value.kw == KW_NIL) {
+                    genStackPush(parser.currToken);
+                    ++(*pc);
+                    break;
+                } else {
+                    printError(LINENUM, "Function can only be called with a variable or a literal.");
+                    return SYNTAX_ERROR;
+                    break;
+                }
+
+            default:
+                printError(LINENUM, "Function can only be called with a variable or a literal.");
+                return SYNTAX_ERROR;
+                break;
+        }
     }
 
     GETTOKEN(scanner, &parser.currToken)
@@ -252,17 +325,16 @@ int parseParamsCallN(Scanner *scanner, int *pc) {
     if (parser.currToken.type == TYPE_COMMA) {
         GETTOKEN(scanner, &parser.currToken)
 
-        return parseParamsCallN(scanner, pc);
-    }
-    else
+        return parseParamsCallN(scanner, pc, foundFunction);
+    } else
         return err;
 }
 
-int parseParamsCall(Scanner *scanner, int *pc) {
+int parseParamsCall(Scanner *scanner, int *pc, SymtablePair *foundFunction) {
     if (parser.currToken.type == TYPE_RIGHT_BRACKET)
         return 0;
     else
-        return parseParamsCallN(scanner, pc);
+        return parseParamsCallN(scanner, pc, foundFunction);
 }
 
 int parseFunctionCall(Scanner *scanner) {
@@ -286,7 +358,7 @@ int parseFunctionCall(Scanner *scanner) {
 
     GETTOKEN(scanner, &parser.currToken)
 
-    CHECKRULE(parseParamsCall(scanner, &parametersRealCount))
+    CHECKRULE(parseParamsCall(scanner, &parametersRealCount, foundFunction))
 
     if (!parser.outsideBody) {
         if ((parametersRealCount != foundFunction->data.paramsCnt) && foundFunction->data.paramsCnt != -1) {
@@ -296,6 +368,7 @@ int parseFunctionCall(Scanner *scanner) {
     }
 
     if (parser.currToken.type != TYPE_RIGHT_BRACKET) {
+        printf("CURRENT TYPE, %d \n", parser.currToken.type);
         printError(LINENUM, "Function's parameters have to be in a bracket (closing).");
         return SYNTAX_ERROR;
     }
@@ -306,7 +379,7 @@ int parseFunctionCall(Scanner *scanner) {
     if (foundFunction->data.parameters.itemCount == -1) {
         rv = NULL;
     } else {
-        rv = foundFunction->data.parameters.last;
+        rv = foundFunction->data.parameters.active;
     }
     genFuncCall((char *) foundFunction->key, parametersRealCount, rv);
 
@@ -320,8 +393,7 @@ int parseAssign(Scanner *scanner, Token variable) {
 
     if (parser.currToken.type == TYPE_IDENTIFIER_FUNC) {
         CHECKRULE(parseFunctionCall(scanner))
-    }
-    else {
+    } else {
         CHECKRULE(parseExpression(scanner, false))
     }
 
@@ -349,7 +421,7 @@ int parseVariableRedefinition(Scanner *scanner, Token variable) {
     return err;
 }
 
-int parseTypeP(LinkedList *ll) {
+int parseTypeP(LinkedList *ll, char *name) {
     if (parser.currToken.type != TYPE_KW) {
         printError(LINENUM, "Expected variable type.");
         return SYNTAX_ERROR;
@@ -359,12 +431,17 @@ int parseTypeP(LinkedList *ll) {
         case KW_STRING:
         case KW_INT:
         case KW_DOUBLE:
+            if (ll != NULL) {
+                listInsert(ll, parser.currToken.value.kw, name);
+                ll->head->opt = false;
+            }
+            return 0;
         case KW_UNDEFINED_DOUBLE:
         case KW_UNDEFINED_INT:
         case KW_UNDEFINED_STRING:
             if (ll != NULL) {
-                listInsert(ll, parser.currToken.value.kw);
-                ll->head->opt = false;
+                listInsert(ll, parser.currToken.value.kw, name);
+                ll->head->opt = true;
             }
             return 0;
 
@@ -374,11 +451,11 @@ int parseTypeP(LinkedList *ll) {
     }
 }
 
-int parseTypeN(Scanner *scanner, LinkedList *ll) {
+int parseTypeN(Scanner *scanner, LinkedList *ll, char *name) {
     int err = 0;
     GETTOKEN(scanner, &parser.currToken)
 
-    CHECKRULE(parseTypeP(ll))
+    CHECKRULE(parseTypeP(ll, name))
     ll->head->opt = true;
     return err;
 }
@@ -420,7 +497,7 @@ int parseBody(Scanner *scanner) {
                         LinkedList ll;
                         listInit(&ll);
 
-                        CHECKRULE(parseTypeP(&ll))
+                        CHECKRULE(parseTypeP(&ll, parser.currToken.value.string))
 
                         if (peek_token(scanner, &parser.currToken) != 0)
                             return LEXICAL_ERROR;
@@ -440,8 +517,7 @@ int parseBody(Scanner *scanner) {
                             symtableAdd(parser.outsideBody ? parser.localSymtable : parser.symtable,
                                         variable.value.string, VAR, -1, parser.condDec, empty);
                         }
-                    }
-                    else {
+                    } else {
                         CHECKRULE(parseExpression(scanner, false))
                     }
                 }
@@ -467,7 +543,7 @@ int parseBody(Scanner *scanner) {
                         LinkedList ll;
                         listInit(&ll);
 
-                        CHECKRULE(parseTypeP(&ll))
+                        CHECKRULE(parseTypeP(&ll, parser.currToken.value.string))
 
                         if (peek_token(scanner, &parser.currToken) != 0)
                             return LEXICAL_ERROR;
@@ -487,8 +563,7 @@ int parseBody(Scanner *scanner) {
                             symtableAdd(parser.outsideBody ? parser.localSymtable : parser.symtable,
                                         variable.value.string, LET, -1, parser.condDec, empty);
                         }
-                    }
-                    else {
+                    } else {
                         CHECKRULE(parseExpression(scanner, false))
                     }
                 }
@@ -536,6 +611,19 @@ int parseParamsDefN(Scanner *scanner, LinkedList *ll) {
 
     GETTOKEN(scanner, &parser.currToken)
 
+    if (parser.currToken.type != TYPE_IDENTIFIER_VAR) {
+        printError(LINENUM, "Type has to be followed by a variable.");
+        return SYNTAX_ERROR;
+    }
+
+    printf("name: %s, id: %s, equals: %d \n", parser.currToken.value.string, name.value.string,
+           parser.currToken.value.string == name.value.string);
+
+    if (strcmp(parser.currToken.value.string, name.value.string) == 0) {
+        printError(LINENUM, "Name and Id should be different.");
+        return SEMANTIC_OTHER_ERROR;
+    }
+
     if (parser.currToken.type == TYPE_IDENTIFIER_VAR) {
         id = parser.currToken;
         GETTOKEN(scanner, &parser.currToken)
@@ -548,18 +636,15 @@ int parseParamsDefN(Scanner *scanner, LinkedList *ll) {
 
     GETTOKEN(scanner, &parser.currToken)
 
-    if (parser.currToken.type != TYPE_OPTIONAL_TYPE) {
-        CHECKRULE(parseTypeP(ll))
-    } else {
-        CHECKRULE(parseTypeN(scanner, ll))
-    }
+    CHECKRULE(parseTypeP(ll, name.value.string))
 
-    ll->head->name = name.value.string;
+//    ll->head->name = name.value.string;
+//    ll->head->id = id.value.string;
 
-    stackPush(parser.undefStack, name);
+    stackPush(parser.undefStack, id);
 
     LinkedList empty = {.itemCount = 0};
-    symtableAdd(parser.localSymtable, name.value.string, VAR, -1, parser.condDec, empty);
+    symtableAdd(parser.localSymtable, id.value.string, VAR, -1, parser.condDec, empty);
 
     GETTOKEN(scanner, &parser.currToken)
 
@@ -567,8 +652,7 @@ int parseParamsDefN(Scanner *scanner, LinkedList *ll) {
         GETTOKEN(scanner, &parser.currToken)
 
         return parseParamsDefN(scanner, ll);
-    }
-    else
+    } else
         return err;
 }
 
@@ -581,14 +665,13 @@ int parseParamsDef(Scanner *scanner, LinkedList *ll) {
 
 int parseType(Scanner *scanner, LinkedList *ll) {
     if (parser.currToken.type == TYPE_OPTIONAL_TYPE) {
-        return parseTypeN(scanner, ll);
-    }
-    else if (parser.currToken.type == TYPE_KW && parser.currToken.value.kw == KW_VOID) {
-        listInsert(ll, parser.currToken.value.kw);
+        return parseTypeN(scanner, ll, "return");
+    } else if (parser.currToken.type == TYPE_KW && parser.currToken.value.kw == KW_VOID) {
+        listInsert(ll, parser.currToken.value.kw, "return");
         return 0;
     }
 
-    return parseTypeP(ll);
+    return parseTypeP(ll, "return");
 }
 
 int findDuplicateParams() {
@@ -664,6 +747,7 @@ int parseFunctionDef(Scanner *scanner) {
     symtableAdd(parser.symtable, func.value.string, FUNC, ll.itemCount - 1, parser.condDec, ll);
 
     if (findDuplicateParams() != 0) {
+        printError(LINENUM, "findDuplicateParams");
         return SEMANTIC_TYPE_ERROR;
     }
 
@@ -689,8 +773,7 @@ int parseMainBody(Scanner *scanner) {
     int err = 0;
     if (parser.currToken.type == TYPE_KW && parser.currToken.value.kw == KW_FUNC) {
         CHECKRULE(parseFunctionDef(scanner))
-    }
-    else if (parser.currToken.type == TYPE_EOF)
+    } else if (parser.currToken.type == TYPE_EOF)
         return 0;
     else
         CHECKRULE(parseBody(scanner))
@@ -711,8 +794,7 @@ int parseProgramEnd(Scanner *scanner) {
             printError(LINENUM, "Closing tag can only be followed by EOL.");
             return SYNTAX_ERROR;
         }
-    }
-    else if (parser.currToken.type == TYPE_EOF)
+    } else if (parser.currToken.type == TYPE_EOF)
         return 0;
     else
         return SYNTAX_ERROR;

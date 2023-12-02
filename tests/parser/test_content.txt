@@ -1,15 +1,43 @@
 var a : Int = 2 + 7 / 5 + 6 * 9
 var t : String? = 6 + 9 + a
 
-func foo(x vasia: Int, _ par : Int) -> String {
+func foo(x _: Int, _ par : Int) -> String {
 var ret = "something"
-var hey = 6 + vasia
+var hey = 6 + par
 return ret
 }
 
 foo(x: a, t)
 
+func fo(_ vasia: Int, _ par : Int) -> String {
+var ret = "something"
+var hey = 6 + vasia
+return ret
+}
 
+fo(a, t)
+
+
+write("Zadejte cislo pro vypocet faktorialu\n")
+let a: Int? = 6
+
+if let (a) {
+    if (a < 0) {
+        write("Faktorial nelze spocitat\n")
+    } else {
+        var a = Int2Double(a)
+        var vysl: Double = 1
+
+        while (a > 0) {
+            vysl = vysl * a
+            a = a - 1
+        }
+
+        write("Vysledek je: ", vysl, "\n")
+    }
+} else {
+    write("Chyba pri nacitani celeho cisla!\n")
+}
 
 
 
