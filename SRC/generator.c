@@ -611,6 +611,11 @@ void genWrite(int numofparams)
     {
         printf("DEFVAR LF@$$write%d\n", i);
         printf("POPS LF@$$write%d\n", i);
+        printf("JUMPIFEQ $$WRITE$$nil%d LF@$$write%d nil@nil\n", i, i);
+        printf("JUMP $$WRITE$$exit%d\n", i);
+        printf("LABEL $$WRITE$$nil%d\n", i);
+        printf("MOVE LF@$$write%d string@\\010\n", i);
+        printf("LABEL $$WRITE$$exit%d\n", i);
     }
     for (int i = 1; i <= numofparams; i++)
     {
@@ -645,19 +650,24 @@ void genOrd()
     printf("PUSHFRAME\n");
     printf("DEFVAR LF@string\n");
     printf("DEFVAR LF@type\n");
-    printf("DEFVAR LF@length$$retval\n");
+    printf("DEFVAR LF@ASCII$$retval\n");
     printf("POPS LF@string\n");
-    printf("TYPE LF@type LF@str\n");
+    printf("TYPE LF@type LF@string\n");
     printf("JUMPIFEQ func$$ord$$%d$$isstring LF@type string@string\n", i);
     printf("EXIT int@4\n");
+
     printf("LABEL func$$ord$$%d$$isstring\n", i);
-    printf("STRLEN LF@length$$retval LF@string\n");
-    printf("JUMPIFEQ func$$ord$$%d$$empty LF@length$$retval int@0\n", i);
-    printf("STRI2INT LF@length$$retval LF@string int@0\n");
+    printf("STRLEN LF@ASCII$$retval LF@string\n");
+    printf("JUMPIFEQ func$$ord$$%d$$empty LF@ASCII$$retval int@0\n", i);
+
+    printf("STRI2INT LF@ASCII$$retval LF@string int@0\n");
+    printf("JUMP func$$ord$$%d$$exit\n", i);
+
     printf("LABEL func$$ord$$%d$$empty\n", i);
-    printf("MOVE LF@length$$retval int@0\n");
+    printf("MOVE LF@ASCII$$retval int@0\n");
+    printf("LABEL func$$ord$$%d$$exit\n", i);
     printf("POPFRAME\n");
-    printf("MOVE GF@$$mainresult TF@length$$retval\n");
+    printf("MOVE GF@$$mainresult TF@ASCII$$retval\n");
     i++;
 }
 
@@ -668,13 +678,14 @@ void genChr()
     printf("PUSHFRAME\n");
     printf("DEFVAR LF@number\n");
     printf("DEFVAR LF@type\n");
-    printf("DEFVAR LF@string$$retval\n");
+    printf("DEFVAR LF@char$$retval\n");
     printf("POPS LF@number\n");
     printf("TYPE LF@type LF@number\n");
     printf("JUMPIFEQ func$$chr$$%d$$isint LF@type string@int\n", i);
     printf("EXIT int@4\n");
+
     printf("LABEL func$$chr$$%d$$isint\n", i);
-    printf("INT2CHAR LF@string$$retval LF@number\n");
+    printf("INT2CHAR LF@char$$retval LF@number\n");
     printf("POPFRAME\n");
     printf("MOVE GF@$$mainresult TF@string$$retval\n");
     i++;
@@ -757,18 +768,18 @@ void genSubstring()
     printf("DEFVAR LF@$$substring$$%d$$curr$$chr\n", i);
     printf("DEFVAR LF@$$i\n");
     printf("DEFVAR LF@$$j\n");
-    printf("DEFVAR LF@$$str\n");
+    printf("DEFVAR LF@$$string\n");
     printf("DEFVAR LF@$$pres\n");
-    printf("DEFVAR LF@$$len\n");
+    printf("DEFVAR LF@$$length\n");
     printf("MOVE LF@$$substring$$%d$$retval nil@nil\n", i);
     printf("POPS LF@$$j\n");
     printf("POPS LF@$$i\n");
-    printf("POPS LF@$$str\n");
+    printf("POPS LF@$$string\n");
     printf("TYPE LF@$$pres LF@$$j\n");
     printf("JUMPIFNEQ $$incorrect$$type%d LF@$$pres string@int\n", i);
     printf("TYPE LF@$$pres LF@$$i\n");
     printf("JUMPIFNEQ $$incorrect$$type%d LF@$$pres string@int\n", i);
-    printf("TYPE LF@$$pres LF@$$str\n");
+    printf("TYPE LF@$$pres LF@$$string\n");
     printf("JUMPIFNEQ $$incorrect$$type%d LF@$$pres string@string\n", i);
     printf("JUMP $$correct$$type%d\n", i);
 
@@ -781,26 +792,26 @@ void genSubstring()
     printf("JUMPIFEQ $$return$$0$$%d LF@$$pres bool@true\n", i);
     printf("LT LF@$$pres LF@$$j int@0\n");
     printf("JUMPIFEQ $$return$$0$$%d LF@$$pres bool@true\n", i);
-    printf("STRLEN LF@$$pres LF@$$str\n");
+    printf("STRLEN LF@$$pres LF@$$string\n");
     printf("EQ LF@$$pres LF@$$pres LF@$$i\n");
     printf("JUMPIFEQ $$return$$0$$%d LF@$$pres bool@true\n", i);
-    printf("STRLEN LF@$$pres LF@$$str\n");
+    printf("STRLEN LF@$$pres LF@$$string\n");
     printf("GT LF@$$pres LF@$$i LF@$$pres\n");
     printf("JUMPIFEQ $$return$$0$$%d LF@$$pres bool@true\n", i);
-    printf("STRLEN LF@$$pres LF@$$str\n");
+    printf("STRLEN LF@$$pres LF@$$string\n");
     printf("GT LF@$$pres LF@$$j LF@$$pres\n");
     printf("JUMPIFEQ $$return$$0$$%d LF@$$pres bool@true\n", i);
 
-    printf("MOVE LF@$$len LF@$$j\n");
-    printf("SUB LF@$$len LF@$$len LF@$$i\n");
+    printf("MOVE LF@$$length LF@$$j\n");
+    printf("SUB LF@$$length LF@$$length LF@$$i\n");
     printf("MOVE LF@$$substring$$%d$$retval string@\n", i);
-    printf("JUMPIFEQ $$return$$0$$%d LF@$$len int@0\n", i);
+    printf("JUMPIFEQ $$return$$0$$%d LF@$$length int@0\n", i);
     printf("LABEL $$for%d\n", i);
-    printf("GETCHAR LF@$$substring$$%d$$curr$$chr LF@$$str LF@$$i\n", i);
+    printf("GETCHAR LF@$$substring$$%d$$curr$$chr LF@$$string LF@$$i\n", i);
     printf("CONCAT LF@$$substring$$%d$$retval LF@$$substring$$%d$$retval LF@$$substring$$%d$$curr$$chr\n", i, i, i);
-    printf("SUB LF@$$len LF@$$len int@1\n");
+    printf("SUB LF@$$length LF@$$length int@1\n");
     printf("ADD LF@$$i LF@$$i int@1\n");
-    printf("JUMPIFNEQ $$for%d LF@$$len int@0\n", i);
+    printf("JUMPIFNEQ $$for%d LF@$$length int@0\n", i);
     printf("LABEL $$return$$0$$%d\n", i);
     printf("POPFRAME\n");
     printf("MOVE GF@$$mainresult TF@$$substring$$%d$$retval\n", i);
