@@ -33,7 +33,6 @@ int parserInit() {
     genPrintHead();
     genCheckTruth();
 
-
     return 0;
 }
 

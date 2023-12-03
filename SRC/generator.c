@@ -480,11 +480,8 @@ void genEQUALS()
     static int i = 0;
     genFRAME();
     printf("LABEL $$EQUALS$$check%d\n", i);
-    printf("JUMPIFEQ $$EQUALS$$check%d$$1 LF@tmp1$$value$$type LF@tmp2$$value$$type\n", i);
+    printf("JUMPIFEQ $$operator$$EQUALS$$exit%d LF@tmp1$$value$$type LF@tmp2$$value$$type\n", i);
     printf("EXIT int@7\n");
-
-    printf("LABEL $$EQUALS$$check%d$$1\n", i);
-    printf("JUMP $$operator$$EQUALS$$exit%d\n", i);
 
     printf("LABEL $$operator$$EQUALS$$exit%d\n", i);
     printf("PUSHS LF@tmp2$$value\n");
