@@ -548,7 +548,7 @@ void genMORE_LESS()
     printf("JUMPIFEQ $$MORE$$LESS$$check%d$$tmp1$$valueint LF@tmp1$$value$$type string@int\n", i);
     printf("JUMPIFEQ $$MORE$$LESS$$check%d$$help2int LF@tmp2$$value$$type string@int\n", i);
     printf("JUMPIFEQ $$operator$$MORE$$LESS$$exit%d LF@tmp1$$value$$type LF@tmp2$$value$$type\n", i);
-    printf("JUMP $$operator$$MORE$$LESS$$exit%d\n");
+    printf("JUMP $$operator$$MORE$$LESS$$exit%d\n", i);
 
     printf("LABEL $$MORE$$LESS$$check%d$$str\n", i);
     printf("JUMPIFEQ $$operator$$MORE$$LESS$$exit%d LF@tmp1$$value$$type LF@tmp2$$value$$type\n", i);

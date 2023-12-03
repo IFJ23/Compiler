@@ -9,14 +9,16 @@
 
 #include <string.h>
 #include <stdbool.h>
-#include "structures.h"
+#include "linlist.h"
+#include "symstack.h"
 
 typedef const char *SymtableKey;
 
 typedef enum
 {
     FUNC,
-    VAR
+    VAR,
+    LET
 } ElType;
 
 typedef struct SymtableData

@@ -4,8 +4,8 @@
 // Vsevolod Pokhvalenko (xpokhv00)
 // Ivan Onufriienko (xonufr00)
 
-#ifndef IFJ23_STRUCTURES_H
-#define IFJ23_STRUCTURES_H
+#ifndef IFJ23_SYMSTACK_H
+#define IFJ23_SYMSTACK_H
 
 #include "scanner.h"
 #include "error.h"
@@ -21,29 +21,7 @@ typedef struct
     unsigned len;
 } Stack;
 
-typedef struct ListNode
-{
-    Keyword type;
-    bool opt;
-    char *name;
-    struct ListNode *next;
-} ListNode;
-
-typedef struct
-{
-    struct ListNode *head;
-    struct ListNode *last;
-    int itemCount;
-} LinkedList;
-
-
 void stackFree(Stack *s);
-
-void listInit(LinkedList *l);
-
-int listInsert(LinkedList *l, Keyword type);
-
-void listDispose(LinkedList *l);
 
 void stackInit(Stack *s);
 

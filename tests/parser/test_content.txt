@@ -4,12 +4,13 @@ var x = a + b
 var y = a - b
 var u = a * b
 var z = a / b
+var z = a / b
 write(x, "\n")
 write(y, "\n")
 write(u, "\n")
 write(z, "\n")
 
-if (a != 5){
+if let a {
     write(a, "\n")
 } else{
     write("NOT\n")
@@ -29,4 +30,7 @@ write(final)
 var dint = Double2Int(b)
 write(dint, "\n")
 var ind = Int2Double(a)
-write(ind) 
+write(ind)
+
+var qwerty = readInt()
+write(qwerty)

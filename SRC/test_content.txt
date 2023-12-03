@@ -1,48 +1,37 @@
-var a : Int = 2 + 7 / 5 + 6 * 9
-var t : String = 6 + 9 + a
+var a = 5
+var b = 3.0
+var x = a + b
+var y = a - b
+var u = a * b
+var z = a / b
 
-func foo(par : String, vasia: Int) -> String {
-var ret = "something"
-return ret
+var z = a / b
+write(x, "\n")
+write(y, "\n")
+write(u, "\n")
+write(z, "\n")
+
+if let a {
+    write(a, "\n")
+} else{
+    write("NOT\n")
 }
 
-let vysl : Double = 4
+var zas = nil
+var vo = zas ?? a
+write(vo, "\n")
+var ce = a ?? zas
+write(ce, "\n")
 
-write(a)
+var str1 = "HELLO"
+var str2 = " WORLD!\n"
+var final = str1 + str2
+write(final)
 
-if (a < 0) {
-    write("Faktorial nelze spocitat\n")
-} else {
-    vysl = 7
-}
+var dint = Double2Int(b)
+write(dint, "\n")
+var ind = Int2Double(a)
+write(ind)
 
-var str1 = "Toto je nejaky text v programu jazyka IFJ23"
-
-while (str1 != "abcdefgh") {
-write("Spatne zadana posloupnost, zkuste znovu:\n")
-str1 = "abcdefgh"
-}
-
-Double2Int(t)
-
-let x = a ?? t
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+var qwerty = readInt()
+write(qwerty)
