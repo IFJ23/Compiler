@@ -480,11 +480,8 @@ void genEQUALS()
     static int i = 0;
     genFRAME();
     printf("LABEL $$EQUALS$$check%d\n", i);
-    printf("JUMPIFEQ $$EQUALS$$check%d$$1 LF@tmp1$$value$$type LF@tmp2$$value$$type\n", i);
+    printf("JUMPIFEQ $$operator$$EQUALS$$exit%d LF@tmp1$$value$$type LF@tmp2$$value$$type\n", i);
     printf("EXIT int@7\n");
-
-    printf("LABEL $$EQUALS$$check%d$$1\n", i);
-    printf("JUMP $$operator$$EQUALS$$exit%d\n", i);
 
     printf("LABEL $$operator$$EQUALS$$exit%d\n", i);
     printf("PUSHS LF@tmp2$$value\n");
@@ -548,7 +545,7 @@ void genMORE_LESS()
     printf("JUMPIFEQ $$MORE$$LESS$$check%d$$tmp1$$valueint LF@tmp1$$value$$type string@int\n", i);
     printf("JUMPIFEQ $$MORE$$LESS$$check%d$$help2int LF@tmp2$$value$$type string@int\n", i);
     printf("JUMPIFEQ $$operator$$MORE$$LESS$$exit%d LF@tmp1$$value$$type LF@tmp2$$value$$type\n", i);
-    printf("JUMP $$operator$$MORE$$LESS$$exit%d\n");
+    printf("JUMP $$operator$$MORE$$LESS$$exit%d\n", i);
 
     printf("LABEL $$MORE$$LESS$$check%d$$str\n", i);
     printf("JUMPIFEQ $$operator$$MORE$$LESS$$exit%d LF@tmp1$$value$$type LF@tmp2$$value$$type\n", i);

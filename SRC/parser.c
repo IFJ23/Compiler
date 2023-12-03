@@ -34,7 +34,7 @@ int parserInit()
     genPrintHead();
     // genConvertBool();
     genCheckTruth();
-    genOperatorCheck();
+    // genOperatorCheck();
 
     return 0;
 }
