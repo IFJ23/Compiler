@@ -471,6 +471,11 @@ int parseBody(Scanner *scanner) {
 
                 GETTOKEN(scanner, &parser.currToken)
 
+                if (symtableFind(parser.symtable, parser.currToken.value.string) != NULL) {
+                    printError(LINENUM, "Redefinition of variable.");
+                    return SEMANTIC_DEFINITION_ERROR;
+                }
+
                 if (parser.currToken.type == TYPE_IDENTIFIER_VAR) {
 
                     Token variable = parser.currToken;
@@ -516,6 +521,11 @@ int parseBody(Scanner *scanner) {
             case KW_LET:
 
                 GETTOKEN(scanner, &parser.currToken)
+
+                if (symtableFind(parser.symtable, parser.currToken.value.string) != NULL) {
+                    printError(LINENUM, "Redefinition of variable.");
+                    return SEMANTIC_DEFINITION_ERROR;
+                }
 
                 if (parser.currToken.type == TYPE_IDENTIFIER_VAR) {
 

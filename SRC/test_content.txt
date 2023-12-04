@@ -11,6 +11,8 @@ write(y, "\n")
 write(u, "\n")
 write(z, "\n")
 
+var a = 5
+
 if let a {
     write(a, "\n")
 } else{
