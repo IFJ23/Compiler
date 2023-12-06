@@ -6,7 +6,6 @@
  * @author Sviatoslav Pokhvalenko (xpokhv01)
  */
 #include "expression.h"
-#include "generator.h"
 
 extern Parser parser;
 

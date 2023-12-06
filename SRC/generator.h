@@ -9,6 +9,7 @@
 #ifndef IFJ23_GENERATOR_H
 #define IFJ23_GENERATOR_H
 
+#include "stdio.h"
 #include "scanner.h"
 #include "parser.h"
 

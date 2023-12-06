@@ -6,7 +6,7 @@
  * @author Vsevolod Pokhvalenko (xpokhv00)
  */
 
-#include "parser.h" // Include the header file of your code
+#include "parser.h" // Include the header file of code
 /**
  * @brief Main function
  * @return 0 if everything went well, 1 if there was an error

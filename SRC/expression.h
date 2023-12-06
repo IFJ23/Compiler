@@ -6,8 +6,8 @@
  * @author Sviatoslav Pokhvalenko (xpokhv01)
  */
 
-#ifndef H_EXPRESSION
-#define H_EXPRESSION
+#ifndef IFJ23_EXPRESSION_H
+#define IFJ23_EXPRESSION_H
 
 #include "symtable.h"
 #include "parser.h"
@@ -66,4 +66,4 @@ typedef enum
  */
 int parseExpression(Scanner *scanner, bool endWithBracket);
 
-#endif //H_EXPRESSION
+#endif //IFJ23_EXPRESSION_H

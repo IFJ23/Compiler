@@ -6,8 +6,8 @@
  * @author Vsevolod Pokhvalenko (xpokhv00)
  */
 
-#ifndef H_PARSER
-#define H_PARSER
+#ifndef IFJ23_PARSER_H
+#define IFJ23_PARSER_H
 
 #include "scanner.h"
 #include "linlist.h"

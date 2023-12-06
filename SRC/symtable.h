@@ -1,10 +1,10 @@
 // Compiler to IFJ23 language
 // Faculty of Information Technology Brno University of Technology
-// Authors:
 /**
  * @file symtable.h
  * @brief Stack for symbols in the IFJ23 language compiler
  * @author Vsevolod Pokhvalenko (xpokhv00)
+ * @author Sviatoslav Pokhvalenko (xpokhv01)
  */
 
 #ifndef IFJ23_SYMTABLE_H

@@ -6,7 +6,6 @@
  * @author Oleksii Shelest (xshele02)
  */
 
-#include "stdio.h"
 #include "generator.h"
 
 extern Parser parser;
