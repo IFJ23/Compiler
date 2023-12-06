@@ -1,39 +1,42 @@
 var a = 5
 var b = 3.0
-var x = a + b
-var y = a - b
-var u = a * b
-var z = a / b
+let c = a + b
+write(c, "\n")
+let v = a - b
+write(v, "\n")
+let r = a * b
+write(r, "\n")
+let n = a / b
+write(n, "\n")
+let m = a ?? b
+write(m, "\n")
 
-var z = a / b
-write(x, "\n")
-write(y, "\n")
-write(u, "\n")
-write(z, "\n")
 
-var a = 5
+var str1 = "Hello"
+var str2 = " World!"
+let final = str1 + str2
+write(final, "\n")
 
-if let a {
-    write(a, "\n")
-} else{
-    write("NOT\n")
-}
+let ind = Int2Double(a)
+write(ind, "\n")
 
-var zas = nil
-var vo = zas ?? a
-write(vo, "\n")
-var ce = a ?? zas
-write(ce, "\n")
+let doi = Double2Int(b)
+write(doi, "\n")
 
-var str1 = "HELLO"
-var str2 = " WORLD!\n"
-var final = str1 + str2
-write(final)
+let sub = substring(str1, 0, 3)
+write(sub, "\n")
 
-var dint = Double2Int(b)
-write(dint, "\n")
-var ind = Int2Double(a)
-write(ind)
+let ordd = ord(final)
+write(ordd, "\n")
 
-var qwerty = readInt()
-write(qwerty)
+let chrr = chr(42)
+write(chrr, "\n")
+
+let rs = readString()
+write(rs, "\n")
+
+let ri = readInt()
+write(ri, "\n")
+
+let rd = readDouble()
+write(rd, "\n")

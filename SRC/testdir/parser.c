@@ -40,8 +40,7 @@ int parserInit() {
     parser.ifScope = false;
     parser.currFunc = "main";
 
-    genPrintHead();
-    genCheckTruth();
+    generatorHead();
 
     return 0;
 }
@@ -161,14 +160,14 @@ int parseWhile(Scanner *scanner) {
     int currWhile = whileCnt; // Store the current 'while' counter value
 
     // Generate code for the beginning of the 'while' loop
-    genWhileLoop1(currWhile);
+    generatorWhile1(currWhile);
     // Check if the 'while' condition starts with a left bracket
     if (parser.currToken.type == TYPE_LEFT_BRACKET) {
         CHECKRULE(parseExpression(scanner, true)) // Parse the expression for 'while' condition
     } else {
         CHECKRULE(parseExpression(scanner, false)) // Parse the expression for 'while' condition
     }
-    genWhileLoop2(currWhile);
+    generatorWhile2(currWhile);
 
     // Check if the body of 'while' starts with a left curly bracket
     if (parser.currToken.type != TYPE_LEFT_CURLY_BRACKET) {
@@ -191,7 +190,7 @@ int parseWhile(Scanner *scanner) {
     }
 
     // Generate code for the end of the 'while' loop
-    genWhileLoop3(currWhile);
+    generatorWhile3(currWhile);
 
     return err; // Return the error code or success flag
 }
@@ -238,7 +237,7 @@ int parseIf(Scanner *scanner) {
 
     ifCnt++; // Increment 'if' counter
     int currentCnt = ifCnt; // Store the current 'if' counter value
-    genIfElse1(currentCnt); // Generate code for the 'if' condition
+    generatorIfElse1(currentCnt); // Generate code for the 'if' condition
 
     // Check if the body of 'if' starts with a left curly bracket
     if (parser.currToken.type != TYPE_LEFT_CURLY_BRACKET) {
@@ -274,7 +273,7 @@ int parseIf(Scanner *scanner) {
         return SYNTAX_ERROR;
     }
 
-    genIfElse2(currentCnt); // Generate code for 'else' part of the 'if' statement
+    generatorIfElse2(currentCnt); // Generate code for 'else' part of the 'if' statement
 
     GETTOKEN(scanner, &parser.currToken) // Get the next token
 
@@ -306,7 +305,7 @@ int parseIf(Scanner *scanner) {
         return SYNTAX_ERROR;
     }
 
-    genIfElse3(currentCnt); // Generate code for the end of 'if-else'
+    generatorIfElse3(currentCnt); // Generate code for the end of 'if-else'
 
     return err; // Return the error code or success flag
 }
@@ -337,14 +336,14 @@ int parseReturn(Scanner *scanner) {
     if ((!parser.outsideBody || (parser.outsideBody && returning != KW_NIL))) {
         // Parse the expression following the 'return' statement and generate return code
         CHECKRULE(parseExpression(scanner, false))
-        genReturn(parser.currFunc, true); // Generate return code with return value
+        generatorReturn(parser.currFunc, true); // Generate return code with return value
     } else {
         // Handle cases when the 'return' statement is invalid
         if ((parser.outsideBody) || (returning == KW_VOID)) {
             printError(LINENUM, "Current function doesn't have a return value");
             return SYNTAX_ERROR;
         }
-        genReturn(parser.currFunc, false); // Generate return code without a return value
+        generatorReturn(parser.currFunc, false); // Generate return code without a return value
     }
 
     return err; // Return the error code or success flag
@@ -369,7 +368,7 @@ int parseParamsCallNext(Scanner *scanner, int *pc, SymtablePair *foundFunction) 
             case TYPE_INT:
             case TYPE_DOUBLE:
                 // Generating code for literal types and incrementing parameter count
-                genStackPush(parser.currToken);
+                generatorStackPush(parser.currToken);
                 ++(*pc);
                 break;
             case TYPE_IDENTIFIER_VAR:
@@ -385,7 +384,7 @@ int parseParamsCallNext(Scanner *scanner, int *pc, SymtablePair *foundFunction) 
             case TYPE_KW:
                 // Handling KW_NIL case
                 if (parser.currToken.value.kw == KW_NIL) {
-                    genStackPush(parser.currToken);
+                    generatorStackPush(parser.currToken);
                     ++(*pc);
                     break;
                 } else {
@@ -425,7 +424,7 @@ int parseParamsCallNext(Scanner *scanner, int *pc, SymtablePair *foundFunction) 
             case TYPE_STRING:
             case TYPE_INT:
             case TYPE_DOUBLE:
-                genStackPush(parser.currToken);
+                generatorStackPush(parser.currToken);
                 ++(*pc);
                 break;
             case TYPE_IDENTIFIER_VAR:
@@ -433,12 +432,12 @@ int parseParamsCallNext(Scanner *scanner, int *pc, SymtablePair *foundFunction) 
                     printError(LINENUM, "Passing an undefined var to a function.");
                     return SEMANTIC_UNDEFINED_ERROR;
                 }
-                genStackPush(parser.currToken);
+                generatorStackPush(parser.currToken);
                 ++(*pc);
                 break;
             case TYPE_KW:
                 if (parser.currToken.value.kw == KW_NIL) {
-                    genStackPush(parser.currToken);
+                    generatorStackPush(parser.currToken);
                     ++(*pc);
                     break;
                 } else {
@@ -540,7 +539,7 @@ int parseFunctionCall(Scanner *scanner) {
     }
 
     // Generate the function call
-    genFuncCall((char *) foundFunction->key, parametersRealCount, rv);
+    generatorFuncCall((char *) foundFunction->key, parametersRealCount, rv);
 
     return err;
 }
@@ -578,7 +577,7 @@ int parseAssign(Scanner *scanner, Token variable) {
     }
 
     // Generate the assignment operation
-    genAssignVariable(variable);
+    generatorAssignVariable(variable);
 
     return err;
 }
@@ -652,7 +651,7 @@ int parseVariableRedefinition(Scanner *scanner, Token variable) {
 
             // Generate variable definition if not already defined
             if (alrDefined == NULL) {
-                genDefineVariable(variable);
+                generatorDefineVariable(variable);
             }
 
             // Parse assignment for the variable
@@ -747,7 +746,7 @@ int parseBody(Scanner *scanner) {
 
                     SymtablePair *alrDefined = symtableFind(parser.symtable, variable.value.string);
                     if (alrDefined == NULL) {
-                        genDefineVariable(variable);
+                        generatorDefineVariable(variable);
                     }
 
                     if (alrDefined == NULL || alrDefined->value.undefined) {
@@ -814,7 +813,7 @@ int parseBody(Scanner *scanner) {
 
                         SymtablePair *alrDefined = symtableFind(parser.symtable, variable.value.string);
                         if (alrDefined == NULL) {
-                            genDefineVariable(variable);
+                            generatorDefineVariable(variable);
                         }
                         GETTOKEN(scanner, &parser.currToken)
                         CHECKRULE(parseAssign(scanner, variable))
@@ -1051,14 +1050,14 @@ int parseFunctionDef(Scanner *scanner) {
     }
 
     // Generate function definition 1
-    genFuncDef1(func.value.string, ll.itemCount - 1, ll);
+    // generatorFuncDef1() unfortunately was not implemented
 
     GETTOKEN(scanner, &parser.currToken) // Get the next token
 
     CHECKRULE(parsePeBody(scanner)) // Parse the function body
 
     // Generate function definition 2
-    genFuncDef2(func.value.string);
+    // generatorFuncDef2(); unfortunately was not implemented
 
     // Check if the function body is wrapped by closing braces
     if (parser.currToken.type != TYPE_RIGHT_CURLY_BRACKET) {

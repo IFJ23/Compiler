@@ -6,7 +6,6 @@ Archive:  xpokhv00.zip
   inflating: expression.h            
   inflating: generator.c             
   inflating: generator.h             
-  inflating: is_it_ok.sh             
   inflating: linlist.c               
   inflating: linlist.h               
   inflating: main.c                  

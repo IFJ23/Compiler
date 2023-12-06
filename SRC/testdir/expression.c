@@ -67,12 +67,12 @@ int reduceI()
     Token t;
     stackPop(parser.stack, &t);
     if (t.type != TYPE_IDENTIFIER_VAR)
-        genStackPush(t);
+        generatorStackPush(t);
     else
     {
         if (foundVar->value.undefined)
-            genCheckDefined(t);
-        genStackPush(t);
+            generatorCheckDefined(t);
+        generatorStackPush(t);
     }
     stackPop(parser.stack, &t);
     if (t.type != SHIFT_SYMBOL)
@@ -92,11 +92,10 @@ int reduceI()
  */
 int reducePlus()
 {
-
     Token t;
     stackPop(parser.stack, NULL);
     stackPop(parser.stack, &t);
-    genStackPush(t);
+    generatorStackPush(t);
     stackPop(parser.stack, NULL);
     stackPop(parser.stack, &t);
     if (t.type != SHIFT_SYMBOL)
@@ -120,7 +119,7 @@ int reduceMultiply()
     Token t;
     stackPop(parser.stack, NULL);
     stackPop(parser.stack, &t);
-    genStackPush(t);
+    generatorStackPush(t);
     stackPop(parser.stack, NULL);
     stackPop(parser.stack, &t);
     if (t.type != SHIFT_SYMBOL)
@@ -145,7 +144,7 @@ int reduceRelation()
     Token t;
     stackPop(parser.stack, NULL);
     stackPop(parser.stack, &t);
-    genStackPush(t);
+    generatorStackPush(t);
     stackPop(parser.stack, NULL);
     stackPop(parser.stack, &t);
     if (t.type != SHIFT_SYMBOL)
@@ -192,7 +191,7 @@ int reduceNotNil()
     Token t;
     stackPop(parser.stack, NULL);
     stackPop(parser.stack, &t);
-    genStackPush(t);
+    generatorStackPush(t);
     stackPop(parser.stack, NULL);
     stackPop(parser.stack, &t);
     if (t.type != SHIFT_SYMBOL)
@@ -216,7 +215,7 @@ int reduceValOrNil()
     Token t;
     stackPop(parser.stack, NULL);
     stackPop(parser.stack, &t);
-    genStackPush(t);
+    generatorStackPush(t);
     stackPop(parser.stack, NULL);
     stackPop(parser.stack, &t);
     if (t.type != SHIFT_SYMBOL)
@@ -374,7 +373,7 @@ int parseExpression(Scanner *scanner, bool endWithBracket)
     static Token beforeEnd = {.type = DOLLAR};
     stackPush(parser.stack, bottom);
 
-    genExpressionBegin();
+    generatorExpressionBegin();
 
     while (true)
     {
@@ -400,7 +399,7 @@ int parseExpression(Scanner *scanner, bool endWithBracket)
                     printError(beforeEnd.line, "Expression has to be wrapped by braces.");
                     return 2;
                 }
-                genExpressionEnd();
+                generatorExpressionEnd();
                 return 0;
 
             default:
