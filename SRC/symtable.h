@@ -16,23 +16,23 @@ typedef const char *SymtableKey;
 
 typedef enum
 {
-    FUNC,
     VAR,
-    LET
-} ElType;
+    LET,
+    FUNC
+} ElemType;
 
 typedef struct SymtableData
 {
-    ElType type;
+    ElemType type;
     int paramsCnt;
     bool possiblyUndefined;
     LinkedList parameters;
-} SymtableData;
+} SymtableValue;
 
 typedef struct SymtablePair
 {
     SymtableKey key;
-    SymtableData data;
+    SymtableValue value;
 } SymtablePair;
 
 typedef struct SymtableItem
@@ -54,7 +54,7 @@ Symtable *symtableInit(size_t n);
 
 SymtablePair *symtableFind(Symtable *t, SymtableKey key);
 
-SymtablePair *symtableAdd(Symtable *t, SymtableKey key, ElType type, int paramsCnt, bool undefined, LinkedList params);
+SymtablePair *symtableAdd(Symtable *t, SymtableKey key, ElemType type, int paramsCnt, bool undefined, LinkedList params);
 
 void symtableFree(Symtable *t);
 

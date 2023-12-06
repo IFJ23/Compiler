@@ -21,10 +21,14 @@ typedef struct
     bool outsideBody;
     char *currFunc;
     bool condDec;
+    bool ifScope;
     Stack *stack;
     Stack *undefStack;
     Symtable *symtable;
     Symtable *localSymtable;
+    Symtable *ifSymtable;
+    Symtable *prevIfSymtable;
+
 } Parser;
 
 #define LINENUM parser.currToken.line
@@ -47,10 +51,9 @@ int parserInit();
 
 void parserDestroy();
 
+SymtablePair* findVariable(const char* varName);
+
 
 int parse(Scanner *scanner);
-
-
-int checkPrologue();
 
 #endif

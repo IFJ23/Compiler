@@ -44,10 +44,10 @@ int reduceI()
     SymtablePair *foundVar;
     if (head.type == TYPE_IDENTIFIER_VAR)
     {
-        foundVar = symtableFind(parser.outsideBody ? parser.localSymtable : parser.symtable, head.value.string);
+        foundVar = findVariable(head.value.string);
         if (foundVar == NULL)
         {
-            printError(head.line, "Undefined variable used in an expression.");
+            printError(head.line, "Undefined variable used in an expression. 1 \n");
             return SEMANTIC_UNDEFINED_ERROR;
         }
     }
@@ -58,7 +58,7 @@ int reduceI()
         genStackPush(t);
     else
     {
-        if (foundVar->data.possiblyUndefined)
+        if (foundVar->value.possiblyUndefined)
             genCheckDefined(t);
         genStackPush(t);
     }
@@ -267,7 +267,7 @@ int reduce()
 
         default:
             printError(0, "No reduction rule for given token.");
-            return INTERNAL_ERROR;
+            return SEMANTIC_COMPATIBILITY_ERROR;
     }
 }
 
@@ -307,7 +307,6 @@ int shift(Scanner *scanner, Token *preShift)
     stackPush(parser.stack, parser.currToken);
     *preShift = parser.currToken;
     int err = get_token(scanner, &(parser.currToken));
-
     return err;
 }
 
@@ -339,7 +338,6 @@ int parseExpression(Scanner *scanner, bool endWithBracket)
                 break;
 
             case (O):
-                stackFree(parser.stack);
                 if (endWithBracket && beforeEnd.type != TYPE_RIGHT_BRACKET)
                 {
                     printError(beforeEnd.line, "Expression has to be wrapped by braces.");
