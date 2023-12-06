@@ -43,12 +43,12 @@ Symtable *symtableInit(size_t n)
 }
 
 // Function to add a key-value pair to the symbol table
-SymtablePair *symtableAdd(Symtable *t, SymtableKey key, ElemType type, int paramsCnt, bool undefined, LinkedList params)
+SymtablePair *symtableAdd(Symtable *table, SymtableKey key, ElemType type, int paramsCnt, bool undefined, LinkedList params)
 {
-    if (!t)
+    if (!table)
         return NULL;
 
-    SymtablePair *found = symtableFind(t, key);       // Check if the key already exists in the symbol table
+    SymtablePair *found = symtableFind(table, key);       // Check if the key already exists in the symbol table
 
     if (found)
         return found;                                // Return the existing pair if the key is found
@@ -69,17 +69,17 @@ SymtablePair *symtableAdd(Symtable *t, SymtableKey key, ElemType type, int param
 
     memcpy((char *)newitem->pair.key, key, len);        // Copy the key to the allocated memory
     newitem->pair.value.type = type;                     // Set the type in the value structure
-    newitem->pair.value.paramsCnt = paramsCnt;           // Set the number of parameters in the value structure
     newitem->pair.value.undefined = undefined;   // Set the possiblyUndefined flag in the value structure
     newitem->pair.value.parameters = params;             // Set the parameters in the value structure
+    newitem->pair.value.paramsCnt = paramsCnt;           // Set the number of parameters in the value structure
     newitem->next = NULL;                               // Initialize the next pointer to NULL
-    t->size++;                                          // Increment the number of elements in the symbol table
+    table->size+=1;                                          // Increment the number of elements in the symbol table
 
-    size_t index = symtableHash(key) % t->array_size; // Calculate the index in the array of linked lists
-    SymtableItem *tmp = t->array_ptr[index];
+    size_t index = symtableHash(key) % table->array_size; // Calculate the index in the array of linked lists
+    SymtableItem *tmp = table->array_ptr[index];
 
     if (!tmp)
-        t->array_ptr[index] = newitem;                // If the linked list is empty, set the new item as the head
+        table->array_ptr[index] = newitem;                // If the linked list is empty, set the new item as the head
     else
     {
         while (tmp->next)
@@ -92,47 +92,46 @@ SymtablePair *symtableAdd(Symtable *t, SymtableKey key, ElemType type, int param
 
 
 // Function to find a key in the symbol table and return its associated data
-SymtablePair *symtableFind(Symtable *t, SymtableKey key)
+SymtablePair *symtableFind(Symtable *table, SymtableKey key)
 {
-    if (!t)
+    if (!table)
         return NULL;
 
-    size_t hash = symtableHash(key) % t->array_size;   // Calculate the hash value for the key
-    SymtableItem *tmp = t->array_ptr[hash];            // Get the linked list at the calculated index
+    size_t hash = symtableHash(key) % table->array_size;   // Calculate the hash value for the key
+    SymtableItem *currentItem = table->array_ptr[hash];            // Get the linked list at the calculated index
 
-    while (tmp)
+    while (currentItem)
     {
-        if (!strcmp(key, tmp->pair.key))
+        if (!strcmp(key, currentItem->pair.key))
         {
-            return &(tmp->pair);    // Return the pair if the key is found
+            return &(currentItem->pair);    // Return the pair if the key is found
         }
-        tmp = tmp->next;            // Move to the next item in the linked list
+        currentItem = currentItem->next;            // Move to the next item in the linked list
     }
     return NULL;                    // Return NULL if the key is not found
 }
 
 // Function to free the memory used by the symbol table
-void symtableFree(Symtable *t)
+void symtableFree(Symtable *table)
 {
-    if (!t)
+    if (!table)
         return;
 
-    SymtableItem *current, *next;
+    SymtableItem *currItem, *next;
 
-    for (size_t i = 0; i < t->array_size; i++)
+    for (size_t i = 0; i < table->array_size; i++)
     {
-        current = t->array_ptr[i];
-        while (current)
+        currItem = table->array_ptr[i];
+        while (currItem)
         {
-            next = current->next;
-            free((char *)current->pair.key);          // Free the memory used by the key
-            free(current);                            // Free the memory used by the current item
-            current = next;                           // Move to the next item in the linked list
+            next = currItem->next;
+            free((char *)currItem->pair.key);          // Free the memory used by the key
+            free(currItem);                            // Free the memory used by the current item
+            currItem = next;                           // Move to the next item in the linked list
         }
-        t->array_ptr[i] = NULL;                      // Set the linked list to NULL after freeing all items
+        table->array_ptr[i] = NULL;                      // Set the linked list to NULL after freeing all items
     }
-    t->size = 0;                                   // Reset the number of elements to 0
-
-    free(t->array_ptr);                              // Free the memory used by the array of linked lists
-    free(t);                                       // Free the memory used by the symbol table
+    table->size = 0;                                   // Reset the number of elements to 0
+    free(table->array_ptr);                              // Free the memory used by the array of linked lists
+    free(table);                                       // Free the memory used by the symbol table
 }
