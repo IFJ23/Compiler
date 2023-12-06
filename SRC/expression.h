@@ -47,16 +47,15 @@ typedef enum
  */
 typedef enum
 {
-    I_PLUS,
-    I_MUL,
-    I_DATA,
-    I_DOLLAR,
-    I_RELATIONAL,
-    I_OPENB,
-    I_CLOSEB,
-    I_NOTNIl,
-    I_VALORNIL
-
+    I_PLUS,         ///< Plus operation.
+    I_MUL,          ///< Multiplication operation.
+    I_DATA,         ///< Data.
+    I_DOLLAR,       ///< End of input.
+    I_RELATIONAL,   ///< Relational operation.
+    I_OPENB,        ///< Open bracket.
+    I_CLOSEB,       ///< Close bracket.
+    I_NOTNIl,       ///< Not nil operation.
+    I_VALORNIL      ///< Value or nil operation.
 } tableIndex;
 
 /**
