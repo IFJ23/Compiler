@@ -34,7 +34,6 @@ typedef enum
  * @param possiblyUndefined Whether the element can be undefined.
  * @param parameters The list of parameters of the element.
  */
- */
 typedef struct SymtableData
 {
     ElType type;
@@ -47,7 +46,6 @@ typedef struct SymtableData
  * @brief Struct representing a key-value pair in the symbol table.
  * @param key The key of the pair.
  * @param data The data of the pair.
- */
  */
 typedef struct SymtablePair
 {
