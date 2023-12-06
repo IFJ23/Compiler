@@ -2,7 +2,7 @@ var a : Int = 2 + 7 / 5 + 6 * 9
 var t : String? = 6 + 9 + a
 var ryt : Int?
 
-func foo(x _: Int, _ par : Int) -> String {
+func foo(x _: Int, _ par : Int) -> String? {
     var ret = "something"
     var hey = 6 + par
 return ret
@@ -10,7 +10,7 @@ return ret
 
 foo(x: a, t)
 
-func fo(_ vasia: Int, _ par : Int) -> String {
+func fo(_ vasia: Int, _ par : Int) {
     var ret = "something"
     var hey = 6 + a
 
