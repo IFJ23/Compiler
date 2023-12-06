@@ -1022,15 +1022,19 @@ int parseFunctionDef(Scanner *scanner) {
 
     // Check if the function definition has the return arrow
     if (parser.currToken.type != TYPE_RETURN_ARROW) {
-        printError(LINENUM, "Incorrect function definition syntax, missing colon.");
-        return SYNTAX_ERROR;
+        if (parser.currToken.type == TYPE_LEFT_CURLY_BRACKET) {
+            listInsert(&ll, parser.currToken.value.kw, "return");
+        } else {
+            printError(LINENUM, "Incorrect function definition syntax, missing colon.");
+            return SYNTAX_ERROR;
+        }
+    } else {
+        GETTOKEN(scanner, &parser.currToken) // Get the next token
+
+        CHECKRULE(parseType(&ll)) // Parse the return type
+
+        GETTOKEN(scanner, &parser.currToken) // Get the next token
     }
-
-    GETTOKEN(scanner, &parser.currToken) // Get the next token
-
-    CHECKRULE(parseType(&ll)) // Parse the return type
-
-    GETTOKEN(scanner, &parser.currToken) // Get the next token
 
     // Check if the function body is wrapped by opening braces
     if (parser.currToken.type != TYPE_LEFT_CURLY_BRACKET) {
