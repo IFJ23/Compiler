@@ -1,9 +1,11 @@
 // Compiler to IFJ23 language
 // Faculty of Information Technology Brno University of Technology
-// Authors:
-// Oleksii Shelest (xshele02)
+/**
+ * @file generator.c
+ * @brief Code generation for the IFJ23 language compiler
+ * @author Oleksii Shelest (xshele02)
+ */
 
-#include "stdio.h"
 #include "generator.h"
 
 extern Parser parser;

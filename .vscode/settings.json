@@ -4,7 +4,8 @@
         "expression.h": "c",
         "stdlib.h": "c",
         "generator.h": "c",
-        "vstr.h": "c"
+        "vstr.h": "c",
+        "scanner.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

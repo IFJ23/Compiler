@@ -1,8 +1,10 @@
 // Compiler to IFJ23 language
 // Faculty of Information Technology Brno University of Technology
-// Authors:
-// Ivan Onufriienko (xonufr00)
-// Vsevolod Pokhvalenko (xpokhv00)
+/**
+ * @file error.c
+ * @brief Error codes and handling for the IFJ23 language compiler
+ * @author Ivan Onufriienko (xonufr00)
+ */
 
 #include <stdio.h>
 #include "error.h"

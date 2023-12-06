@@ -1,35 +1,69 @@
 // Compiler to IFJ23 language
 // Faculty of Information Technology Brno University of Technology
-// Authors:
-// Ivan Onufriienko (xonufr00)
-// Vsevolod Pokhvalenko (xpokhv00)
+/**
+ * @file error.h
+ * @brief Error codes and handling for the IFJ23 language compiler
+ * @author Ivan Onufriienko (xonufr00)
+ */
 
 #ifndef IFJ23_ERROR_H
 #define IFJ23_ERROR_H
 
-#define LEXICAL_ERROR 1                 // incorrect structure of the current lexeme
+/**
+ * @brief Error code for incorrect structure of the current lexeme.
+ */
+#define LEXICAL_ERROR 1
 
-#define SYNTAX_ERROR 2                  // incorrect syntax of the program, missing header, etc.
+/**
+ * @brief Error code for incorrect syntax of the program, missing header, etc.
+ */
+#define SYNTAX_ERROR 2
 
-#define SEMANTIC_DEFINITION_ERROR 3     // undefined function, variable redefinition
+/**
+ * @brief Error code for undefined function, variable redefinition.
+ */
+#define SEMANTIC_DEFINITION_ERROR 3
 
-#define SEMANTIC_TYPE_ERROR 4           // wrong number/type of parameters when calling the function or 
-                                        // wrong type of return value from function
+/**
+ * @brief Error code for wrong number/type of parameters when calling the function or wrong type of return value from function.
+ */
+#define SEMANTIC_TYPE_ERROR 4
 
-#define SEMANTIC_UNDEFINED_ERROR 5      // use of an undefined or uninitialized variable
+/**
+ * @brief Error code for use of an undefined or uninitialized variable.
+ */
+#define SEMANTIC_UNDEFINED_ERROR 5
 
-#define SEMANTIC_RETURN_ERROR 6         // missing/remaining expression in the return command from the function
+/**
+ * @brief Error code for missing/remaining expression in the return command from the function.
+ */
+#define SEMANTIC_RETURN_ERROR 6
 
-#define SEMANTIC_COMPATIBILITY_ERROR 7  // compatibility error in arithmetic, string and relational expressions
+/**
+ * @brief Error code for compatibility error in arithmetic, string and relational expressions.
+ */
+#define SEMANTIC_COMPATIBILITY_ERROR 7
 
-#define SEMANTIC_UNDECLARED_ERROR 8     // inference error - variable or parameter type is not specified and 
-                                        // cannot be inferred from the expression used
+/**
+ * @brief Error code for inference error - variable or parameter type is not specified and cannot be inferred from the expression used.
+ */
+#define SEMANTIC_UNDECLARED_ERROR 8
 
-#define SEMANTIC_OTHER_ERROR 9          // other semantic errors
+/**
+ * @brief Error code for other semantic errors.
+ */
+#define SEMANTIC_OTHER_ERROR 9
 
-#define INTERNAL_ERROR 99               // internal compiler error
+/**
+ * @brief Error code for internal compiler error.
+ */
+#define INTERNAL_ERROR 99
 
-
+/**
+ * @brief Function to print an error message.
+ * @param line The line number where the error occurred.
+ * @param message The error message to print.
+ */
 void printError(int line, char *message);
 
 #endif //IFJ23_ERROR_H

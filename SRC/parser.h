@@ -1,10 +1,13 @@
 // Compiler to IFJ23 language
 // Faculty of Information Technology Brno University of Technology
-// Authors:
-// Vsevolod Pokhvalenko (xpokhv00)
+/**
+ * @file parser.h
+ * @brief Parser for the IFJ23 language compiler
+ * @author Vsevolod Pokhvalenko (xpokhv00)
+ */
 
-#ifndef H_PARSER
-#define H_PARSER
+#ifndef IFJ23_PARSER_H
+#define IFJ23_PARSER_H
 
 #include "scanner.h"
 #include "linlist.h"
