@@ -1,0 +1,32 @@
+Archive:  xpokhv00.zip
+  inflating: dokumentace.pdf         
+  inflating: error.c                 
+  inflating: error.h                 
+  inflating: expression.c            
+  inflating: expression.h            
+  inflating: generator.c             
+  inflating: generator.h             
+  inflating: is_it_ok.sh             
+  inflating: linlist.c               
+  inflating: linlist.h               
+  inflating: main.c                  
+  inflating: Makefile                
+  inflating: parser.c                
+  inflating: parser.h                
+  inflating: rozdeleni               
+  inflating: scanner.c               
+  inflating: scanner.h               
+  inflating: symstack.c              
+  inflating: symstack.h              
+  inflating: symtable.c              
+  inflating: symtable.h              
+gcc -Wall -Wextra -std=c99 -pedantic -c main.c -o main.o
+gcc -Wall -Wextra -std=c99 -pedantic -c scanner.c -o scanner.o
+gcc -Wall -Wextra -std=c99 -pedantic -c parser.c -o parser.o
+gcc -Wall -Wextra -std=c99 -pedantic -c expression.c -o expression.o
+gcc -Wall -Wextra -std=c99 -pedantic -c symtable.c -o symtable.o
+gcc -Wall -Wextra -std=c99 -pedantic -c symstack.c -o symstack.o
+gcc -Wall -Wextra -std=c99 -pedantic -c linlist.c -o linlist.o
+gcc -Wall -Wextra -std=c99 -pedantic -c generator.c -o generator.o
+gcc -Wall -Wextra -std=c99 -pedantic -c error.c -o error.o
+gcc -Wall -Wextra -std=c99 -pedantic -o compiler main.o scanner.o parser.o expression.o symtable.o symstack.o linlist.o generator.o error.o -lm
