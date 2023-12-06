@@ -9,6 +9,9 @@
 
 extern Parser parser;
 
+/**
+ * @brief Precedence table for the parser.
+ */
 int prec_table[9][9] = {
    //+, *, i, $, <=, (, ), !, ??
     {R, S, S, R,  R, S, R, S, R}, // +
@@ -18,10 +21,14 @@ int prec_table[9][9] = {
     {S, S, S, R,  F, S, R, S, R}, // <=
     {S, S, S, F,  S, S, E, F, S}, // (
     {R, R, F, R,  R, F, R, R, R}, // )
-    {R, R, F, O,  S, F, E, E, R}, // !,
-    {S, S, S, R,  S, S, R, S, S}  // ??,
+    {R, R, F, O,  S, F, E, E, R}, // !
+    {S, S, S, R,  S, S, R, S, S}  // ??
 };
 
+/**
+ * @brief Function to get the topmost terminal from the stack.
+ * @return The topmost terminal token.
+ */
 Token topmostTerminal()
 {
     StackItem *tmp = parser.stack->head;
@@ -39,6 +46,10 @@ Token topmostTerminal()
     return err;
 }
 
+/**
+ * @brief Function to reduce an identifier.
+ * @return 0 if successful, non-zero otherwise.
+ */
 int reduceI()
 {
     Token head = parser.stack->head->t;
@@ -75,6 +86,10 @@ int reduceI()
     return 0;
 }
 
+/**
+ * @brief Function to reduce a plus operation.
+ * @return 0 if successful, non-zero otherwise.
+ */
 int reducePlus()
 {
 
@@ -96,6 +111,10 @@ int reducePlus()
     return 0;
 }
 
+/**
+ * @brief Function to reduce a multiply operation.
+ * @return 0 if successful, non-zero otherwise.
+ */
 int reduceMultiply()
 {
     Token t;
@@ -116,6 +135,10 @@ int reduceMultiply()
     return 0;
 }
 
+/**
+ * @brief Function to reduce a relational operation.
+ * @return 0 if successful, non-zero otherwise.
+ */
 int reduceRelation()
 {
 
@@ -137,6 +160,10 @@ int reduceRelation()
     return 0;
 }
 
+/**
+ * @brief Function to reduce a bracket operation.
+ * @return 0 if successful, non-zero otherwise.
+ */
 int reduceBracket()
 {
     Token t;
@@ -156,6 +183,10 @@ int reduceBracket()
     return 0;
 }
 
+/**
+ * @brief Function to reduce a not nil operation.
+ * @return 0 if successful, non-zero otherwise.
+ */
 int reduceNotNil()
 {
     Token t;
@@ -176,6 +207,10 @@ int reduceNotNil()
     return 0;
 }
 
+/**
+ * @brief Function to reduce a value or nil operation.
+ * @return 0 if successful, non-zero otherwise.
+ */
 int reduceValOrNil()
 {
     Token t;
@@ -196,6 +231,11 @@ int reduceValOrNil()
     return 0;
 }
 
+/**
+ * @brief Function to get the index in the precedence table for a token.
+ * @param t The token to get the index for.
+ * @return The index in the precedence table.
+ */
 tableIndex getTableIndex(Token t)
 {
     switch (t.type)
@@ -236,11 +276,21 @@ tableIndex getTableIndex(Token t)
     }
 }
 
+/**
+ * @brief Function to get the relation between two tokens from the precedence table.
+ * @param top The top token.
+ * @param new The new token.
+ * @return The relation between the two tokens.
+ */
 precValues getRelation(Token top, Token new)
 {
     return prec_table[getTableIndex(top)][getTableIndex(new)];
 }
 
+/**
+ * @brief Function to reduce the topmost terminal on the stack.
+ * @return 0 if successful, non-zero otherwise.
+ */
 int reduce()
 {
     switch (getTableIndex(topmostTerminal()))
@@ -272,6 +322,12 @@ int reduce()
     }
 }
 
+/**
+ * @brief Function to shift a token onto the stack.
+ * @param scanner The scanner to get the tokens from.
+ * @param preShift Pointer to the token to shift.
+ * @return 0 if successful, non-zero otherwise.
+ */
 int shift(Scanner *scanner, Token *preShift)
 {
     Token shift = {.type = SHIFT_SYMBOL};
