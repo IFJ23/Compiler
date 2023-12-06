@@ -1,9 +1,10 @@
 // Compiler to IFJ23 language
 // Faculty of Information Technology Brno University of Technology
-// Authors:
-// Vsevolod Pokhvalenko (xpokhv00)
-// Ivan Onufriienko (xonufr00)
-
+/**
+ * @file linlist.c
+ * @brief Linked list for the IFJ23 language compiler
+ * @author Vsevolod Pokhvalenko (xpokhv00)
+ */
 #include "linlist.h"
 
 void listInit(LinkedList *l)
@@ -11,26 +12,6 @@ void listInit(LinkedList *l)
     l->head = NULL;
     l->itemCount = 0;
 }
-
-//int listInsert(LinkedList *l, Keyword type)
-//{
-//    ListNode *newEle = malloc(sizeof(struct ListNode));
-//    if (newEle == NULL)
-//        return INTERNAL_ERROR;
-//    else
-//    {
-//        newEle->type = type;
-//        newEle->next = NULL;
-//        if (l->head == NULL)
-//            l->head = newEle;
-//        else
-//            l->last->next = newEle;
-//        l->last = newEle;
-//        ++(l->itemCount);
-//    }
-//
-//    return 0;
-//}
 
 int listInsert(LinkedList *l, Keyword type, char *name)
 {

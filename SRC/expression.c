@@ -1,8 +1,10 @@
 // Compiler to IFJ23 language
 // Faculty of Information Technology Brno University of Technology
-// Authors:
-// Sviatoslav Pokhvalenko (xpokhv01)
-
+/**
+ * @file expression.c
+ * @brief Expression parsing for the IFJ23 language compiler
+ * @author Sviatoslav Pokhvalenko (xpokhv01)
+ */
 #include "expression.h"
 #include "generator.h"
 
