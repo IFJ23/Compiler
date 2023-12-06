@@ -1,8 +1,10 @@
 // Compiler to IFJ23 language
 // Faculty of Information Technology Brno University of Technology
-// Authors:
-// Ivan Onufriienko (xonufr00)
-
+/**
+ * @file scanner.c
+ * @brief Compiler to IFJ23 language
+ * @author Ivan Onufriienko (xonufr00)
+ */
 #include "scanner.h"
 
 int get_token(Scanner *scanner, Token *token)
@@ -11,13 +13,13 @@ int get_token(Scanner *scanner, Token *token)
     {
         int c = fgetc(scanner->file);
 
-        if (c == EOF)
+        if (c == EOF)               // End of file
         {
             token->type = TYPE_EOF;
             return EXIT_SUCCESS;
         }
 
-        if (isspace(c))
+        if (isspace(c))             // Whitespaces
         {
             if (c == '\n')
             {
@@ -32,7 +34,7 @@ int get_token(Scanner *scanner, Token *token)
             }
         }
 
-        if (isdigit(c))
+        if (isdigit(c))             // Numbers
         {
             int counter, exponent, dot, sign;
             counter = exponent = dot = sign = 0;
@@ -44,7 +46,7 @@ int get_token(Scanner *scanner, Token *token)
                 exit(INTERNAL_ERROR);
             }
 
-            while (isdigit(c) || c == '.' || c == 'e' || c == 'E' || c == '+' || c == '-')
+            while (isdigit(c) || c == '.' || c == 'e' || c == 'E' || c == '+' || c == '-')  // Float or double
             {
                 if (counter == size)
                 {
@@ -89,7 +91,7 @@ int get_token(Scanner *scanner, Token *token)
             }
 
             counter = 0;
-            while (number[counter] != '\0')
+            while (number[counter] != '\0') // Check if the number is valid
             {
 
                 if (number[counter] == '.')
@@ -145,7 +147,7 @@ int get_token(Scanner *scanner, Token *token)
                 return LEXICAL_ERROR;
             }
         }
-        if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_')
+        if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_')   // Keywords and identifiers
         {
             int counter = 0;
             int size = 20;
@@ -156,7 +158,7 @@ int get_token(Scanner *scanner, Token *token)
                 exit(INTERNAL_ERROR);
             }
 
-            while ((isalnum(c) || c == '_' || c == '?') && c != EOF)
+            while ((isalnum(c) || c == '_' || c == '?') && c != EOF)    // Main cycle
             {
 
                 if (counter == size)
@@ -185,7 +187,7 @@ int get_token(Scanner *scanner, Token *token)
             ungetc(c, scanner->file);
             id[counter] = '\0';
 
-            if (keyword_from_token(token, id) == EXIT_SUCCESS)
+            if (keyword_from_token(token, id) == EXIT_SUCCESS)  // Check for possible keywords
             {
                 token->line = scanner->line;
                 free(id);
@@ -202,15 +204,15 @@ int get_token(Scanner *scanner, Token *token)
             }
 
             // Check the context to distinguish between function and variable identifiers
-            bool isFunction = false; // Assume it's a variable unless proven otherwise
+            bool isFunction = false; 
 
             // Check if the next character is '(' to indicate a function identifier
             int nextChar = getc(scanner->file);
             if (nextChar == '(')
             {
-                isFunction = true; // It's a function identifier
+                isFunction = true; 
             }
-            ungetc(nextChar, scanner->file); // Return the read character back to the input stream
+            ungetc(nextChar, scanner->file); 
 
             if (isFunction)
             {
@@ -259,7 +261,7 @@ int get_token(Scanner *scanner, Token *token)
         case '/':
             c2 = fgetc(scanner->file);
 
-            if (c2 == '/')
+            if (c2 == '/')  // single line comment
             {
 
                 while (c2 != '\n')
@@ -279,10 +281,10 @@ int get_token(Scanner *scanner, Token *token)
                 break;
             }
 
-            else if (c2 == '*')
+            else if (c2 == '*') // multiline comment
             {
 
-                int nested = 0;
+                int nested = 0; // nested comments
 
                 while (true)
                 {
@@ -501,7 +503,7 @@ int get_token(Scanner *scanner, Token *token)
                 {
                     token->type = TYPE_MULTILINE_STRING;
                     token->line = scanner->line;
-                    // todo?
+                    
                 }
                 else
                 {
@@ -546,7 +548,7 @@ int get_token(Scanner *scanner, Token *token)
                 string[counter] = c2;
                 counter++;
 
-                if (c2 < 32 || c2 > 255)
+                if (c2 < 32 || c2 > 255)    // Check for invalid characters
                 {
                     if (token->type == TYPE_MULTILINE_STRING)
                     {
@@ -561,7 +563,7 @@ int get_token(Scanner *scanner, Token *token)
                         return LEXICAL_ERROR;
                     }
                 }
-                else if (c2 == '\\')
+                else if (c2 == '\\')    // Check for escape sequences
                 {
                     c2 = fgetc(scanner->file);
 
@@ -585,7 +587,7 @@ int get_token(Scanner *scanner, Token *token)
                     {
                         string[counter - 1] = '\\';
                     }
-                    else if (c2 == 'u')
+                    else if (c2 == 'u')     // Unicode escape sequence
                     {
                         int c3 = fgetc(scanner->file);
 
@@ -652,7 +654,7 @@ int get_token(Scanner *scanner, Token *token)
                         return LEXICAL_ERROR;
                     }
                 }
-                else if (c2 == '"')
+                else if (c2 == '"')    // Check for closing quote
                 {
 
                     if (token->type == TYPE_MULTILINE_STRING)
@@ -818,10 +820,10 @@ int keyword_from_token(Token *token, char *c)
 
 int peek_token(Scanner *scanner, Token *token)
 {
-    long int file_pos = ftell(scanner->file); // Store current file position
+    long int file_pos = ftell(scanner->file);   // Store current file position
 
-    int result = get_token(scanner, token); // Get the next token
+    int result = get_token(scanner, token);     // Get the next token
 
-    fseek(scanner->file, file_pos, SEEK_SET); // Restore file position
-    return result;                            // Return the result of get_token
+    fseek(scanner->file, file_pos, SEEK_SET);   // Restore file position
+    return result;                              // Return the result of get_token
 }
