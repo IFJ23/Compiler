@@ -28,7 +28,7 @@ typedef enum
 typedef enum
 {
     I_PLUS,
-    I_MULTIPLY,
+    I_MUL,
     I_DATA,
     I_DOLLAR,
     I_RELATIONAL,

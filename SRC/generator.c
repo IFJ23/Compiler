@@ -76,7 +76,6 @@ void genStackPush(Token t)
             break;
 
         case TYPE_EXCLAMATION_MARK:
-            // Now doesnt implemented yet
             break;
 
         case TYPE_PLUS:
@@ -112,16 +111,44 @@ void genStackPush(Token t)
             break;
 
         case TYPE_MORE:
+            genMORE_LESS();
+            printf("POPFRAME\n");
+            printf("GTS\n");
+            genConvertBool();
+            break;
         case TYPE_MORE_EQUAL:
             genMORE_LESS();
             printf("GTS\n");
+            printf("POPS GF@$$mainresult\n");
+            printf("PUSHS GF@$$mainresult\n");
+            printf("PUSHS LF@tmp2$$value\n");
+            printf("PUSHS LF@tmp1$$value\n");
+            printf("EQS\n");
+            printf("POPS GF@$$mainresult\n");
+            printf("PUSHS GF@$$mainresult\n");
+            printf("POPFRAME\n");
+            printf("ORS\n");
             genConvertBool();
             break;
 
         case TYPE_LESS:
+            genMORE_LESS();
+            printf("POPFRAME\n");
+            printf("LTS\n");
+            genConvertBool();
+            break;
         case TYPE_LESS_EQUAL:
             genMORE_LESS();
             printf("LTS\n");
+            printf("POPS GF@$$mainresult\n");
+            printf("PUSHS GF@$$mainresult\n");
+            printf("PUSHS LF@tmp2$$value\n");
+            printf("PUSHS LF@tmp1$$value\n");
+            printf("EQS\n");
+            printf("POPS GF@$$mainresult\n");
+            printf("PUSHS GF@$$mainresult\n");
+            printf("POPFRAME\n");
+            printf("ORS\n");
             genConvertBool();
             break;
 
@@ -269,7 +296,7 @@ void genPLUS()
     printf("JUMP $$ADDS$$checkk%d\n", i);
     printf("LABEL $$ADDS$$check%d$$1\n", i);
     printf("JUMPIFEQ $$ADDS$$check%d$$2 LF@tmp2$$value$$type string@string\n", i);
-    printf("EXIT int@7\n");
+    printf("DPRINT int@7\n");
     printf("LABEL $$ADDS$$check%d$$2\n", i);
     printf("CONCAT LF@tmp1$$value LF@tmp2$$value LF@tmp1$$value\n");
     printf("JUMP $$operator$$ADDS$$exit%d\n", i);
@@ -497,7 +524,7 @@ void genMORE_LESS()
     printf("TYPE LF@tmp1$$value$$type LF@tmp1$$value\n");
     printf("TYPE LF@tmp2$$value$$type LF@tmp2$$value\n");
     printf("JUMPIFEQ $$MORE$$LESS$$check%d$$nil$$tmp1$$value LF@tmp1$$value$$type nil@nil\n", i);
-    printf("JUMPIFEQ $$MORE$$LESS$$check%d$$nil$$help2 LF@tmp2$$value$$type nil@nil\n", i);
+    printf("JUMPIFEQ $$MORE$$LESS$$check%d$$nil$$tmp2$$value LF@tmp2$$value$$type nil@nil\n", i);
     printf("JUMP $$MORE$$LESS$$check%d$$2\n", i);
 
     printf("LABEL $$MORE$$LESS$$check%d$$nil$$tmp1$$value\n", i);
@@ -519,7 +546,7 @@ void genMORE_LESS()
     printf("MOVE LF@tmp1$$value string@\n");
     printf("JUMP $$MORE$$LESS$$check%d\n", i);
 
-    printf("LABEL $$MORE$$LESS$$check%d$$nil$$help2\n", i);
+    printf("LABEL $$MORE$$LESS$$check%d$$nil$$tmp2$$value\n", i);
     printf("JUMPIFEQ $$MORE$$LESS$$check%d$$help2tozero$$int LF@tmp1$$value$$type string@int\n", i);
     printf("JUMPIFEQ $$MORE$$LESS$$check%d$$help2tozero$$float LF@tmp1$$value$$type string@float\n", i);
     printf("JUMPIFEQ $$MORE$$LESS$$check%d$$help2toempty LF@tmp1$$value$$type string@string\n", i);
@@ -562,7 +589,7 @@ void genMORE_LESS()
     printf("LABEL $$operator$$MORE$$LESS$$exit%d\n", i);
     printf("PUSHS LF@tmp2$$value\n");
     printf("PUSHS LF@tmp1$$value\n");
-    printf("POPFRAME\n");
+    // printf("POPFRAME\n");
     i++;
 }
 void genCOALESCING()

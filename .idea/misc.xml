@@ -6,6 +6,12 @@
       <MakefileProjectSettings>
         <option name="buildTarget" value="" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+          </set>
+        </option>
+        <option name="preConfigureCommands" value="# Compiler and flags CC = gcc CFLAGS = -Wall -Wextra -std=c99 -pedantic  # Executable name EXECUTABLE = compiler  # Source files SRCS = main.c scanner.c parser.c expression.c symtable.c symstack.c linlist.c generator.c error.c  # Object files (auto-generated) OBJS = $(SRCS:.c=.o)  # Linking rule $(EXECUTABLE): $(OBJS) &#9;$(CC) $(CFLAGS) -o $@ $^ -lm  # Compilation rule %.o: %.c &#9;$(CC) $(CFLAGS) -c $&lt; -o $@  # Clean rule clean: &#9;rm -f $(OBJS) $(EXECUTABLE) " />
         <option name="version" value="2" />
       </MakefileProjectSettings>
     </option>

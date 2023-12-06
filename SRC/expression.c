@@ -17,7 +17,7 @@ int prec_table[9][9] = {
     {S, S, S, R,  F, S, R, S, R}, // <=
     {S, S, S, F,  S, S, E, F, S}, // (
     {R, R, F, R,  R, F, R, R, R}, // )
-    {R, R, F, R,  R, F, R, F, R}, // !,
+    {R, R, F, O,  S, F, E, E, R}, // !,
     {S, S, S, R,  S, S, R, S, S}  // ??,
 };
 
@@ -208,7 +208,7 @@ tableIndex getTableIndex(Token t)
             return  I_NOTNIl;
         case TYPE_MUL:
         case TYPE_DIV:
-            return I_MULTIPLY;
+            return I_MUL;
         case TYPE_STRING:
         case TYPE_INT:
         case TYPE_DOUBLE:
@@ -250,7 +250,7 @@ int reduce()
         case I_PLUS:
             return reducePlus();
 
-        case I_MULTIPLY:
+        case I_MUL:
             return reduceMultiply();
 
         case I_RELATIONAL:
