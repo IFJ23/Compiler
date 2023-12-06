@@ -7,10 +7,10 @@
 #include <stdio.h>
 #include "error.h"
 
-void printError(int line, char *message)
+void printError(int line, char *errorText)
 {
     if (line > 0)
-        fprintf(stderr, "%d\tError: %s\n", line, message);
+        fprintf(stderr, "%d\tError: %s\n", line, errorText);
     else
-        fprintf(stderr, "Error: %s\n", message);
+        fprintf(stderr, "Error: %s\n", errorText);
 }
