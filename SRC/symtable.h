@@ -22,10 +22,10 @@ typedef const char *SymtableKey;
  */
 typedef enum
 {
-    FUNC,
     VAR,
-    LET
-} ElType;
+    LET,
+    FUNC
+} ElemType;
 
 /**
  * @brief Struct representing the data of an element in the symbol table.
@@ -36,11 +36,11 @@ typedef enum
  */
 typedef struct SymtableData
 {
-    ElType type;
+    ElemType type;
     int paramsCnt;
     bool possiblyUndefined;
     LinkedList parameters;
-} SymtableData;
+} SymtableValue;
 
 /**
  * @brief Struct representing a key-value pair in the symbol table.
@@ -50,7 +50,7 @@ typedef struct SymtableData
 typedef struct SymtablePair
 {
     SymtableKey key;
-    SymtableData data;
+    SymtableValue value;
 } SymtablePair;
 
 /**
@@ -109,7 +109,8 @@ SymtablePair *symtableFind(Symtable *t, SymtableKey key);
  * @param params List of parameters if the element is a function.
  * @return Pointer to the added key-value pair.
  */
-SymtablePair *symtableAdd(Symtable *t, SymtableKey key, ElType type, int paramsCnt, bool undefined, LinkedList params);
+SymtablePair *symtableAdd(Symtable *t, SymtableKey key, ElemType type, int paramsCnt, bool undefined, LinkedList params);
+
 
 /**
  * @brief Function to free the memory allocated for the symbol table.

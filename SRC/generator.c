@@ -34,111 +34,137 @@ void genStackPush(Token t)
 {
     switch (t.type)
     {
-    case TYPE_STRING:
-    {
-        printf("PUSHS string@");
-
-        int i = 0;
-
-        while (t.value.string[i] != '\0')
+        case TYPE_STRING:
         {
-            char currentChar = t.value.string[i];
+            printf("PUSHS string@");
 
-            if (currentChar < 33 || currentChar == 35 || currentChar == 92 || currentChar > 126)
+            int i = 0;
+
+            while (t.value.string[i] != '\0')
             {
-                putchar('\\');
+                char currentChar = t.value.string[i];
 
-                if (currentChar < 0)
-                    currentChar += 256;
+                if (currentChar < 33 || currentChar == 35 || currentChar == 92 || currentChar > 126)
+                {
+                    putchar('\\');
 
-                printf("%03d", currentChar);
+                    if (currentChar < 0)
+                        currentChar += 256;
+
+                    printf("%03d", currentChar);
+                }
+                else
+                {
+                    putchar(currentChar);
+                }
+
+                i++;
             }
-            else
-            {
-                putchar(currentChar);
-            }
 
-            i++;
+            putchar('\n');
+            break;
         }
 
-        putchar('\n');
-        free(t.value.string);
-        break;
-    }
+        case TYPE_INT:
+            printf("PUSHS int@%d\n", t.value.integer);
+            break;
 
-    case TYPE_INT:
-        printf("PUSHS int@%d\n", t.value.integer);
-        break;
+        case TYPE_DOUBLE:
+            printf("PUSHS float@%a\n", t.value.decimal);
+            break;
 
-    case TYPE_DOUBLE:
-        printf("PUSHS float@%a\n", t.value.decimal);
-        break;
+        case TYPE_KW:
+            printf("PUSHS nil@nil\n");
+            break;
 
-    case TYPE_KW:
-        printf("PUSHS nil@nil\n");
-        break;
+        case TYPE_EXCLAMATION_MARK:
+            break;
 
-    case TYPE_EXCLAMATION_MARK:
-        // Now doesnt implemented yet
-        break;
+        case TYPE_PLUS:
+            genPLUS();
+            break;
 
-    case TYPE_PLUS:
-        genPLUS();
-        break;
+        case TYPE_MINUS:
+            genMINUS();
+            printf("SUBS\n");
+            break;
 
-    case TYPE_MINUS:
-        genMINUS();
-        printf("SUBS\n");
-        break;
+        case TYPE_MUL:
+            genMULTIPLY();
+            printf("MULS\n");
+            break;
 
-    case TYPE_MUL:
-        genMULTIPLY();
-        printf("MULS\n");
-        break;
+        case TYPE_DIV:
+            genDIVISION();
+            printf("DIVS\n");
+            break;
 
-    case TYPE_DIV:
-        genDIVISION();
-        printf("DIVS\n");
-        break;
+        case TYPE_EQUAL:
+            genEQUALS();
+            printf("EQS\n");
+            genConvertBool();
+            break;
 
-    case TYPE_EQUAL:
-        genEQUALS();
-        printf("EQS\n");
-        genConvertBool();
-        break;
+        case TYPE_NOT_EQUAL:
+            genEQUALS();
+            printf("EQS\n");
+            printf("NOTS\n");
+            genConvertBool();
+            break;
 
-    case TYPE_NOT_EQUAL:
-        genEQUALS();
-        printf("EQS\n");
-        printf("NOTS\n");
-        genConvertBool();
-        break;
+        case TYPE_MORE:
+            genMORE_LESS();
+            printf("POPFRAME\n");
+            printf("GTS\n");
+            genConvertBool();
+            break;
+        case TYPE_MORE_EQUAL:
+            genMORE_LESS();
+            printf("GTS\n");
+            printf("POPS GF@$$mainresult\n");
+            printf("PUSHS GF@$$mainresult\n");
+            printf("PUSHS LF@tmp2$$value\n");
+            printf("PUSHS LF@tmp1$$value\n");
+            printf("EQS\n");
+            printf("POPS GF@$$mainresult\n");
+            printf("PUSHS GF@$$mainresult\n");
+            printf("POPFRAME\n");
+            printf("ORS\n");
+            genConvertBool();
+            break;
 
-    case TYPE_MORE:
-    case TYPE_MORE_EQUAL:
-        genMORE_LESS();
-        printf("GTS\n");
-        genConvertBool();
-        break;
+        case TYPE_LESS:
+            genMORE_LESS();
+            printf("POPFRAME\n");
+            printf("LTS\n");
+            genConvertBool();
+            break;
+        case TYPE_LESS_EQUAL:
+            genMORE_LESS();
+            printf("LTS\n");
+            printf("POPS GF@$$mainresult\n");
+            printf("PUSHS GF@$$mainresult\n");
+            printf("PUSHS LF@tmp2$$value\n");
+            printf("PUSHS LF@tmp1$$value\n");
+            printf("EQS\n");
+            printf("POPS GF@$$mainresult\n");
+            printf("PUSHS GF@$$mainresult\n");
+            printf("POPFRAME\n");
+            printf("ORS\n");
+            genConvertBool();
+            break;
 
-    case TYPE_LESS:
-    case TYPE_LESS_EQUAL:
-        genMORE_LESS();
-        printf("LTS\n");
-        genConvertBool();
-        break;
+        case TYPE_NIL_COALESCING_OPERATOR:
+            genCOALESCING();
+            break;
 
-    case TYPE_NIL_COALESCING_OPERATOR:
-        genCOALESCING();
-        break;
+        case TYPE_IDENTIFIER_VAR:
+            printf("POPFRAME\n");
+            printf("PUSHS LF@%s\n", t.value.string);
+            printf("PUSHFRAME\n");
 
-    case TYPE_IDENTIFIER_VAR:
-        printf("POPFRAME\n");
-        printf("PUSHS LF@%s\n", t.value.string);
-        printf("PUSHFRAME\n");
-
-    default:
-        break;
+        default:
+            break;
     }
 }
 
@@ -272,7 +298,7 @@ void genPLUS()
     printf("JUMP $$ADDS$$checkk%d\n", i);
     printf("LABEL $$ADDS$$check%d$$1\n", i);
     printf("JUMPIFEQ $$ADDS$$check%d$$2 LF@tmp2$$value$$type string@string\n", i);
-    printf("EXIT int@7\n");
+    printf("DPRINT int@7\n");
     printf("LABEL $$ADDS$$check%d$$2\n", i);
     printf("CONCAT LF@tmp1$$value LF@tmp2$$value LF@tmp1$$value\n");
     printf("JUMP $$operator$$ADDS$$exit%d\n", i);
@@ -500,7 +526,7 @@ void genMORE_LESS()
     printf("TYPE LF@tmp1$$value$$type LF@tmp1$$value\n");
     printf("TYPE LF@tmp2$$value$$type LF@tmp2$$value\n");
     printf("JUMPIFEQ $$MORE$$LESS$$check%d$$nil$$tmp1$$value LF@tmp1$$value$$type nil@nil\n", i);
-    printf("JUMPIFEQ $$MORE$$LESS$$check%d$$nil$$help2 LF@tmp2$$value$$type nil@nil\n", i);
+    printf("JUMPIFEQ $$MORE$$LESS$$check%d$$nil$$tmp2$$value LF@tmp2$$value$$type nil@nil\n", i);
     printf("JUMP $$MORE$$LESS$$check%d$$2\n", i);
 
     printf("LABEL $$MORE$$LESS$$check%d$$nil$$tmp1$$value\n", i);
@@ -522,7 +548,7 @@ void genMORE_LESS()
     printf("MOVE LF@tmp1$$value string@\n");
     printf("JUMP $$MORE$$LESS$$check%d\n", i);
 
-    printf("LABEL $$MORE$$LESS$$check%d$$nil$$help2\n", i);
+    printf("LABEL $$MORE$$LESS$$check%d$$nil$$tmp2$$value\n", i);
     printf("JUMPIFEQ $$MORE$$LESS$$check%d$$help2tozero$$int LF@tmp1$$value$$type string@int\n", i);
     printf("JUMPIFEQ $$MORE$$LESS$$check%d$$help2tozero$$float LF@tmp1$$value$$type string@float\n", i);
     printf("JUMPIFEQ $$MORE$$LESS$$check%d$$help2toempty LF@tmp1$$value$$type string@string\n", i);
@@ -565,7 +591,7 @@ void genMORE_LESS()
     printf("LABEL $$operator$$MORE$$LESS$$exit%d\n", i);
     printf("PUSHS LF@tmp2$$value\n");
     printf("PUSHS LF@tmp1$$value\n");
-    printf("POPFRAME\n");
+    // printf("POPFRAME\n");
     i++;
 }
 void genCOALESCING()
@@ -609,19 +635,21 @@ void genWrite(int numofparams)
 {
     printf("CREATEFRAME\n");
     printf("PUSHFRAME\n");
-    for (int i = numofparams; i > 0; i--)
+    static int i = 0;
+    for (int j = numofparams; j > 0; j--)
     {
-        printf("DEFVAR LF@$$write%d\n", i);
-        printf("POPS LF@$$write%d\n", i);
-        printf("JUMPIFEQ $$WRITE$$nil%d LF@$$write%d nil@nil\n", i, i);
+        printf("DEFVAR LF@$$write%d\n", j);
+        printf("POPS LF@$$write%d\n", j);
+        printf("JUMPIFEQ $$WRITE$$nil%d LF@$$write%d nil@nil\n", i, j);
         printf("JUMP $$WRITE$$exit%d\n", i);
         printf("LABEL $$WRITE$$nil%d\n", i);
-        printf("MOVE LF@$$write%d string@\\010\n", i);
+        printf("MOVE LF@$$write%d string@\\010\n", j);
         printf("LABEL $$WRITE$$exit%d\n", i);
+        i++;
     }
-    for (int i = 1; i <= numofparams; i++)
+    for (int j = 1; j <= numofparams; j++)
     {
-        printf("WRITE LF@$$write%d\n", i);
+        printf("WRITE LF@$$write%d\n", j);
     }
     printf("POPFRAME\n");
 }

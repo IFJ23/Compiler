@@ -18,7 +18,7 @@ int prec_table[9][9] = {
     {S, S, S, R,  F, S, R, S, R}, // <=
     {S, S, S, F,  S, S, E, F, S}, // (
     {R, R, F, R,  R, F, R, R, R}, // )
-    {R, R, F, R,  R, F, R, F, R}, // !,
+    {R, R, F, O,  S, F, E, E, R}, // !,
     {S, S, S, R,  S, S, R, S, S}  // ??,
 };
 
@@ -45,10 +45,10 @@ int reduceI()
     SymtablePair *foundVar;
     if (head.type == TYPE_IDENTIFIER_VAR)
     {
-        foundVar = symtableFind(parser.outsideBody ? parser.localSymtable : parser.symtable, head.value.string);
+        foundVar = findVariable(head.value.string);
         if (foundVar == NULL)
         {
-            printError(head.line, "Undefined variable used in an expression.");
+            printError(head.line, "Undefined variable used in an expression. 1 \n");
             return SEMANTIC_UNDEFINED_ERROR;
         }
     }
@@ -59,7 +59,7 @@ int reduceI()
         genStackPush(t);
     else
     {
-        if (foundVar->data.possiblyUndefined)
+        if (foundVar->value.possiblyUndefined)
             genCheckDefined(t);
         genStackPush(t);
     }
@@ -209,7 +209,7 @@ tableIndex getTableIndex(Token t)
             return  I_NOTNIl;
         case TYPE_MUL:
         case TYPE_DIV:
-            return I_MULTIPLY;
+            return I_MUL;
         case TYPE_STRING:
         case TYPE_INT:
         case TYPE_DOUBLE:
@@ -251,7 +251,7 @@ int reduce()
         case I_PLUS:
             return reducePlus();
 
-        case I_MULTIPLY:
+        case I_MUL:
             return reduceMultiply();
 
         case I_RELATIONAL:
@@ -268,7 +268,7 @@ int reduce()
 
         default:
             printError(0, "No reduction rule for given token.");
-            return INTERNAL_ERROR;
+            return SEMANTIC_COMPATIBILITY_ERROR;
     }
 }
 
@@ -308,7 +308,6 @@ int shift(Scanner *scanner, Token *preShift)
     stackPush(parser.stack, parser.currToken);
     *preShift = parser.currToken;
     int err = get_token(scanner, &(parser.currToken));
-
     return err;
 }
 
@@ -340,7 +339,6 @@ int parseExpression(Scanner *scanner, bool endWithBracket)
                 break;
 
             case (O):
-                stackFree(parser.stack);
                 if (endWithBracket && beforeEnd.type != TYPE_RIGHT_BRACKET)
                 {
                     printError(beforeEnd.line, "Expression has to be wrapped by braces.");
