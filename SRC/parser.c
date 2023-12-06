@@ -8,12 +8,12 @@
 Parser parser;
 
 int parserInit() {
-    Stack *s = malloc(sizeof(Stack));
+    Stack *s = (Stack *)malloc(sizeof(Stack));
     if (s == NULL)
         return INTERNAL_ERROR;
     stackInit(s);
 
-    Stack *sUndef = malloc(sizeof(Stack));
+    Stack *sUndef = (Stack *)malloc(sizeof(Stack));
     if (sUndef == NULL)
         return INTERNAL_ERROR;
     stackInit(sUndef);
@@ -660,7 +660,7 @@ int parseVariableRedefinition(Scanner *scanner, Token variable) {
             CHECKRULE(parseAssign(scanner, variable))
 
             // If the variable was previously undefined or possibly undefined, mark it as defined
-            if (alrDefined == NULL || alrDefined->value.possiblyUndefined) {
+            if (alrDefined == NULL || alrDefined->value.undefined) {
                 addVariable(variable.value.string, VAR);
             }
         } else {
@@ -750,7 +750,7 @@ int parseBody(Scanner *scanner) {
                         genDefineVariable(variable);
                     }
 
-                    if (alrDefined == NULL || alrDefined->value.possiblyUndefined) {
+                    if (alrDefined == NULL || alrDefined->value.undefined) {
                         addVariable(variable.value.string, VAR);
                     }
 
@@ -818,7 +818,7 @@ int parseBody(Scanner *scanner) {
                         }
                         GETTOKEN(scanner, &parser.currToken)
                         CHECKRULE(parseAssign(scanner, variable))
-                        if (alrDefined == NULL || alrDefined->value.possiblyUndefined) {
+                        if (alrDefined == NULL || alrDefined->value.undefined) {
                             addVariable(variable.value.string, LET);
                         }
                     } else {

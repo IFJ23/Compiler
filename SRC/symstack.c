@@ -20,7 +20,7 @@ void stackPush(Stack *s, Token t)
         return;
 
     // Allocate memory for a new stack item
-    StackItem *newItem = malloc(sizeof(StackItem));
+    StackItem *newItem = (StackItem *)malloc(sizeof(StackItem));
     if (newItem == NULL)  // Check if memory allocation failed
         return;
 

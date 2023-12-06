@@ -70,7 +70,7 @@ int reduceI()
         genStackPush(t);
     else
     {
-        if (foundVar->value.possiblyUndefined)
+        if (foundVar->value.undefined)
             genCheckDefined(t);
         genStackPush(t);
     }
@@ -339,7 +339,7 @@ int shift(Scanner *scanner, Token *preShift)
     }
     StackItem *tmp = parser.stack->top;
 
-    Stack *putaway = malloc(sizeof(Stack));
+    Stack *putaway = (Stack *)malloc(sizeof(Stack));
     if (putaway == NULL)
         return INTERNAL_ERROR;
     stackInit(putaway);

@@ -38,7 +38,7 @@ typedef struct SymtableData
 {
     ElemType type;
     int paramsCnt;
-    bool possiblyUndefined;
+    bool undefined;
     LinkedList parameters;
 } SymtableValue;
 
@@ -73,8 +73,8 @@ typedef struct SymtableItem
 typedef struct Symtable
 {
     size_t size;
-    size_t arr_size;
-    SymtableItem **arr_ptr;
+    size_t array_size;
+    SymtableItem **array_ptr;
 } Symtable;
 
 /**
@@ -101,7 +101,7 @@ SymtablePair *symtableFind(Symtable *t, SymtableKey key);
 
 /**
  * @brief Function to add a key-value pair to the symbol table.
- * @param t Pointer to the symbol table.
+ * @param table Pointer to the symbol table.
  * @param key The key of the pair to add.
  * @param type The type of the element to add.
  * @param paramsCnt The count of parameters if the element is a function.
@@ -109,7 +109,7 @@ SymtablePair *symtableFind(Symtable *t, SymtableKey key);
  * @param params List of parameters if the element is a function.
  * @return Pointer to the added key-value pair.
  */
-SymtablePair *symtableAdd(Symtable *t, SymtableKey key, ElemType type, int paramsCnt, bool undefined, LinkedList params);
+SymtablePair *symtableAdd(Symtable *table, SymtableKey key, ElemType type, int paramsCnt, bool undefined, LinkedList params);
 
 /**
  * @brief Function to free the memory allocated for the symbol table.

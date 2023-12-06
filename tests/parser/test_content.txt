@@ -1,5 +1,7 @@
 var a : Int = 2 + 7 / 5 + 6 * 9
 var t : String? = 6 + 9 + a
+var ar : Int = 2 + 7 / 5 + 6 * 9
+var tq : String? = 6 + 9 + a
 var ryt : Int?
 
 func foo(x _: Int, _ par : Int) -> String? {
