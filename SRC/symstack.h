@@ -31,8 +31,8 @@ typedef struct StackItem
 
 typedef struct
 {
-    StackItem *head;
-    unsigned len;
+    StackItem *top;
+    unsigned length;
 } Stack;
 
 /**

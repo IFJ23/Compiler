@@ -955,7 +955,7 @@ int parseType(LinkedList *ll) {
 // Function to find duplicate parameters in the stack
 int checkForDuplicateParams() {
     // Start from the head of the undefined stack
-    StackItem *curr = parser.undefStack->head;
+    StackItem *curr = parser.undefStack->top;
 
     // Iterate through the stack until the end
     while (curr != NULL) {

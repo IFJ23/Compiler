@@ -31,7 +31,7 @@ int prec_table[9][9] = {
  */
 Token topmostTerminal()
 {
-    StackItem *tmp = parser.stack->head;
+    StackItem *tmp = parser.stack->top;
 
     while (tmp != NULL)
     {
@@ -52,7 +52,7 @@ Token topmostTerminal()
  */
 int reduceI()
 {
-    Token head = parser.stack->head->t;
+    Token head = parser.stack->top->t;
     SymtablePair *foundVar;
     if (head.type == TYPE_IDENTIFIER_VAR)
     {
@@ -337,7 +337,7 @@ int shift(Scanner *scanner, Token *preShift)
         printError(parser.currToken.line,  "Couldn't shift symbol, invalid expression.");
         return SYNTAX_ERROR;
     }
-    StackItem *tmp = parser.stack->head;
+    StackItem *tmp = parser.stack->top;
 
     Stack *putaway = malloc(sizeof(Stack));
     if (putaway == NULL)
@@ -349,11 +349,11 @@ int shift(Scanner *scanner, Token *preShift)
     {
         stackPop(parser.stack, &toPush);
         stackPush(putaway, toPush);
-        tmp = parser.stack->head;
+        tmp = parser.stack->top;
     }
 
     stackPush(parser.stack, shift);
-    while (putaway->head != NULL)
+    while (putaway->top != NULL)
     {
         stackPop(putaway, &toPush);
         stackPush(parser.stack, toPush);
